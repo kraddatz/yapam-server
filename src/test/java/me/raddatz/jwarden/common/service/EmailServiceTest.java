@@ -57,4 +57,25 @@ class EmailServiceTest {
         assertEquals("register", message.getSubject());
         assertEquals("http://host/users/userid/email/verify?token=emailtoken", message.getText());
     }
+
+    @Test
+    void sendEmailChangeRequest() {
+        var user = getDefaultUser();
+        var email = "email";
+
+        when(appParameter.getHost()).thenReturn("http://host");
+
+        emailService.sendEmailChangeEmail(user, email);
+
+        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        Mockito.verify(javaMailSender).send(captor.capture());
+        var message = captor.getValue();
+
+        assertEquals("kevin@familie-raddatz.de", message.getFrom());
+        if (!Objects.isNull(message.getTo())) {
+            assertTrue(Arrays.asList(message.getTo()).contains("email"));
+        }
+        assertEquals("register", message.getSubject());
+        assertEquals("http://host/users/userid/email/change?email=email&token=emailtoken", message.getText());
+    }
 }

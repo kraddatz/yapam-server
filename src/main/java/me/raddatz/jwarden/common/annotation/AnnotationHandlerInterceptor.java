@@ -1,7 +1,9 @@
 package me.raddatz.jwarden.common.annotation;
 
-import me.raddatz.jwarden.common.annotation.profileexecution.VerifiedEmail;
-import me.raddatz.jwarden.common.annotation.profileexecution.VerifiedEmailValidator;
+import me.raddatz.jwarden.common.annotation.userexists.UserExists;
+import me.raddatz.jwarden.common.annotation.userexists.UserExistsValidator;
+import me.raddatz.jwarden.common.annotation.verifiedemail.VerifiedEmail;
+import me.raddatz.jwarden.common.annotation.verifiedemail.VerifiedEmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -15,6 +17,7 @@ import java.lang.reflect.Method;
 public class AnnotationHandlerInterceptor implements HandlerInterceptor {
 
     @Autowired private VerifiedEmailValidator verifiedEmailValidator;
+    @Autowired private UserExistsValidator userExistsValidator;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -25,6 +28,9 @@ public class AnnotationHandlerInterceptor implements HandlerInterceptor {
         Method method = ((HandlerMethod) handler).getMethod();
         if (method.isAnnotationPresent(VerifiedEmail.class)) {
             return verifiedEmailValidator.validate();
+        }
+        if (method.isAnnotationPresent(UserExists.class)) {
+            return userExistsValidator.validate(request);
         }
         return true;
     }

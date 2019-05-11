@@ -3,6 +3,7 @@ package me.raddatz.jwarden.config.oauth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -36,7 +37,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/documentation/**",
-                        "/users/register").permitAll() // whitelist these urls from authentication
+                        "/users/*/email/verify",
+                        "/users/*/email/requestChange",
+                        "/users/*/email/change").permitAll() // whitelist these urls from authentication
+                .antMatchers(HttpMethod.POST, "/users").permitAll()
                 .and()
                 .authorizeRequests()
                 .anyRequest().authenticated() // authenticate all other urls

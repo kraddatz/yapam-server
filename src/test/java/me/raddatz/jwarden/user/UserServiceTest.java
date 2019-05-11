@@ -3,7 +3,7 @@ package me.raddatz.jwarden.user;
 import me.raddatz.jwarden.common.annotation.AnnotationHandlerInterceptor;
 import me.raddatz.jwarden.common.error.EmailAlreadyExistsException;
 import me.raddatz.jwarden.common.error.InvalidEmailVerificationTokenException;
-import me.raddatz.jwarden.common.error.UserNotExistsException;
+import me.raddatz.jwarden.common.error.UserNotFoundException;
 import me.raddatz.jwarden.common.service.EmailService;
 import me.raddatz.jwarden.common.service.PBKDF2Service;
 import me.raddatz.jwarden.config.JWardenConfig;
@@ -138,16 +138,7 @@ class UserServiceTest {
     }
 
     @Test
-    void verifyEmail_whenUserNotExists_doNothing() {
-        var userId = "userid";
-        var token = "token";
-        when(userRepository.findOneById(anyString())).thenReturn(null);
-
-        assertThrows(UserNotExistsException.class, () -> userService.verifyEmail(userId, token));
-    }
-
-    @Test
-    void verifyEmail_whenUserExists_saveUser() {
+    void verifyEmail_validToken_thenSaveUser() {
         var userId = "userid";
         var token = "token";
         var user = createDefaultUser();
@@ -158,12 +149,47 @@ class UserServiceTest {
     }
 
     @Test
-    void verifyEmail_whenUserExistsAndInvalidToken_throwException() {
+    void verifyEmail_whenInvalidToken_thenThrowException() {
         var userId = "userid";
         var token = "invalidtoken";
         var user = createDefaultUser();
         when(userRepository.findOneById(anyString())).thenReturn(user);
 
         assertThrows(InvalidEmailVerificationTokenException.class, () -> userService.verifyEmail(userId, token));
+    }
+
+    @Test
+    void requestEmailChange_whenUserExists_thenRequestEmailChange() {
+        var userId = "userId";
+        var email = "email";
+        var user = createDefaultUser();
+        when(userRepository.findOneById(anyString())).thenReturn(user);
+
+        userService.requestEmailChange(userId, email);
+        verify(userRepository, times(1)).save(any(User.class));
+        verify(emailService, times(1)).sendEmailChangeEmail(any(User.class), anyString());
+    }
+
+    @Test
+    void emailChange_whenValidToken_thenChangeEmail() {
+        var userId = "userId";
+        var token = "token";
+        var email = "email";
+        var user = createDefaultUser();
+        when(userRepository.findOneById(anyString())).thenReturn(user);
+
+        userService.emailChange(userId, token, email);
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void emailChange_whenInvalidToken_thenChangeEmail() {
+        var userId = "userId";
+        var token = "invalidtoken";
+        var email = "email";
+        var user = createDefaultUser();
+        when(userRepository.findOneById(anyString())).thenReturn(user);
+
+        assertThrows(InvalidEmailVerificationTokenException.class, () -> userService.emailChange(userId, token, email));
     }
 }

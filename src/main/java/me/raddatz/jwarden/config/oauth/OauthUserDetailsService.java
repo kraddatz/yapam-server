@@ -1,6 +1,6 @@
 package me.raddatz.jwarden.config.oauth;
 
-import me.raddatz.jwarden.common.error.UserNotExistsException;
+import me.raddatz.jwarden.common.error.UserNotFoundException;
 import me.raddatz.jwarden.user.model.Role;
 import me.raddatz.jwarden.user.model.User;
 import me.raddatz.jwarden.user.repository.RoleRepository;
@@ -25,7 +25,7 @@ public class OauthUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String email) {
 		User user = userRepository.findOneByEmail(email);
 		if (null == user) {
-			throw new UserNotExistsException();
+			throw new UserNotFoundException();
 		} else {
 
 			List<Role> userRoles = roleRepository.findByUser(user);

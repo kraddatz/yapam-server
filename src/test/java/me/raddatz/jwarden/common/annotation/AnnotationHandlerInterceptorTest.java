@@ -1,6 +1,7 @@
 package me.raddatz.jwarden.common.annotation;
 
-import me.raddatz.jwarden.common.annotation.profileexecution.VerifiedEmailValidator;
+import me.raddatz.jwarden.common.annotation.userexists.UserExistsValidator;
+import me.raddatz.jwarden.common.annotation.verifiedemail.VerifiedEmailValidator;
 import me.raddatz.jwarden.user.UserController;
 import me.raddatz.jwarden.user.model.RegisterUser;
 import org.junit.jupiter.api.Disabled;
@@ -17,6 +18,7 @@ import org.springframework.web.method.HandlerMethod;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -26,22 +28,29 @@ class AnnotationHandlerInterceptorTest {
 
     @Autowired private AnnotationHandlerInterceptor annotationHandlerInterceptor;
     @MockBean private VerifiedEmailValidator verifiedEmailValidator;
+    @MockBean private UserExistsValidator userExistsValidator;
 
-    private MockHttpServletRequest getDefaultHttpServletRequest() {
+    private MockHttpServletRequest createDefaultHttpServletRequest() {
         return new MockHttpServletRequest();
     }
 
-    private MockHttpServletResponse getDefaultHttpServletResponse() {
+    private MockHttpServletResponse createDefaultHttpServletResponse() {
         return new MockHttpServletResponse();
     }
 
-    private HandlerMethod getDefaultAnnotationHandlerMethod() throws NoSuchMethodException {
+    private HandlerMethod createNoAnnotationHandlerMethod() throws NoSuchMethodException {
         var method = UserController.class.getMethod("register", RegisterUser.class);
 
         return new HandlerMethod(new UserController(), method);
     }
 
-    private HandlerMethod getDefaultNoAnnotationHandlerMethod() throws NoSuchMethodException {
+    private HandlerMethod createVerifiedEmailHandlerMethod() throws NoSuchMethodException {
+        var method = UserController.class.getMethod("register", RegisterUser.class);
+
+        return new HandlerMethod(new UserController(), method);
+    }
+
+    private HandlerMethod createUserExistsHandlerMethod() throws NoSuchMethodException {
         var method = UserController.class.getMethod("verifyEmail", String.class, String.class);
 
         return new HandlerMethod(new UserController(), method);
@@ -49,8 +58,8 @@ class AnnotationHandlerInterceptorTest {
 
     @Test
     void preHandle_whenHandlerMethodIsNull_thenReturnTrue() {
-        var request = getDefaultHttpServletRequest();
-        var response = getDefaultHttpServletResponse();
+        var request = createDefaultHttpServletRequest();
+        var response = createDefaultHttpServletResponse();
 
         boolean result = annotationHandlerInterceptor.preHandle(request, response, null);
 
@@ -58,10 +67,10 @@ class AnnotationHandlerInterceptorTest {
     }
 
     @Test
-    void preHandle_whenHandlerMethodNoAnnotation_thenReturnFalse() throws NoSuchMethodException {
-        var request = getDefaultHttpServletRequest();
-        var response = getDefaultHttpServletResponse();
-        var handlerMethod = getDefaultNoAnnotationHandlerMethod();
+    void preHandle_whenHandlerMethodNoAnnotation_thenReturnTrue() throws NoSuchMethodException {
+        var request = createDefaultHttpServletRequest();
+        var response = createDefaultHttpServletResponse();
+        var handlerMethod = createNoAnnotationHandlerMethod();
 
         boolean result = annotationHandlerInterceptor.preHandle(request, response, handlerMethod);
 
@@ -70,12 +79,25 @@ class AnnotationHandlerInterceptorTest {
 
     @Test
     @Disabled // TODO: Missing request with VerifiedEmail validator
-    void preHandle_whenHandlerMethodWithAnnotation_thenReturnFalse() throws NoSuchMethodException {
-        var request = getDefaultHttpServletRequest();
-        var response = getDefaultHttpServletResponse();
-        var handlerMethod = getDefaultAnnotationHandlerMethod();
+    void preHandleVerifiedEmail_when_thenReturnFalse() throws NoSuchMethodException {
+        var request = createDefaultHttpServletRequest();
+        var response = createDefaultHttpServletResponse();
+        var handlerMethod = createVerifiedEmailHandlerMethod();
 
         when(verifiedEmailValidator.validate()).thenReturn(false);
+
+        boolean result = annotationHandlerInterceptor.preHandle(request, response, handlerMethod);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void preHandleUserExists_whenUserNotExists_thenReturnFalse() throws NoSuchMethodException {
+        var request = createDefaultHttpServletRequest();
+        var response = createDefaultHttpServletResponse();
+        var handlerMethod = createUserExistsHandlerMethod();
+
+        when(userExistsValidator.validate(request)).thenReturn(false);
 
         boolean result = annotationHandlerInterceptor.preHandle(request, response, handlerMethod);
 

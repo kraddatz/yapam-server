@@ -1,4 +1,4 @@
-package me.raddatz.jwarden.common.annotation.profileexecution;
+package me.raddatz.jwarden.common.annotation.userexists;
 
 import java.lang.annotation.*;
 
@@ -6,5 +6,5 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Inherited
 @Documented
-public @interface VerifiedEmail {
+public @interface UserExists {
 }

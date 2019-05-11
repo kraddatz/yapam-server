@@ -2,7 +2,6 @@ package me.raddatz.jwarden.user;
 
 import me.raddatz.jwarden.common.error.EmailAlreadyExistsException;
 import me.raddatz.jwarden.common.error.InvalidEmailVerificationTokenException;
-import me.raddatz.jwarden.common.error.UserNotExistsException;
 import me.raddatz.jwarden.common.service.EmailService;
 import me.raddatz.jwarden.common.service.PBKDF2Service;
 import me.raddatz.jwarden.config.JWardenConfig;
@@ -61,11 +60,27 @@ public class UserService {
     @Transactional
     public void verifyEmail(String userId, String token) {
         var user = userRepository.findOneById(userId);
-        if (user == null) {
-            throw new UserNotExistsException();
-        }
         if (user.getEmailToken().equals(token)) {
             user.setEmailVerified(true);
+            userRepository.save(user);
+        } else {
+            throw new InvalidEmailVerificationTokenException();
+        }
+    }
+
+    @Transactional
+    public void requestEmailChange(String userId, String email) {
+        var user = userRepository.findOneById(userId);
+        user.setEmailToken(UUID.randomUUID().toString());
+        userRepository.save(user);
+        emailService.sendEmailChangeEmail(user, email);
+    }
+
+    @Transactional
+    public void emailChange(String userId, String token, String email) {
+        var user = userRepository.findOneById(userId);
+        if (user.getEmailToken().equals(token)) {
+            user.setEmail(email);
             userRepository.save(user);
         } else {
             throw new InvalidEmailVerificationTokenException();

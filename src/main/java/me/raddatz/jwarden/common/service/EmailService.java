@@ -14,12 +14,22 @@ public class EmailService {
     @Autowired private JavaMailSender javaMailSender;
 
     public void sendRegisterEmail(User user) {
-        SimpleMailMessage message = new SimpleMailMessage();
+        var message = new SimpleMailMessage();
         message.setFrom("kevin@familie-raddatz.de");
         message.setTo(user.getEmail());
         message.setSubject("register");
-        String registerUrl = appParameter.getHost() + "/users/" + user.getId() + "/email/verify?token=" + user.getEmailToken();
+        var registerUrl = appParameter.getHost() + "/users/" + user.getId() + "/email/verify?token=" + user.getEmailToken();
         message.setText(registerUrl);
+        javaMailSender.send(message);
+    }
+
+    public void sendEmailChangeEmail(User user, String email) {
+        var message = new SimpleMailMessage();
+        message.setFrom("kevin@familie-raddatz.de");
+        message.setTo(email);
+        message.setSubject("register");
+        var emailChangeUrl = appParameter.getHost() + "/users/" + user.getId() + "/email/change?email=" + email + "&token=" + user.getEmailToken();
+        message.setText(emailChangeUrl);
         javaMailSender.send(message);
     }
 }
