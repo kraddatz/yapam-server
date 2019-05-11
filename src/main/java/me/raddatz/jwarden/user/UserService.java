@@ -5,14 +5,17 @@ import me.raddatz.jwarden.common.error.InvalidEmailVerificationTokenException;
 import me.raddatz.jwarden.common.error.UserNotExistsException;
 import me.raddatz.jwarden.common.service.EmailService;
 import me.raddatz.jwarden.common.service.PBKDF2Service;
+import me.raddatz.jwarden.config.JWardenConfig;
 import me.raddatz.jwarden.user.model.RegisterUser;
 import me.raddatz.jwarden.user.model.User;
 import me.raddatz.jwarden.user.repository.UserRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -21,15 +24,24 @@ public class UserService {
     @Autowired private UserRepository userRepository;
     @Autowired private EmailService emailService;
     @Autowired private PBKDF2Service pbkdf2Service;
+    @Autowired private JWardenConfig jWardenConfig;
+
+    private Boolean userIsInRegistrationPeriod(User user) {
+        return user.getCreationDate().plus(jWardenConfig.getRegistrationTimeout()).isAfter(LocalDateTime.now());
+    }
 
     @Transactional
     void tryToRegisterUser(User user) {
-        if (userRepository.findOneByEmail(user.getEmail()) == null) {
-            userRepository.save(user);
+        var dbUser = userRepository.findOneByEmail(user.getEmail());
+        if (!Objects.isNull(dbUser)) {
+            if (!(userIsInRegistrationPeriod(dbUser) && !dbUser.getEmailVerified())) {
+                throw new EmailAlreadyExistsException();
+            }
+            BeanUtils.copyProperties(user, dbUser, "id");
+            userRepository.save(dbUser);
         } else {
-            throw new EmailAlreadyExistsException();
+            userRepository.save(user);
         }
-        emailService.sendRegisterEmail(user);
     }
 
     public RegisterUser register(RegisterUser registerUser) {
@@ -40,7 +52,9 @@ public class UserService {
         ));
         user.setEmailToken(UUID.randomUUID().toString());
         user.setCreationDate(LocalDateTime.now());
+        user.setEmailVerified(false);
         tryToRegisterUser(user);
+        emailService.sendRegisterEmail(user);
         return registerUser;
     }
 

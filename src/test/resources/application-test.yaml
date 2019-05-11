@@ -15,7 +15,11 @@ swagger:
 
 app:
   build-time: 1
-  name: 1
+  app-name: 1
   java-version: 1
   spring-boot-version: 1
   tomcat-version: 1
+
+
+jwarden:
+  registration-timeout: P1D

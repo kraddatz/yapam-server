@@ -44,6 +44,4 @@ public class User {
     )
     private Set<Role> role;
 
-    @Transient
-    private String masterPassword;
 }
