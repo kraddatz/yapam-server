@@ -1,6 +1,6 @@
 package me.raddatz.jwarden.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -15,30 +15,24 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {
 
-    @Value("${app.swagger.schemes}")
-    private String[] schemes;
-
-    @Value("${app.host}")
-    private String hostname;
+    @Autowired private AppParameter appParameter;
 
     @Bean
     public Docket apiDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .protocols(new HashSet<>(Arrays.asList(schemes)))
+                .protocols(appParameter.getSwaggerSchemes())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("me.raddatz.jwarden"))
                 .paths(PathSelectors.any())
                 .build()
-                .host(hostname)
+                .host(appParameter.getHost())
                 .securitySchemes(securitySchemes())
                 .securityContexts(securityContexts())
                 .apiInfo(apiInfo());

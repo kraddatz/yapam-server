@@ -40,6 +40,6 @@ app:
   spring-boot-version: @springBootVersion@
   tomcat-version: @tomcatVersion@
   host: localhost:8080
-  swagger:
-    schemes: http, https
-    base-path: test
+  swagger-schemes:
+    - http
+    - https
