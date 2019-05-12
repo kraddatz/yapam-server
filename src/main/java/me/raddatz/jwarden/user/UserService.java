@@ -1,10 +1,11 @@
 package me.raddatz.jwarden.user;
 
 import me.raddatz.jwarden.common.error.EmailAlreadyExistsException;
+import me.raddatz.jwarden.common.error.EmailVerificationTokenExpiredException;
 import me.raddatz.jwarden.common.error.InvalidEmailVerificationTokenException;
 import me.raddatz.jwarden.common.service.EmailService;
 import me.raddatz.jwarden.common.service.PBKDF2Service;
-import me.raddatz.jwarden.config.JWardenConfig;
+import me.raddatz.jwarden.config.JWardenProperties;
 import me.raddatz.jwarden.user.model.RegisterUser;
 import me.raddatz.jwarden.user.model.User;
 import me.raddatz.jwarden.user.repository.UserRepository;
@@ -23,21 +24,22 @@ public class UserService {
     @Autowired private UserRepository userRepository;
     @Autowired private EmailService emailService;
     @Autowired private PBKDF2Service pbkdf2Service;
-    @Autowired private JWardenConfig jWardenConfig;
+    @Autowired private JWardenProperties jWardenProperties;
 
     private Boolean userIsInRegistrationPeriod(User user) {
-        return user.getCreationDate().plus(jWardenConfig.getRegistrationTimeout()).isAfter(LocalDateTime.now());
+        return user.getCreationDate().plus(jWardenProperties.getRegistrationTimeout()).isAfter(LocalDateTime.now());
     }
 
     @Transactional
     void tryToRegisterUser(User user) {
         var dbUser = userRepository.findOneByEmail(user.getEmail());
         if (!Objects.isNull(dbUser)) {
-            if (!(userIsInRegistrationPeriod(dbUser) && !dbUser.getEmailVerified())) {
+            if (userIsInRegistrationPeriod(dbUser) && !dbUser.getEmailVerified()) {
+                BeanUtils.copyProperties(user, dbUser, "id");
+                userRepository.save(dbUser);
+            } else {
                 throw new EmailAlreadyExistsException();
             }
-            BeanUtils.copyProperties(user, dbUser, "id");
-            userRepository.save(dbUser);
         } else {
             userRepository.save(user);
         }
@@ -60,6 +62,9 @@ public class UserService {
     @Transactional
     public void verifyEmail(String userId, String token) {
         var user = userRepository.findOneById(userId);
+        if (user.getCreationDate().plus(jWardenProperties.getRegistrationTimeout()).isBefore(LocalDateTime.now())) {
+            throw new EmailVerificationTokenExpiredException();
+        }
         if (user.getEmailToken().equals(token)) {
             user.setEmailVerified(true);
             userRepository.save(user);

@@ -14,7 +14,7 @@ public class UserExistsValidator {
     @Autowired private UserRepository userRepository;
 
     public boolean validate(HttpServletRequest request) {
-        var path = request.getContextPath();
+        var path = request.getRequestURI();
         var userId = path.split("/")[2];
         var user = userRepository.findOneById(userId);
         if (Objects.isNull(user)) {

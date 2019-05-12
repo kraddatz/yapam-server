@@ -2,11 +2,11 @@ package me.raddatz.jwarden.user;
 
 import me.raddatz.jwarden.common.annotation.AnnotationHandlerInterceptor;
 import me.raddatz.jwarden.common.error.EmailAlreadyExistsException;
+import me.raddatz.jwarden.common.error.EmailVerificationTokenExpiredException;
 import me.raddatz.jwarden.common.error.InvalidEmailVerificationTokenException;
-import me.raddatz.jwarden.common.error.UserNotFoundException;
 import me.raddatz.jwarden.common.service.EmailService;
 import me.raddatz.jwarden.common.service.PBKDF2Service;
-import me.raddatz.jwarden.config.JWardenConfig;
+import me.raddatz.jwarden.config.JWardenProperties;
 import me.raddatz.jwarden.user.model.RegisterUser;
 import me.raddatz.jwarden.user.model.User;
 import me.raddatz.jwarden.user.repository.UserRepository;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Duration;
@@ -32,14 +31,13 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(UserService.class)
 @ActiveProfiles("test")
-@ContextConfiguration(classes = {UserService.class})
 class UserServiceTest {
 
     @Autowired private UserService userService;
     @MockBean private PBKDF2Service pbkdf2Service;
     @MockBean private UserRepository userRepository;
     @MockBean private EmailService emailService;
-    @MockBean private JWardenConfig jWardenConfig;
+    @MockBean private JWardenProperties jWardenProperties;
     @MockBean private AnnotationHandlerInterceptor annotationHandlerInterceptor;
 
     private RegisterUser createDefaultRegisterUser() {
@@ -77,13 +75,13 @@ class UserServiceTest {
     }
 
     @Test
-    void register_whenUserExistsInRegistrationUnverified_thenOverrideUser() {
+    void register_whenUserExistsInRegistrationUnverified_thenThrowException() {
         var registerUser = createDefaultRegisterUser();
         var user = createDefaultUser();
         when(pbkdf2Service.generateSalt()).thenReturn("salt");
         when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
-        when(jWardenConfig.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         userService.register(registerUser);
 
@@ -98,14 +96,14 @@ class UserServiceTest {
     }
 
     @Test
-    void register_whenUserExistsNotInRegistrationUnverified_thenThrowException() {
+    void register_whenUserExistsNotInRegistrationUnverified_thenOverrideUser() {
         var registerUser = createDefaultRegisterUser();
         var user = createDefaultUser();
         user.setCreationDate(LocalDateTime.now().minusDays(2));
         when(pbkdf2Service.generateSalt()).thenReturn("salt");
         when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
-        when(jWardenConfig.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.register(registerUser));
     }
@@ -119,7 +117,7 @@ class UserServiceTest {
         when(pbkdf2Service.generateSalt()).thenReturn("salt");
         when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
-        when(jWardenConfig.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.register(registerUser));
     }
@@ -132,7 +130,7 @@ class UserServiceTest {
         when(pbkdf2Service.generateSalt()).thenReturn("salt");
         when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
-        when(jWardenConfig.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.register(registerUser));
     }
@@ -143,6 +141,7 @@ class UserServiceTest {
         var token = "token";
         var user = createDefaultUser();
         when(userRepository.findOneById(anyString())).thenReturn(user);
+        when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         userService.verifyEmail(userId, token);
         verify(userRepository, times(1)).save(any(User.class));
@@ -154,8 +153,21 @@ class UserServiceTest {
         var token = "invalidtoken";
         var user = createDefaultUser();
         when(userRepository.findOneById(anyString())).thenReturn(user);
+        when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         assertThrows(InvalidEmailVerificationTokenException.class, () -> userService.verifyEmail(userId, token));
+    }
+
+    @Test
+    void verifyEmail_whenUserNotInRegistrationPeriod_thenThrowException() {
+        var userId = "userid";
+        var token = "invalidtoken";
+        var user = createDefaultUser();
+        user.setCreationDate(LocalDateTime.now().minusDays(2));
+        when(userRepository.findOneById(anyString())).thenReturn(user);
+        when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+
+        assertThrows(EmailVerificationTokenExpiredException.class, () -> userService.verifyEmail(userId, token));
     }
 
     @Test

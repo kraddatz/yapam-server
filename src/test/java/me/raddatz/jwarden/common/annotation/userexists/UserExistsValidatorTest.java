@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -27,7 +26,7 @@ class UserExistsValidatorTest {
 
     private MockHttpServletRequest createDefaultHttpServletRequest() {
         var request = new MockHttpServletRequest();
-        request.setContextPath("/users/e515ab50-1328-446b-aabf-6f565b266f41/email/verify");
+        request.setRequestURI("/users/e515ab50-1328-446b-aabf-6f565b266f41/email/verify");
         return request;
     }
 
@@ -49,7 +48,6 @@ class UserExistsValidatorTest {
     @Test
     void validate_whenUserNotExists_thenReturnTrue() {
         var request = createDefaultHttpServletRequest();
-        var user = createDefaultUser();
         when(userRepository.findOneById("e515ab50-1328-446b-aabf-6f565b266f41")).thenReturn(null);
 
         assertThrows(UserNotFoundException.class, () -> userExistsValidator.validate(request));
