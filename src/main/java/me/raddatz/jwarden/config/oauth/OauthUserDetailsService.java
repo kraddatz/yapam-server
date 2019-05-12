@@ -6,16 +6,16 @@ import me.raddatz.jwarden.user.model.User;
 import me.raddatz.jwarden.user.repository.RoleRepository;
 import me.raddatz.jwarden.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Configuration
 public class OauthUserDetailsService implements UserDetailsService {
 
 	@Autowired private UserRepository userRepository;
@@ -37,7 +37,7 @@ public class OauthUserDetailsService implements UserDetailsService {
 				}
 			}
 
-			return new OauthUserDetails(user.getName(), user.getMasterPasswordHash(), grantedAuthorities);
+			return new OauthUserDetails(user.getEmail(), user.getMasterPasswordHash(), grantedAuthorities);
 		}
 	}
 }
