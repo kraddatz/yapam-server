@@ -62,7 +62,7 @@ class UserServiceTest {
         when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
         var registerUser = createDefaultRegisterUser();
 
-        userService.register(registerUser);
+        userService.createUser(registerUser);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(captor.capture());
@@ -83,7 +83,7 @@ class UserServiceTest {
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
         when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
-        userService.register(registerUser);
+        userService.createUser(registerUser);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(captor.capture());
@@ -105,7 +105,7 @@ class UserServiceTest {
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
         when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.register(registerUser));
+        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(registerUser));
     }
 
     @Test
@@ -119,7 +119,7 @@ class UserServiceTest {
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
         when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.register(registerUser));
+        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(registerUser));
     }
 
     @Test
@@ -132,7 +132,7 @@ class UserServiceTest {
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
         when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.register(registerUser));
+        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(registerUser));
     }
 
     @Test

@@ -75,7 +75,7 @@ class EmailServiceTest {
         if (!Objects.isNull(message.getTo())) {
             assertTrue(Arrays.asList(message.getTo()).contains("email"));
         }
-        assertEquals("register", message.getSubject());
+        assertEquals("verify your email", message.getSubject());
         assertEquals("http://host/users/userid/email/change?email=email&token=emailtoken", message.getText());
     }
 }

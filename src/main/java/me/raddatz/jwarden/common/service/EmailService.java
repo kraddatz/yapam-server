@@ -27,7 +27,7 @@ public class EmailService {
         var message = new SimpleMailMessage();
         message.setFrom("kevin@familie-raddatz.de");
         message.setTo(email);
-        message.setSubject("register");
+        message.setSubject("verify your email");
         var emailChangeUrl = appParameter.getHost() + "/users/" + user.getId() + "/email/change?email=" + email + "&token=" + user.getEmailToken();
         message.setText(emailChangeUrl);
         javaMailSender.send(message);

@@ -18,7 +18,6 @@ import org.springframework.web.method.HandlerMethod;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -39,13 +38,13 @@ class AnnotationHandlerInterceptorTest {
     }
 
     private HandlerMethod createNoAnnotationHandlerMethod() throws NoSuchMethodException {
-        var method = UserController.class.getMethod("register", RegisterUser.class);
+        var method = UserController.class.getMethod("createUser", RegisterUser.class);
 
         return new HandlerMethod(new UserController(), method);
     }
 
     private HandlerMethod createVerifiedEmailHandlerMethod() throws NoSuchMethodException {
-        var method = UserController.class.getMethod("register", RegisterUser.class);
+        var method = UserController.class.getMethod("createUser", RegisterUser.class);
 
         return new HandlerMethod(new UserController(), method);
     }

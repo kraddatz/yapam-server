@@ -17,7 +17,7 @@ public class ObjectMapperConfig {
     @Bean
     @Primary
     public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
+        var objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
@@ -27,7 +27,7 @@ public class ObjectMapperConfig {
 
     @Bean
     public ObjectMapper yamlObjectMapper() {
-        final ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory()
+        var objectMapper = new ObjectMapper(new YAMLFactory()
                 .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER));
         objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
         return objectMapper;

@@ -1,7 +1,9 @@
 package me.raddatz.jwarden.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import me.raddatz.jwarden.secret.model.Secret;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -12,6 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class User {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -43,5 +46,11 @@ public class User {
             inverseJoinColumns = { @JoinColumn(name = "role_id") }
     )
     private Set<Role> role;
-
+    @JsonIgnore
+    @OneToMany(
+            mappedBy = "user",
+            cascade =  CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<Secret> secrets;
 }

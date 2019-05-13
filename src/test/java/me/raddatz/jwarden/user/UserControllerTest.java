@@ -26,7 +26,7 @@ class UserControllerTest {
     @MockBean private AnnotationHandlerInterceptor annotationHandlerInterceptor;
 
     @Test
-    @DisplayName("Test register")
+    @DisplayName("Test createUser")
     void whenRegister_thenReturnSuccessful() throws Exception {
         mvc.perform(
                 post("/users")

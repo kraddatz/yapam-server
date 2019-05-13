@@ -12,11 +12,10 @@ public class UserController {
 
     @Autowired private UserService userService;
 
-    //    @VerifiedEmail
     @PostMapping(value = "users", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public RegisterUser register(@RequestBody RegisterUser model) {
-        return userService.register(model);
+    public RegisterUser createUser(@RequestBody RegisterUser model) {
+        return userService.createUser(model);
     }
 
     @GetMapping(value = "users/{userId}/email/verify")

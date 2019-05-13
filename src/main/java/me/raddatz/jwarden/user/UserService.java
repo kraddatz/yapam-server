@@ -45,7 +45,7 @@ public class UserService {
         }
     }
 
-    public RegisterUser register(RegisterUser registerUser) {
+    public RegisterUser createUser(RegisterUser registerUser) {
         var user = registerUser.toUser();
         user.setMasterPasswordSalt(pbkdf2Service.generateSalt());
         user.setMasterPasswordHash(pbkdf2Service.generateSaltedHash(

@@ -10,15 +10,15 @@ spring:
     mapper:
       DEFAULT_VIEW_INCLUSION: true
 
-swagger:
-  schemes: http, https
-
 app:
   build-time: 1
   app-name: 1
   java-version: 1
   spring-boot-version: 1
   tomcat-version: 1
+  swagger-schemes:
+    - http
+    - https
 
 
 jwarden:

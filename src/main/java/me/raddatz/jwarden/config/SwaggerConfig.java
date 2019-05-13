@@ -1,6 +1,5 @@
 package me.raddatz.jwarden.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -22,10 +21,9 @@ import java.util.List;
 @EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {
 
-    @Autowired private AppParameter appParameter;
 
     @Bean
-    public Docket apiDocket() {
+    public Docket apiDocket(AppParameter appParameter) {
         return new Docket(DocumentationType.SWAGGER_2)
                 .protocols(appParameter.getSwaggerSchemes())
                 .select()
