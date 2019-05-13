@@ -2,7 +2,6 @@ package me.raddatz.jwarden.common.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.raddatz.jwarden.common.error.UnauthorizedUserException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,6 @@ import java.util.Objects;
 
 @Service
 public class RequestHelperService {
-
-    @Autowired private ObjectMapper objectMapper;
 
     private HttpServletRequest getCurrentHttpRequest() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
@@ -38,6 +35,7 @@ public class RequestHelperService {
     }
 
     private String getPropertyFromAT(String property) {
+        var objectMapper = new ObjectMapper();
         String rawHeader = getAuthenticationHeader();
         String token = rawHeader.replace("Bearer ", "");
         Jwt jwt = JwtHelper.decode(token);
