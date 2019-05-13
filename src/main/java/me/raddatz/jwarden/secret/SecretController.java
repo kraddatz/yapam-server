@@ -1,5 +1,6 @@
 package me.raddatz.jwarden.secret;
 
+import me.raddatz.jwarden.common.annotation.verifiedemail.VerifiedEmail;
 import me.raddatz.jwarden.secret.model.Secret;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ public class SecretController {
 
     @PostMapping(value = "secrets", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
+    @VerifiedEmail
     public Secret createSecret(@RequestBody Secret secret) {
         return secretService.createSecret(secret);
     }

@@ -2,6 +2,8 @@ package me.raddatz.jwarden.common.annotation;
 
 import me.raddatz.jwarden.common.annotation.userexists.UserExistsValidator;
 import me.raddatz.jwarden.common.annotation.verifiedemail.VerifiedEmailValidator;
+import me.raddatz.jwarden.secret.SecretController;
+import me.raddatz.jwarden.secret.model.Secret;
 import me.raddatz.jwarden.user.UserController;
 import me.raddatz.jwarden.user.model.RegisterUser;
 import org.junit.jupiter.api.Disabled;
@@ -44,9 +46,9 @@ class AnnotationHandlerInterceptorTest {
     }
 
     private HandlerMethod createVerifiedEmailHandlerMethod() throws NoSuchMethodException {
-        var method = UserController.class.getMethod("createUser", RegisterUser.class);
+        var method = SecretController.class.getMethod("createSecret", Secret.class);
 
-        return new HandlerMethod(new UserController(), method);
+        return new HandlerMethod(new SecretController(), method);
     }
 
     private HandlerMethod createUserExistsHandlerMethod() throws NoSuchMethodException {
@@ -77,7 +79,7 @@ class AnnotationHandlerInterceptorTest {
     }
 
     @Test
-    @Disabled // TODO: Missing request with VerifiedEmail validator
+//    @Disabled // TODO: Missing request with VerifiedEmail validator
     void preHandleVerifiedEmail_when_thenReturnFalse() throws NoSuchMethodException {
         var request = createDefaultHttpServletRequest();
         var response = createDefaultHttpServletResponse();
