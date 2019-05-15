@@ -14,10 +14,10 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
 
   datasource:
-    name: jwarden
+    name: yapam
     username: root
     password: secret
-    url: jdbc:mysql://127.0.0.1/jwarden?createDatabaseIfNotExist=true
+    url: jdbc:mysql://127.0.0.1/yapam?createDatabaseIfNotExist=true
     initialization-mode: always
 
   jpa:
@@ -35,7 +35,7 @@ spring:
 
 app:
   build-time: @buildTime@
-  app-name: JWarden-Server
+  app-name: Yapam-Server
   java-version: @javaVersion@
   spring-boot-version: @springBootVersion@
   tomcat-version: @tomcatVersion@

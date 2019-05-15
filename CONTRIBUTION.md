@@ -73,8 +73,8 @@ We developed the following stucture for our project:
 |   |   +-- AnnotationHandlerInterceptor
 |   |   +--
 |   +-- error
-|   |   +-- JWardenException
-|   |   +-- JWardenExceptionHandler
+|   |   +-- YapamException
+|   |   +-- YapamExceptionHandler
 |   |   +--
 |   +-- service
 |   |   +-- 

@@ -1,4 +1,4 @@
-# JWarden Project
+# Yapam Project
 
 ## 1. Contributing
 Before contributing, please read the [contribution-guide][contribution-guide]
