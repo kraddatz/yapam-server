@@ -1,13 +1,10 @@
 package me.raddatz.jwarden.common.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import me.raddatz.jwarden.common.error.UnauthorizedUserException;
-import me.raddatz.jwarden.common.service.RequestHelperService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -24,6 +21,7 @@ class RequestHelperServiceTest {
 
     private final String validToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTc2NDgwNTQsInVzZXJfbmFtZSI6InVzZXJAZW1haWwuY29tIiwianRpIjoiZjYyYTk2MGEtZGM4My00MGYzLTgyMjctY2YzOTU2NzBhZTM5IiwiY2xpZW50X2lkIjoiandhcmRlbiIsInNjb3BlIjpbInJlYWQiLCJ3cml0ZSJdfQ.ef9i1BqVt7EACKOUk9e-yLAsjqbHA4ZjvAgmxHBgA7o";
     private final String invalidToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTc2NDgwNTQsImp0aSI6ImY2MmE5NjBhLWRjODMtNDBmMy04MjI3LWNmMzk1NjcwYWUzOSIsImNsaWVudF9pZCI6Imp3YXJkZW4iLCJzY29wZSI6WyJyZWFkIiwid3JpdGUiXX0.l6IIcbrkGG2EmvQS1mk58DurMXVsmBNCtsYGUBDjPOs";
+    private final String malformedToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAifQ==.EoEbyNXjh5_7qHl7I78l32P9eQpr6HuZ_R1FaZX8ED4";
 
     @Autowired private RequestHelperService requestHelperService;
 
@@ -37,6 +35,16 @@ class RequestHelperServiceTest {
     void whenInvalidHttpServletRequest_thenThrowException() {
         RequestContextHolder.setRequestAttributes(null);
         assertThrows(Exception.class, () -> requestHelperService.getUserName());
+    }
+
+    @Test
+    void whenATMalformed_thenThrowException() {
+        var request = getDefaultMockHttpServletRequest();
+        request.removeHeader("Authorization");
+        request.addHeader("Authorization", malformedToken);
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        assertThrows(UnauthorizedUserException.class, () -> requestHelperService.getUserName());
     }
 
     @Test

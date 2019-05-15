@@ -1,6 +1,7 @@
 package me.raddatz.jwarden.user;
 
 import me.raddatz.jwarden.common.annotation.userexists.UserExists;
+import me.raddatz.jwarden.user.model.User;
 import me.raddatz.jwarden.user.model.RegisterUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ public class UserController {
 
     @PostMapping(value = "users", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public RegisterUser createUser(@RequestBody RegisterUser model) {
+    public User createUser(@RequestBody RegisterUser model) {
         return userService.createUser(model);
     }
 

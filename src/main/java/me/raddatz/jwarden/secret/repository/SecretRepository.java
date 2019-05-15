@@ -1,9 +1,11 @@
 package me.raddatz.jwarden.secret.repository;
 
-import me.raddatz.jwarden.secret.model.Secret;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SecretRepository extends JpaRepository<Secret, String> {
+public interface SecretRepository extends JpaRepository<SecretDBO, String> {
+
+    Integer findFirstVersionBySecretIdOrderByVersionDesc(@Param("secretId") String secretId);
 }

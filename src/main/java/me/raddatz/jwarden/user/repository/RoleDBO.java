@@ -1,4 +1,4 @@
-package me.raddatz.jwarden.user.model;
+package me.raddatz.jwarden.user.repository;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.util.Set;
 @Entity(name = "role")
 @Getter
 @Setter
-public class Role {
+public class RoleDBO {
 
 	@Id
 	@GeneratedValue(generator = "UUID")
@@ -29,5 +29,5 @@ public class Role {
 			mappedBy = "role"
 	)
 	@JsonIgnore
-	private Set<User> user;
+	private Set<UserDBO> user;
 }

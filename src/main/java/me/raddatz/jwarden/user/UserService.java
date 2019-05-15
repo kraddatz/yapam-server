@@ -8,12 +8,12 @@ import me.raddatz.jwarden.common.service.PBKDF2Service;
 import me.raddatz.jwarden.config.JWardenProperties;
 import me.raddatz.jwarden.user.model.RegisterUser;
 import me.raddatz.jwarden.user.model.User;
+import me.raddatz.jwarden.user.repository.UserDBO;
 import me.raddatz.jwarden.user.repository.UserRepository;
-import org.springframework.beans.BeanUtils;
+import me.raddatz.jwarden.user.repository.UserTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -25,28 +25,27 @@ public class UserService {
     @Autowired private EmailService emailService;
     @Autowired private PBKDF2Service pbkdf2Service;
     @Autowired private JWardenProperties jWardenProperties;
+    @Autowired private UserTransaction userTransaction;
 
-    private Boolean userIsInRegistrationPeriod(User user) {
+    private Boolean userIsInRegistrationPeriod(UserDBO user) {
         return user.getCreationDate().plus(jWardenProperties.getRegistrationTimeout()).isAfter(LocalDateTime.now());
     }
 
-    @Transactional
-    void tryToRegisterUser(User user) {
-        var dbUser = userRepository.findOneByEmail(user.getEmail());
-        if (!Objects.isNull(dbUser)) {
-            if (userIsInRegistrationPeriod(dbUser) && !dbUser.getEmailVerified()) {
-                BeanUtils.copyProperties(user, dbUser, "id");
-                userRepository.save(dbUser);
+    private void prepareUser(User user) {
+        var userDBO = userRepository.findOneByEmail(user.getEmail());
+        if (!Objects.isNull(userDBO)) {
+            if (userIsInRegistrationPeriod(userDBO) && !userDBO.getEmailVerified()) {
+                userTransaction.tryToCreateUser(user);
             } else {
                 throw new EmailAlreadyExistsException();
             }
         } else {
-            userRepository.save(user);
+            userTransaction.tryToCreateUser(user);
         }
     }
 
-    public RegisterUser createUser(RegisterUser registerUser) {
-        var user = registerUser.toUser();
+    public User createUser(RegisterUser registerUser) {
+        var user = new User(registerUser);
         user.setMasterPasswordSalt(pbkdf2Service.generateSalt());
         user.setMasterPasswordHash(pbkdf2Service.generateSaltedHash(
                 registerUser.getMasterPassword(), user.getMasterPasswordSalt()
@@ -54,12 +53,11 @@ public class UserService {
         user.setEmailToken(UUID.randomUUID().toString());
         user.setCreationDate(LocalDateTime.now());
         user.setEmailVerified(false);
-        tryToRegisterUser(user);
+        prepareUser(user);
         emailService.sendRegisterEmail(user);
-        return registerUser;
+        return user;
     }
 
-    @Transactional
     public void verifyEmail(String userId, String token) {
         var user = userRepository.findOneById(userId);
         if (user.getCreationDate().plus(jWardenProperties.getRegistrationTimeout()).isBefore(LocalDateTime.now())) {
@@ -73,20 +71,18 @@ public class UserService {
         }
     }
 
-    @Transactional
     public void requestEmailChange(String userId, String email) {
-        var user = userRepository.findOneById(userId);
-        user.setEmailToken(UUID.randomUUID().toString());
-        userRepository.save(user);
-        emailService.sendEmailChangeEmail(user, email);
+        var userDBO = userRepository.findOneById(userId);
+        userDBO.setEmailToken(UUID.randomUUID().toString());
+        userRepository.save(userDBO);
+        emailService.sendEmailChangeEmail(new User(userDBO), email);
     }
 
-    @Transactional
     public void emailChange(String userId, String token, String email) {
-        var user = userRepository.findOneById(userId);
-        if (user.getEmailToken().equals(token)) {
-            user.setEmail(email);
-            userRepository.save(user);
+        var userDBO = userRepository.findOneById(userId);
+        if (userDBO.getEmailToken().equals(token)) {
+            userDBO.setEmail(email);
+            userRepository.save(userDBO);
         } else {
             throw new InvalidEmailVerificationTokenException();
         }

@@ -2,7 +2,7 @@ package me.raddatz.jwarden.common.service;
 
 import lombok.extern.slf4j.Slf4j;
 import me.raddatz.jwarden.common.error.InternalServerError;
-import me.raddatz.jwarden.user.model.User;
+import me.raddatz.jwarden.user.repository.UserDBO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +36,7 @@ public class PBKDF2Service {
         throw new InternalServerError();
     }
 
-    public boolean equals(String password, String salt, User user) {
+    public boolean equals(String password, String salt, UserDBO user) {
         var saltedHash = generateSaltedHash(password, salt);
         return saltedHash.equals(user.getMasterPasswordHash());
     }

@@ -1,8 +1,8 @@
 package me.raddatz.jwarden.config.oauth;
 
 import me.raddatz.jwarden.common.error.UserNotFoundException;
-import me.raddatz.jwarden.user.model.Role;
-import me.raddatz.jwarden.user.model.User;
+import me.raddatz.jwarden.user.repository.RoleDBO;
+import me.raddatz.jwarden.user.repository.UserDBO;
 import me.raddatz.jwarden.user.repository.RoleRepository;
 import me.raddatz.jwarden.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +23,17 @@ public class OauthUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String email) {
-		User user = userRepository.findOneByEmail(email);
+		UserDBO user = userRepository.findOneByEmail(email);
 		if (null == user) {
 			throw new UserNotFoundException();
 		} else {
 
-			List<Role> userRoles = roleRepository.findByUser(user);
+			List<RoleDBO> roleDBOs = roleRepository.findByUser(user);
 
 			ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-			if (userRoles != null && !userRoles.isEmpty()) {
-				for (Role role : userRoles) {
-					grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+			if (roleDBOs != null && !roleDBOs.isEmpty()) {
+				for (RoleDBO roleDBO : roleDBOs) {
+					grantedAuthorities.add(new SimpleGrantedAuthority(roleDBO.getName()));
 				}
 			}
 

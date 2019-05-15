@@ -67,7 +67,8 @@ sonarqube {
                 "**/me/raddatz/jwarden/common/error/**, " +
                 "**/me/raddatz/jwarden/common/annotation/**, " +
                 "**/me/raddatz/jwarden/swagger/**," +
-                "**/me/raddatz/jwarden/**/model/**"
+                "**/me/raddatz/jwarden/**/model/**," +
+                "**/me/raddatz/jwarden/**/repository/**"
     }
 }
 

@@ -18,10 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class HealthCheckControllerTest {
 
-    @Autowired
-    private MockMvc mvc;
-    @MockBean
-    private HealthCheckService healthCheckService;
+    @Autowired private MockMvc mvc;
+    @MockBean private HealthCheckService healthCheckService;
 
     @Test
     void whenHealthCheckIsCalled_thenReturnSuccessful() throws Exception {
@@ -31,11 +29,4 @@ class HealthCheckControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void whenHealthCheckIsCalled_thenReturnSuccessful2() throws Exception {
-        mvc.perform(
-                get("/healthll").accept(MediaType.APPLICATION_JSON)
-        )
-                .andExpect(status().isNotFound());
-    }
 }

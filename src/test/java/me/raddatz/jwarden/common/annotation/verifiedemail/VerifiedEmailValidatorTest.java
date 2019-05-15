@@ -3,9 +3,8 @@ package me.raddatz.jwarden.common.annotation.verifiedemail;
 import me.raddatz.jwarden.common.error.EmailNotVerifiedException;
 import me.raddatz.jwarden.common.error.UserNotFoundException;
 import me.raddatz.jwarden.common.service.RequestHelperService;
-import me.raddatz.jwarden.user.model.User;
+import me.raddatz.jwarden.user.repository.UserDBO;
 import me.raddatz.jwarden.user.repository.UserRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,8 @@ class VerifiedEmailValidatorTest {
     @MockBean private RequestHelperService requestHelperService;
     @MockBean private UserRepository userRepository;
 
-    private User createDefaultUser() {
-        var user = new User();
+    private UserDBO createDefaultUser() {
+        var user = new UserDBO();
         user.setEmailVerified(true);
         return user;
     }

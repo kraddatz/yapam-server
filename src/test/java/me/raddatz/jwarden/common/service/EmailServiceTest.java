@@ -2,6 +2,7 @@ package me.raddatz.jwarden.common.service;
 
 import me.raddatz.jwarden.config.AppParameter;
 import me.raddatz.jwarden.user.model.User;
+import me.raddatz.jwarden.user.repository.UserDBO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

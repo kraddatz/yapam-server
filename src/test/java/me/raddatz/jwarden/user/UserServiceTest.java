@@ -7,9 +7,11 @@ import me.raddatz.jwarden.common.error.InvalidEmailVerificationTokenException;
 import me.raddatz.jwarden.common.service.EmailService;
 import me.raddatz.jwarden.common.service.PBKDF2Service;
 import me.raddatz.jwarden.config.JWardenProperties;
-import me.raddatz.jwarden.user.model.RegisterUser;
 import me.raddatz.jwarden.user.model.User;
+import me.raddatz.jwarden.user.model.RegisterUser;
+import me.raddatz.jwarden.user.repository.UserDBO;
 import me.raddatz.jwarden.user.repository.UserRepository;
+import me.raddatz.jwarden.user.repository.UserTransaction;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -39,6 +41,7 @@ class UserServiceTest {
     @MockBean private EmailService emailService;
     @MockBean private JWardenProperties jWardenProperties;
     @MockBean private AnnotationHandlerInterceptor annotationHandlerInterceptor;
+    @MockBean private UserTransaction userTransaction;
 
     private RegisterUser createDefaultRegisterUser() {
         var user = new RegisterUser();
@@ -48,8 +51,8 @@ class UserServiceTest {
         return user;
     }
 
-    private User createDefaultUser() {
-        var user = new User();
+    private UserDBO createDefaultUser() {
+        var user = new UserDBO();
         user.setEmailToken("token");
         user.setCreationDate(LocalDateTime.now());
         user.setEmailVerified(false);
@@ -65,7 +68,7 @@ class UserServiceTest {
         userService.createUser(registerUser);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(captor.capture());
+        verify(userTransaction).tryToCreateUser(captor.capture());
         var user = captor.getValue();
 
         assertEquals(registerUser.getEmail(), user.getEmail());
@@ -77,17 +80,17 @@ class UserServiceTest {
     @Test
     void register_whenUserExistsInRegistrationUnverified_thenThrowException() {
         var registerUser = createDefaultRegisterUser();
-        var user = createDefaultUser();
+        var userDBO = createDefaultUser();
         when(pbkdf2Service.generateSalt()).thenReturn("salt");
         when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
-        when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
+        when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(userDBO);
         when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         userService.createUser(registerUser);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(captor.capture());
-        user = captor.getValue();
+        verify(userTransaction).tryToCreateUser(captor.capture());
+        var user = captor.getValue();
 
         assertEquals(registerUser.getEmail(), user.getEmail());
         assertEquals(registerUser.getName(), user.getName());
@@ -144,7 +147,7 @@ class UserServiceTest {
         when(jWardenProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         userService.verifyEmail(userId, token);
-        verify(userRepository, times(1)).save(any(User.class));
+        verify(userRepository, times(1)).save(any(UserDBO.class));
     }
 
     @Test
@@ -178,7 +181,7 @@ class UserServiceTest {
         when(userRepository.findOneById(anyString())).thenReturn(user);
 
         userService.requestEmailChange(userId, email);
-        verify(userRepository, times(1)).save(any(User.class));
+        verify(userRepository, times(1)).save(any(UserDBO.class));
         verify(emailService, times(1)).sendEmailChangeEmail(any(User.class), anyString());
     }
 
@@ -191,7 +194,7 @@ class UserServiceTest {
         when(userRepository.findOneById(anyString())).thenReturn(user);
 
         userService.emailChange(userId, token, email);
-        verify(userRepository, times(1)).save(any(User.class));
+        verify(userRepository, times(1)).save(any(UserDBO.class));
     }
 
     @Test

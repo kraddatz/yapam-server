@@ -1,35 +1,33 @@
 package me.raddatz.jwarden.secret.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import me.raddatz.jwarden.secret.repository.SecretDBO;
 import me.raddatz.jwarden.user.model.User;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.beans.BeanUtils;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "secret")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Secret {
-
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    private String id;
-    @Column(name = "creation_date")
-    private LocalDateTime creationDate;
-    private Integer version;
-    @Lob
+    private String secretId;
     private String data;
     private SecretType type;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    private Integer version;
+    private LocalDateTime creationDate;
     private User user;
+
+    public Secret (SecretRequest secretRequest) {
+        BeanUtils.copyProperties(secretRequest, this);
+    }
+
+    public SecretDBO toDBO() {
+        var secretDBO = new SecretDBO();
+        BeanUtils.copyProperties(this, secretDBO);
+        secretDBO.setUser(this.user.toDBO());
+        return secretDBO;
+    }
 }

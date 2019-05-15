@@ -1,7 +1,7 @@
 package me.raddatz.jwarden.common.annotation.userexists;
 
 import me.raddatz.jwarden.common.error.UserNotFoundException;
-import me.raddatz.jwarden.user.model.User;
+import me.raddatz.jwarden.user.repository.UserDBO;
 import me.raddatz.jwarden.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,8 +30,8 @@ class UserExistsValidatorTest {
         return request;
     }
 
-    private User createDefaultUser() {
-        return new User();
+    private UserDBO createDefaultUser() {
+        return new UserDBO();
     }
 
     @Test

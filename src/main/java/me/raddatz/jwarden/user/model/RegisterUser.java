@@ -17,13 +17,4 @@ public class RegisterUser {
     private String masterPassword;
     @ApiModelProperty(value = "Password hint", example = "Password is Password")
     private String masterPasswordHint;
-
-    public User toUser() {
-        var user = new User();
-        user.setName(this.name);
-        user.setEmail(this.email);
-        user.setMasterPasswordHint(this.masterPasswordHint);
-        return user;
-    }
-
 }

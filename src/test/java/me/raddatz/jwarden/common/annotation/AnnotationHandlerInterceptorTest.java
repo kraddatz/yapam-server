@@ -3,10 +3,9 @@ package me.raddatz.jwarden.common.annotation;
 import me.raddatz.jwarden.common.annotation.userexists.UserExistsValidator;
 import me.raddatz.jwarden.common.annotation.verifiedemail.VerifiedEmailValidator;
 import me.raddatz.jwarden.secret.SecretController;
-import me.raddatz.jwarden.secret.model.Secret;
+import me.raddatz.jwarden.secret.model.SecretRequest;
 import me.raddatz.jwarden.user.UserController;
 import me.raddatz.jwarden.user.model.RegisterUser;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ class AnnotationHandlerInterceptorTest {
     }
 
     private HandlerMethod createVerifiedEmailHandlerMethod() throws NoSuchMethodException {
-        var method = SecretController.class.getMethod("createSecret", Secret.class);
+        var method = SecretController.class.getMethod("createSecret", SecretRequest.class);
 
         return new HandlerMethod(new SecretController(), method);
     }
