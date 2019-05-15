@@ -1,6 +1,6 @@
 package me.raddatz.yapam.config.oauth;
 
-import me.raddatz.yapam.common.service.PBKDF2Service;
+import me.raddatz.yapam.common.service.BCryptService;
 import me.raddatz.yapam.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ public class AuthenticationProviderConfig implements AuthenticationProvider {
 
     @Autowired private UserRepository userRepository;
 
-    @Autowired private PBKDF2Service pbkdf2Service;
+    @Autowired private BCryptService bcryptService;
 
     @Override
     public Authentication authenticate(Authentication authentication) {
@@ -28,8 +28,7 @@ public class AuthenticationProviderConfig implements AuthenticationProvider {
         }
 
         var password = authentication.getCredentials().toString();
-        var salt = user.getMasterPasswordSalt();
-        if (pbkdf2Service.equals(password, salt, user)) {
+        if (bcryptService.checkHash(password, user)) {
             return new UsernamePasswordAuthenticationToken(email, password, new ArrayList<>());
         }
         throw new BadCredentialsException("Invalid username or password");

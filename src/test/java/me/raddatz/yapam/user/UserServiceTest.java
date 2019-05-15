@@ -5,7 +5,7 @@ import me.raddatz.yapam.common.error.EmailAlreadyExistsException;
 import me.raddatz.yapam.common.error.EmailVerificationTokenExpiredException;
 import me.raddatz.yapam.common.error.InvalidEmailVerificationTokenException;
 import me.raddatz.yapam.common.service.EmailService;
-import me.raddatz.yapam.common.service.PBKDF2Service;
+import me.raddatz.yapam.common.service.BCryptService;
 import me.raddatz.yapam.config.YapamProperties;
 import me.raddatz.yapam.user.model.User;
 import me.raddatz.yapam.user.model.RegisterUser;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
 
     @Autowired private UserService userService;
-    @MockBean private PBKDF2Service pbkdf2Service;
+    @MockBean private BCryptService bcryptService;
     @MockBean private UserRepository userRepository;
     @MockBean private EmailService emailService;
     @MockBean private YapamProperties yapamProperties;
@@ -47,7 +47,7 @@ class UserServiceTest {
         var user = new RegisterUser();
         user.setName("Name");
         user.setEmail("email@test.com");
-        user.setMasterPassword("password");
+        user.setMasterPasswordHash("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         return user;
     }
 
@@ -61,8 +61,7 @@ class UserServiceTest {
 
     @Test
     void register_whenUserNotExists_thenRegisterUser() {
-        when(pbkdf2Service.generateSalt()).thenReturn("salt");
-        when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
+        when(bcryptService.generateSaltedHash(Mockito.anyString())).thenReturn("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         var registerUser = createDefaultRegisterUser();
 
         userService.createUser(registerUser);
@@ -73,16 +72,14 @@ class UserServiceTest {
 
         assertEquals(registerUser.getEmail(), user.getEmail());
         assertEquals(registerUser.getName(), user.getName());
-        assertEquals("saltedhash", user.getMasterPasswordHash());
-        assertEquals("salt", user.getMasterPasswordSalt());
+        assertEquals("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK", user.getMasterPasswordHash());
     }
 
     @Test
     void register_whenUserExistsInRegistrationUnverified_thenThrowException() {
         var registerUser = createDefaultRegisterUser();
         var userDBO = createDefaultUser();
-        when(pbkdf2Service.generateSalt()).thenReturn("salt");
-        when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
+        when(bcryptService.generateSaltedHash(Mockito.anyString())).thenReturn("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
@@ -94,8 +91,7 @@ class UserServiceTest {
 
         assertEquals(registerUser.getEmail(), user.getEmail());
         assertEquals(registerUser.getName(), user.getName());
-        assertEquals("saltedhash", user.getMasterPasswordHash());
-        assertEquals("salt", user.getMasterPasswordSalt());
+        assertEquals("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK", user.getMasterPasswordHash());
     }
 
     @Test
@@ -103,8 +99,7 @@ class UserServiceTest {
         var registerUser = createDefaultRegisterUser();
         var user = createDefaultUser();
         user.setCreationDate(LocalDateTime.now().minusDays(2));
-        when(pbkdf2Service.generateSalt()).thenReturn("salt");
-        when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
+        when(bcryptService.generateSaltedHash( Mockito.anyString())).thenReturn("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
@@ -117,8 +112,7 @@ class UserServiceTest {
         var user = createDefaultUser();
         user.setEmailVerified(true);
         user.setCreationDate(LocalDateTime.now().minusDays(2));
-        when(pbkdf2Service.generateSalt()).thenReturn("salt");
-        when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
+        when(bcryptService.generateSaltedHash(Mockito.anyString())).thenReturn("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
@@ -130,8 +124,7 @@ class UserServiceTest {
         var registerUser = createDefaultRegisterUser();
         var user = createDefaultUser();
         user.setEmailVerified(true);
-        when(pbkdf2Service.generateSalt()).thenReturn("salt");
-        when(pbkdf2Service.generateSaltedHash(Mockito.anyString(), Mockito.anyString())).thenReturn("saltedhash");
+        when(bcryptService.generateSaltedHash(Mockito.anyString())).thenReturn("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 

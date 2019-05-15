@@ -13,8 +13,8 @@ public class RegisterUser {
     private String name;
     @ApiModelProperty(value = "Email of the user", example = "max.mustermann@email.com")
     private String email;
-    @ApiModelProperty(value = "Password of the user", example = "MasterPassword123")
-    private String masterPassword;
+    @ApiModelProperty(value = "Hash of the password of the user", example = "$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK")
+    private String masterPasswordHash;
     @ApiModelProperty(value = "Password hint", example = "Password is Password")
     private String masterPasswordHint;
 }

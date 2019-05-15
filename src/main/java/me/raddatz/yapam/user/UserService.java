@@ -4,7 +4,6 @@ import me.raddatz.yapam.common.error.EmailAlreadyExistsException;
 import me.raddatz.yapam.common.error.EmailVerificationTokenExpiredException;
 import me.raddatz.yapam.common.error.InvalidEmailVerificationTokenException;
 import me.raddatz.yapam.common.service.EmailService;
-import me.raddatz.yapam.common.service.PBKDF2Service;
 import me.raddatz.yapam.config.YapamProperties;
 import me.raddatz.yapam.user.model.RegisterUser;
 import me.raddatz.yapam.user.model.User;
@@ -23,7 +22,6 @@ public class UserService {
 
     @Autowired private UserRepository userRepository;
     @Autowired private EmailService emailService;
-    @Autowired private PBKDF2Service pbkdf2Service;
     @Autowired private YapamProperties yapamProperties;
     @Autowired private UserTransaction userTransaction;
 
@@ -46,10 +44,6 @@ public class UserService {
 
     public User createUser(RegisterUser registerUser) {
         var user = new User(registerUser);
-        user.setMasterPasswordSalt(pbkdf2Service.generateSalt());
-        user.setMasterPasswordHash(pbkdf2Service.generateSaltedHash(
-                registerUser.getMasterPassword(), user.getMasterPasswordSalt()
-        ));
         user.setEmailToken(UUID.randomUUID().toString());
         user.setCreationDate(LocalDateTime.now());
         user.setEmailVerified(false);
