@@ -2,7 +2,6 @@ server:
   port: 8080
 
 spring:
-
   main:
     allow-bean-definition-overriding: true
 
@@ -18,20 +17,15 @@ spring:
     username: root
     password: secret
     url: jdbc:mysql://127.0.0.1/yapam?createDatabaseIfNotExist=true
-    initialization-mode: always
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     database: mysql
     show-sql: true
-    properties:
-      hibernate:
-        enable_lazy_load_no_trans: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
-
 
 app:
   build-time: @buildTime@
