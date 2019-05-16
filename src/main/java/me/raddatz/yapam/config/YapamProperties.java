@@ -18,6 +18,7 @@ public class YapamProperties {
     @Getter
     @Setter
     public static class Security {
+        private Integer bcryptIterations;
         private Oauth oauth;
 
         @Getter
