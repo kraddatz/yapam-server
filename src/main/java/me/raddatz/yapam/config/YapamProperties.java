@@ -4,7 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -12,8 +16,8 @@ import java.time.Duration;
 public class YapamProperties {
 
     private Duration registrationTimeout;
-
     private Security security;
+    private Mail mail;
 
     @Getter
     @Setter
@@ -29,5 +33,18 @@ public class YapamProperties {
         }
     }
 
+    @Getter
+    @Setter
+    public static class Mail {
+
+        private String host;
+        private Integer port;
+        private String username;
+        private String password;
+        private String protocol = "smtp";
+        private Charset defaultEncoding = StandardCharsets.UTF_8;
+        private Map<String, String> properties = new HashMap<>();
+        private String jndiName;
+    }
 
 }
