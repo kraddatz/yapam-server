@@ -4,6 +4,7 @@ import me.raddatz.yapam.common.service.MappingService;
 import me.raddatz.yapam.common.service.RequestHelperService;
 import me.raddatz.yapam.secret.model.Secret;
 import me.raddatz.yapam.secret.model.request.SecretRequest;
+import me.raddatz.yapam.secret.model.response.SecretResponse;
 import me.raddatz.yapam.secret.repository.SecretDBO;
 import me.raddatz.yapam.secret.repository.SecretRepository;
 import me.raddatz.yapam.secret.repository.SecretTransactions;
@@ -17,6 +18,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +41,9 @@ public class SecretServiceTest {
     @MockBean private SecretRepository secretRepository;
 
     private UserDBO createDefaultUserDBO() {
-        return new UserDBO();
+        var userDBO = new UserDBO();
+        userDBO.setSecrets(new HashSet<>(Collections.singletonList(createDefaultSecretDBO())));
+        return userDBO;
     }
 
     private SecretRequest createDefaultSecretRequest() {
@@ -47,6 +52,10 @@ public class SecretServiceTest {
 
     private SecretDBO createDefaultSecretDBO() {
         return new SecretDBO();
+    }
+
+    private SecretResponse createDefaultSecretResponse() {
+        return new SecretResponse();
     }
 
     private Secret createDefaultSecret() {
@@ -86,5 +95,17 @@ public class SecretServiceTest {
         secretDBO = captor.getValue();
 
         assertEquals(Integer.valueOf(1), secretDBO.getVersion());
+    }
+
+    @Test
+    void getAllSecrets() {
+        var userDBO = createDefaultUserDBO();
+        var secretResponse = createDefaultSecretResponse();
+        when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
+        when(mappingService.secretDBOToResponse(any(SecretDBO.class))).thenReturn(secretResponse);
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
+
+        var result = secretService.getAllSecrets();
+        assertEquals(1, result.size());
     }
 }

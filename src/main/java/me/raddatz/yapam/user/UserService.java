@@ -7,9 +7,9 @@ import me.raddatz.yapam.common.service.EmailService;
 import me.raddatz.yapam.common.service.MappingService;
 import me.raddatz.yapam.common.service.RequestHelperService;
 import me.raddatz.yapam.config.YapamProperties;
+import me.raddatz.yapam.user.model.User;
 import me.raddatz.yapam.user.model.request.PasswordChangeRequest;
 import me.raddatz.yapam.user.model.request.UserRequest;
-import me.raddatz.yapam.user.model.User;
 import me.raddatz.yapam.user.model.response.SimpleUserResponse;
 import me.raddatz.yapam.user.model.response.UserResponse;
 import me.raddatz.yapam.user.repository.UserDBO;
@@ -19,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -96,7 +96,7 @@ public class UserService {
         userTransactions.tryToUpdateUser(userDBO);
     }
 
-    public List<SimpleUserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(user -> mappingService.userDBOToSimpleResponse(user)).collect(Collectors.toList());
+    public Set<SimpleUserResponse> getAllUsers() {
+        return userRepository.findAll().stream().map(user -> mappingService.userDBOToSimpleResponse(user)).collect(Collectors.toSet());
     }
 }

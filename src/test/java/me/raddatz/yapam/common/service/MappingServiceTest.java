@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -130,6 +131,14 @@ class MappingServiceTest {
 
         var result = mappingService.secretToResponse(secret);
         assertEquals("username", result.getUser().getName());
+    }
+
+    @Test
+    void secretDBOToResponse() {
+        var secretDBO = createDefaultSecretDBO();
+
+        var result = mappingService.secretDBOToResponse(secretDBO);
+        assertTrue(true);
     }
 
     @Test
