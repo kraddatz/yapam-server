@@ -11,7 +11,7 @@ import java.util.Properties;
 @Configuration
 public class MailProperties {
 
-    @Autowired private YapamProperties properties;
+    @Autowired private YapamProperties yapamProperties;
 
     @Bean
     public JavaMailSenderImpl mailSender() {
@@ -21,18 +21,18 @@ public class MailProperties {
     }
 
     private void applyProperties(JavaMailSenderImpl sender) {
-        sender.setHost(this.properties.getMail().getHost());
-        if (this.properties.getMail().getPort() != null) {
-            sender.setPort(this.properties.getMail().getPort());
+        sender.setHost(this.yapamProperties.getMail().getHost());
+        if (this.yapamProperties.getMail().getPort() != null) {
+            sender.setPort(this.yapamProperties.getMail().getPort());
         }
-        sender.setUsername(this.properties.getMail().getUsername());
-        sender.setPassword(this.properties.getMail().getPassword());
-        sender.setProtocol(this.properties.getMail().getProtocol());
-        if (this.properties.getMail().getDefaultEncoding() != null) {
-            sender.setDefaultEncoding(this.properties.getMail().getDefaultEncoding().name());
+        sender.setUsername(this.yapamProperties.getMail().getUsername());
+        sender.setPassword(this.yapamProperties.getMail().getPassword());
+        sender.setProtocol(this.yapamProperties.getMail().getProtocol());
+        if (this.yapamProperties.getMail().getDefaultEncoding() != null) {
+            sender.setDefaultEncoding(this.yapamProperties.getMail().getDefaultEncoding().name());
         }
-        if (!this.properties.getMail().getProperties().isEmpty()) {
-            sender.setJavaMailProperties(asProperties(this.properties.getMail().getProperties()));
+        if (!this.yapamProperties.getMail().getProperties().isEmpty()) {
+            sender.setJavaMailProperties(asProperties(this.yapamProperties.getMail().getProperties()));
         }
     }
 
