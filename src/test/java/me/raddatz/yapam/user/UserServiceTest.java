@@ -10,6 +10,7 @@ import me.raddatz.yapam.config.YapamProperties;
 import me.raddatz.yapam.user.model.User;
 import me.raddatz.yapam.user.model.request.PasswordChangeRequest;
 import me.raddatz.yapam.user.model.request.UserRequest;
+import me.raddatz.yapam.user.model.response.SimpleUserResponse;
 import me.raddatz.yapam.user.repository.UserDBO;
 import me.raddatz.yapam.user.repository.UserRepository;
 import me.raddatz.yapam.user.repository.UserTransactions;
@@ -260,7 +261,7 @@ class UserServiceTest {
         var userDBO = createDefaultUserDBO();
         when(userRepository.findAll()).thenReturn(new ArrayList<>(Collections.singletonList(userDBO)));
 
-        List<User> users = userService.getAllUsers();
+        List<SimpleUserResponse> users = userService.getAllUsers();
 
         assertEquals(1, users.size());
     }

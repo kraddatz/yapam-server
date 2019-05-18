@@ -3,6 +3,7 @@ package me.raddatz.yapam.secret;
 import me.raddatz.yapam.common.service.MappingService;
 import me.raddatz.yapam.secret.model.Secret;
 import me.raddatz.yapam.secret.model.request.SecretRequest;
+import me.raddatz.yapam.secret.model.response.SecretResponse;
 import me.raddatz.yapam.secret.repository.SecretRepository;
 import me.raddatz.yapam.secret.repository.SecretTransactions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,9 @@ public class SecretService {
         return secret;
     }
 
-    Secret createSecret(SecretRequest secretRequest) {
+    SecretResponse createSecret(SecretRequest secretRequest) {
         var secret = mappingService.secretFromRequest(secretRequest);
-        return createSecret(secret);
+        return mappingService.secretToResponse(createSecret(secret));
     }
 
     private Secret updateSecret(String secretId, Secret secret) {
@@ -40,8 +41,8 @@ public class SecretService {
         return secret;
     }
 
-    Secret updateSecret(String secretId, SecretRequest secretRequest) {
+    SecretResponse updateSecret(String secretId, SecretRequest secretRequest) {
         var secret = mappingService.secretFromRequest(secretRequest);
-        return updateSecret(secretId, secret);
+        return mappingService.secretToResponse(updateSecret(secretId, secret));
     }
 }

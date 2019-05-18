@@ -116,6 +116,23 @@ class MappingServiceTest {
     }
 
     @Test
+    void secretToResponse_whenSecretHasNoUser() {
+        var secret = createDefaultSecret();
+
+        var result = mappingService.secretToResponse(secret);
+        assertEquals("data", result.getData());
+    }
+
+    @Test
+    void secretToResponse_whenSecretHasUser() {
+        var secret = createDefaultSecret();
+        secret.setUser(createDefaultUser());
+
+        var result = mappingService.secretToResponse(secret);
+        assertEquals("username", result.getUser().getName());
+    }
+
+    @Test
     void userFromDBO() {
         var userDBO = createDefaultUserDBO();
 
@@ -136,6 +153,22 @@ class MappingServiceTest {
         var user = createDefaultUser();
 
         var result = mappingService.userToDBO(user);
+        assertEquals("username", result.getName());
+    }
+
+    @Test
+    void userToResponse() {
+        var user = createDefaultUser();
+
+        var result = mappingService.userToResponse(user);
+        assertEquals("username", result.getName());
+    }
+
+    @Test
+    void userDBOToSimpleResponse() {
+        var userDBO = createDefaultUserDBO();
+
+        var result = mappingService.userDBOToSimpleResponse(userDBO);
         assertEquals("username", result.getName());
     }
 }

@@ -3,7 +3,8 @@ package me.raddatz.yapam.user;
 import me.raddatz.yapam.common.annotation.userexists.UserExists;
 import me.raddatz.yapam.user.model.request.PasswordChangeRequest;
 import me.raddatz.yapam.user.model.request.UserRequest;
-import me.raddatz.yapam.user.model.User;
+import me.raddatz.yapam.user.model.response.SimpleUserResponse;
+import me.raddatz.yapam.user.model.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class UserController {
 
     @PostMapping(value = "users", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public User createUser(@RequestBody UserRequest user) {
+    public UserResponse createUser(@RequestBody UserRequest user) {
         return userService.createUser(user);
     }
 
@@ -49,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping(value = "users")
-    public List<User> getAllUsers() {
+    public List<SimpleUserResponse> getAllUsers() {
         return userService.getAllUsers();
     }
 }

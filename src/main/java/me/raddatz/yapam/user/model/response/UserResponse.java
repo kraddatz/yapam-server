@@ -1,4 +1,4 @@
-package me.raddatz.yapam.user.model;
+package me.raddatz.yapam.user.model.response;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,16 +7,12 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class User {
+public class UserResponse {
 
     private String id;
     private String name;
     private String email;
     private Boolean emailVerified;
-    private String emailToken;
-    private String masterPasswordHash;
-    private String masterPasswordHint;
-    private String publicKey;
     private String culture;
     private LocalDateTime creationDate;
 }

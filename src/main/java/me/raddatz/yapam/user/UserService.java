@@ -10,6 +10,8 @@ import me.raddatz.yapam.config.YapamProperties;
 import me.raddatz.yapam.user.model.request.PasswordChangeRequest;
 import me.raddatz.yapam.user.model.request.UserRequest;
 import me.raddatz.yapam.user.model.User;
+import me.raddatz.yapam.user.model.response.SimpleUserResponse;
+import me.raddatz.yapam.user.model.response.UserResponse;
 import me.raddatz.yapam.user.repository.UserDBO;
 import me.raddatz.yapam.user.repository.UserRepository;
 import me.raddatz.yapam.user.repository.UserTransactions;
@@ -46,7 +48,7 @@ public class UserService {
         }
     }
 
-    public User createUser(UserRequest userRequest) {
+    public UserResponse createUser(UserRequest userRequest) {
         var user = mappingService.userFromRequest(userRequest);
         checkExistingUser(user);
         user.setEmailToken(UUID.randomUUID().toString());
@@ -54,7 +56,7 @@ public class UserService {
         user.setEmailVerified(false);
         userTransactions.tryToCreateUser(mappingService.userToDBO(user));
         emailService.sendRegisterEmail(user);
-        return user;
+        return mappingService.userToResponse(user);
     }
 
     public void verifyEmail(String userId, String token) {
@@ -94,7 +96,7 @@ public class UserService {
         userTransactions.tryToUpdateUser(userDBO);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll().stream().map(user -> mappingService.userFromDBO(user)).collect(Collectors.toList());
+    public List<SimpleUserResponse> getAllUsers() {
+        return userRepository.findAll().stream().map(user -> mappingService.userDBOToSimpleResponse(user)).collect(Collectors.toList());
     }
 }

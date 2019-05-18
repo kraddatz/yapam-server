@@ -2,9 +2,12 @@ package me.raddatz.yapam.common.service;
 
 import me.raddatz.yapam.secret.model.Secret;
 import me.raddatz.yapam.secret.model.request.SecretRequest;
+import me.raddatz.yapam.secret.model.response.SecretResponse;
 import me.raddatz.yapam.secret.repository.SecretDBO;
 import me.raddatz.yapam.user.model.User;
 import me.raddatz.yapam.user.model.request.UserRequest;
+import me.raddatz.yapam.user.model.response.SimpleUserResponse;
+import me.raddatz.yapam.user.model.response.UserResponse;
 import me.raddatz.yapam.user.repository.UserDBO;
 import me.raddatz.yapam.user.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +48,15 @@ public class MappingService {
         return secret;
     }
 
+    public SecretResponse secretToResponse(Secret secret) {
+        var secretResponse = new SecretResponse();
+        BeanUtils.copyProperties(secret, secretResponse);
+        if (!Objects.isNull(secret.getUser())) {
+            secretResponse.setUser(userToSimpleResponse(secret.getUser()));
+        }
+        return secretResponse;
+    }
+
     public User userFromDBO(UserDBO userDBO) {
         var user = new User();
         BeanUtils.copyProperties(userDBO, user);
@@ -61,5 +73,21 @@ public class MappingService {
         var userDBO = new UserDBO();
         BeanUtils.copyProperties(user, userDBO);
         return userDBO;
+    }
+
+    public UserResponse userToResponse(User user) {
+        var userResponse = new UserResponse();
+        BeanUtils.copyProperties(user, userResponse);
+        return userResponse;
+    }
+
+    private SimpleUserResponse userToSimpleResponse(User user) {
+        var simpleUserResponse = new SimpleUserResponse();
+        BeanUtils.copyProperties(user, simpleUserResponse);
+        return simpleUserResponse;
+    }
+
+    public SimpleUserResponse userDBOToSimpleResponse(UserDBO userDBO) {
+        return userToSimpleResponse(userFromDBO(userDBO));
     }
 }
