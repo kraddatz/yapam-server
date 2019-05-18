@@ -2,7 +2,7 @@ package me.raddatz.yapam.secret;
 
 import me.raddatz.yapam.common.annotation.verifiedemail.VerifiedEmail;
 import me.raddatz.yapam.secret.model.Secret;
-import me.raddatz.yapam.secret.model.SecretRequest;
+import me.raddatz.yapam.secret.model.request.SecretRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

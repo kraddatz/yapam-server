@@ -1,19 +1,17 @@
 package me.raddatz.yapam.secret.repository;
 
-import me.raddatz.yapam.secret.model.Secret;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
 @Component
-public class SecretTransaction {
+public class SecretTransactions {
 
     @Autowired private SecretRepository secretRepository;
 
     @Transactional(rollbackOn = RuntimeException.class)
-    public void saveSecret(Secret secret) {
-        var secretDBO = secret.toDBO();
+    public void saveSecret(SecretDBO secretDBO) {
         secretRepository.save(secretDBO);
     }
 }

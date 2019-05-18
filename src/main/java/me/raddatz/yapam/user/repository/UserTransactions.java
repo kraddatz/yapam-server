@@ -1,19 +1,22 @@
 package me.raddatz.yapam.user.repository;
 
-import me.raddatz.yapam.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
 @Component
-public class UserTransaction {
+public class UserTransactions {
 
     @Autowired private UserRepository userRepository;
 
     @Transactional
-    public void tryToCreateUser(User user) {
-        var userDBO = user.toDBO();
+    public void tryToCreateUser(UserDBO userDBO) {
+        userRepository.save(userDBO);
+    }
+
+    @Transactional
+    public void tryToUpdateUser(UserDBO userDBO) {
         userRepository.save(userDBO);
     }
 }

@@ -18,25 +18,18 @@ class BCryptServiceTest {
     @Autowired private BCryptService bcryptService;
 
     @Test
-    void test_generateSaltedHash() {
-        var saltedHashedPassword = bcryptService.generateSaltedHash("MasterPassword123");
-
-        assertNotNull(saltedHashedPassword);
-    }
-
-    @Test
     void equals_whenPasswordIsValid_thenReturnTrue() {
         var user = new UserDBO();
-        user.setMasterPasswordHash(bcryptService.generateSaltedHash("MasterPassword123"));
+        user.setMasterPasswordHash("$2a$10$2t0Y7BXreyVzBrvPiyqcDOR/dwUyTMpxAhVJBVEy0YUBUXbNWC/Tq");
 
-        var result = bcryptService.checkHash("MasterPassword123", user);
+        var result = bcryptService.checkHash("password", user);
         assertTrue(result);
     }
 
     @Test
     void equals_whenPasswordIsInvalid_thenReturnFalse() {
         var user = new UserDBO();
-        user.setMasterPasswordHash(bcryptService.generateSaltedHash("MasterPassword123"));
+        user.setMasterPasswordHash("$2a$10$2t0Y7BXreyVzBrvPiyqcDOR/dwUyTMpxAhVJBVEy0YUBUXbNWC/Tq");
 
         var result = bcryptService.checkHash("wrong_password", user);
         assertFalse(result);

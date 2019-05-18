@@ -35,8 +35,8 @@ class VerifiedEmailValidatorTest {
     @Test
     void validate_whenUserExists_thenReturnTrue() {
         var user = createDefaultUser();
-        when(requestHelperService.getUserName()).thenReturn("user@email.com");
-        when(userRepository.findOneByEmail("user@email.com")).thenReturn(user);
+        when(requestHelperService.getUserName()).thenReturn("userSecrets@email.com");
+        when(userRepository.findOneByEmail("userSecrets@email.com")).thenReturn(user);
 
         var result = verifiedEmailValidator.validate();
 

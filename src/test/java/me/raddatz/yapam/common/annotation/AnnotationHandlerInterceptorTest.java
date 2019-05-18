@@ -3,9 +3,9 @@ package me.raddatz.yapam.common.annotation;
 import me.raddatz.yapam.common.annotation.userexists.UserExistsValidator;
 import me.raddatz.yapam.common.annotation.verifiedemail.VerifiedEmailValidator;
 import me.raddatz.yapam.secret.SecretController;
-import me.raddatz.yapam.secret.model.SecretRequest;
+import me.raddatz.yapam.secret.model.request.SecretRequest;
 import me.raddatz.yapam.user.UserController;
-import me.raddatz.yapam.user.model.RegisterUser;
+import me.raddatz.yapam.user.model.request.UserRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ class AnnotationHandlerInterceptorTest {
     }
 
     private HandlerMethod createNoAnnotationHandlerMethod() throws NoSuchMethodException {
-        var method = UserController.class.getMethod("createUser", RegisterUser.class);
+        var method = UserController.class.getMethod("createUser", UserRequest.class);
 
         return new HandlerMethod(new UserController(), method);
     }

@@ -1,12 +1,14 @@
 package me.raddatz.yapam.user;
 
 import me.raddatz.yapam.common.annotation.userexists.UserExists;
+import me.raddatz.yapam.user.model.request.PasswordChangeRequest;
+import me.raddatz.yapam.user.model.request.UserRequest;
 import me.raddatz.yapam.user.model.User;
-import me.raddatz.yapam.user.model.RegisterUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -15,12 +17,11 @@ public class UserController {
 
     @PostMapping(value = "users", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public User createUser(@RequestBody RegisterUser model) {
-        return userService.createUser(model);
+    public User createUser(@RequestBody UserRequest user) {
+        return userService.createUser(user);
     }
 
     @GetMapping(value = "users/{userId}/email/verify")
-    @ResponseStatus(HttpStatus.ACCEPTED)
     @UserExists
     public void verifyEmail(@PathVariable(value = "userId") String userId,
                             @RequestParam(value = "token") String token) {
@@ -40,5 +41,15 @@ public class UserController {
                             @RequestParam(value = "token") String token,
                             @RequestParam(value = "email") String email) {
         userService.emailChange(userId, token, email);
+    }
+
+    @PutMapping(value = "users/password/change", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
+        userService.passwordChange(passwordChangeRequest);
+    }
+
+    @GetMapping(value = "users")
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
     }
 }

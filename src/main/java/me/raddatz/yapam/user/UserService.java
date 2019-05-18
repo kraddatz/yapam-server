@@ -4,18 +4,23 @@ import me.raddatz.yapam.common.error.EmailAlreadyExistsException;
 import me.raddatz.yapam.common.error.EmailVerificationTokenExpiredException;
 import me.raddatz.yapam.common.error.InvalidEmailVerificationTokenException;
 import me.raddatz.yapam.common.service.EmailService;
+import me.raddatz.yapam.common.service.MappingService;
+import me.raddatz.yapam.common.service.RequestHelperService;
 import me.raddatz.yapam.config.YapamProperties;
-import me.raddatz.yapam.user.model.RegisterUser;
+import me.raddatz.yapam.user.model.request.PasswordChangeRequest;
+import me.raddatz.yapam.user.model.request.UserRequest;
 import me.raddatz.yapam.user.model.User;
 import me.raddatz.yapam.user.repository.UserDBO;
 import me.raddatz.yapam.user.repository.UserRepository;
-import me.raddatz.yapam.user.repository.UserTransaction;
+import me.raddatz.yapam.user.repository.UserTransactions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -23,31 +28,31 @@ public class UserService {
     @Autowired private UserRepository userRepository;
     @Autowired private EmailService emailService;
     @Autowired private YapamProperties yapamProperties;
-    @Autowired private UserTransaction userTransaction;
+    @Autowired private UserTransactions userTransactions;
+    @Autowired private RequestHelperService requestHelperService;
+    @Autowired private MappingService mappingService;
 
     private Boolean userIsInRegistrationPeriod(UserDBO user) {
         return user.getCreationDate().plus(yapamProperties.getRegistrationTimeout()).isAfter(LocalDateTime.now());
     }
 
-    private void prepareUser(User user) {
+    @java.lang.SuppressWarnings("squid:S1066")
+    private void checkExistingUser(User user) {
         var userDBO = userRepository.findOneByEmail(user.getEmail());
         if (!Objects.isNull(userDBO)) {
-            if (userIsInRegistrationPeriod(userDBO) && !userDBO.getEmailVerified()) {
-                userTransaction.tryToCreateUser(user);
-            } else {
+            if (!(userIsInRegistrationPeriod(userDBO) && !userDBO.getEmailVerified())) {
                 throw new EmailAlreadyExistsException();
             }
-        } else {
-            userTransaction.tryToCreateUser(user);
         }
     }
 
-    public User createUser(RegisterUser registerUser) {
-        var user = new User(registerUser);
+    public User createUser(UserRequest userRequest) {
+        var user = mappingService.userFromRequest(userRequest);
+        checkExistingUser(user);
         user.setEmailToken(UUID.randomUUID().toString());
         user.setCreationDate(LocalDateTime.now());
         user.setEmailVerified(false);
-        prepareUser(user);
+        userTransactions.tryToCreateUser(mappingService.userToDBO(user));
         emailService.sendRegisterEmail(user);
         return user;
     }
@@ -69,7 +74,7 @@ public class UserService {
         var userDBO = userRepository.findOneById(userId);
         userDBO.setEmailToken(UUID.randomUUID().toString());
         userRepository.save(userDBO);
-        emailService.sendEmailChangeEmail(new User(userDBO), email);
+        emailService.sendEmailChangeEmail(mappingService.userFromDBO(userDBO), email);
     }
 
     public void emailChange(String userId, String token, String email) {
@@ -80,5 +85,16 @@ public class UserService {
         } else {
             throw new InvalidEmailVerificationTokenException();
         }
+    }
+
+    public void passwordChange(PasswordChangeRequest passwordChangeRequest) {
+        var userDBO = userRepository.findOneByEmail(requestHelperService.getUserName());
+        userDBO.setMasterPasswordHash(passwordChangeRequest.getMasterPasswordHash());
+        userDBO.setMasterPasswordHint(passwordChangeRequest.getMasterPasswordHint());
+        userTransactions.tryToUpdateUser(userDBO);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll().stream().map(user -> mappingService.userFromDBO(user)).collect(Collectors.toList());
     }
 }

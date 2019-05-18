@@ -26,7 +26,7 @@ class UserExistsValidatorTest {
 
     private MockHttpServletRequest createDefaultHttpServletRequest() {
         var request = new MockHttpServletRequest();
-        request.setRequestURI("/users/e515ab50-1328-446b-aabf-6f565b266f41/email/verify");
+        request.setRequestURI("/userWrappers/e515ab50-1328-446b-aabf-6f565b266f41/email/verify");
         return request;
     }
 

@@ -9,9 +9,10 @@ create table user
     email_verified       boolean                 not null,
     master_password_hash varchar(88)             not null,
     master_password_hint varchar(256)            not null,
-    culture              char(8)                 null,
+    culture              varchar(8)              null,
     creation_date        datetime                not null,
-    email_token          varchar(64)             not null
+    email_token          varchar(64)             not null,
+    public_key           longtext                not null
 );
 
 create table role
@@ -37,6 +38,7 @@ create table secret
     user_id       varchar(64) not null,
     creation_date datetime    not null,
     data          longtext    not null,
-    type          tinyint(2)  not null,
-    constraint fk_secret_user_id foreign key (user_id) references user (id)
+    type          int         not null,
+    constraint fk_secret_user_id foreign key (user_id) references user (id),
+    key (secret_id)
 );

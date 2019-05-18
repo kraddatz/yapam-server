@@ -1,17 +1,18 @@
 package me.raddatz.yapam.user;
 
-import me.raddatz.yapam.common.annotation.AnnotationHandlerInterceptor;
 import me.raddatz.yapam.common.error.EmailAlreadyExistsException;
 import me.raddatz.yapam.common.error.EmailVerificationTokenExpiredException;
 import me.raddatz.yapam.common.error.InvalidEmailVerificationTokenException;
 import me.raddatz.yapam.common.service.EmailService;
-import me.raddatz.yapam.common.service.BCryptService;
+import me.raddatz.yapam.common.service.MappingService;
+import me.raddatz.yapam.common.service.RequestHelperService;
 import me.raddatz.yapam.config.YapamProperties;
 import me.raddatz.yapam.user.model.User;
-import me.raddatz.yapam.user.model.RegisterUser;
+import me.raddatz.yapam.user.model.request.PasswordChangeRequest;
+import me.raddatz.yapam.user.model.request.UserRequest;
 import me.raddatz.yapam.user.repository.UserDBO;
 import me.raddatz.yapam.user.repository.UserRepository;
-import me.raddatz.yapam.user.repository.UserTransaction;
+import me.raddatz.yapam.user.repository.UserTransactions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,6 +25,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,107 +41,137 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
 
     @Autowired private UserService userService;
-    @MockBean private BCryptService bcryptService;
     @MockBean private UserRepository userRepository;
     @MockBean private EmailService emailService;
     @MockBean private YapamProperties yapamProperties;
-    @MockBean private AnnotationHandlerInterceptor annotationHandlerInterceptor;
-    @MockBean private UserTransaction userTransaction;
+    @MockBean private UserTransactions userTransactions;
+    @MockBean private RequestHelperService requestHelperService;
+    @MockBean private MappingService mappingService;
 
-    private RegisterUser createDefaultRegisterUser() {
-        var user = new RegisterUser();
+    private UserRequest createDefaultUserRequest() {
+        var user = new UserRequest();
         user.setName("Name");
         user.setEmail("email@test.com");
         user.setMasterPasswordHash("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         return user;
     }
 
-    private UserDBO createDefaultUser() {
-        var user = new UserDBO();
+    private PasswordChangeRequest createDefaultPasswordChangeRequest() {
+        var passwordChangeRequest = new PasswordChangeRequest();
+        passwordChangeRequest.setMasterPasswordHash("$2a$10$9lAsYfGz8LVxNEr4NB8CHuMjd2H1rlq7YG8eSqpVYYNopZmdsW0ZO");
+        passwordChangeRequest.setMasterPasswordHint("password is new_password");
+        return passwordChangeRequest;
+    }
+
+    private User createDefaultUser() {
+        var user = new User();
+        user.setName("Name");
         user.setEmailToken("token");
         user.setCreationDate(LocalDateTime.now());
         user.setEmailVerified(false);
+        user.setEmail("email@test.com");
+        user.setMasterPasswordHash("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         return user;
+    }
+
+    private UserDBO createDefaultUserDBO() {
+        var userDBO = new UserDBO();
+        userDBO.setName("Name");
+        userDBO.setEmailToken("token");
+        userDBO.setCreationDate(LocalDateTime.now());
+        userDBO.setEmailVerified(false);
+        userDBO.setEmail("email@test.com");
+        userDBO.setMasterPasswordHash("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
+        userDBO.setMasterPasswordHint("password is password");
+        return userDBO;
     }
 
     @Test
     void register_whenUserNotExists_thenRegisterUser() {
-        when(bcryptService.generateSaltedHash(Mockito.anyString())).thenReturn("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
-        var registerUser = createDefaultRegisterUser();
+        var registerUser = createDefaultUserRequest();
+        var user = createDefaultUser();
+        var userDBO = createDefaultUserDBO();
+        when(mappingService.userFromRequest(Mockito.any(UserRequest.class))).thenReturn(user);
+        when(mappingService.userToDBO(user)).thenReturn(userDBO);
 
         userService.createUser(registerUser);
 
-        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userTransaction).tryToCreateUser(captor.capture());
-        var user = captor.getValue();
+        ArgumentCaptor<UserDBO> captor = ArgumentCaptor.forClass(UserDBO.class);
+        verify(userTransactions).tryToCreateUser(captor.capture());
+        userDBO = captor.getValue();
 
-        assertEquals(registerUser.getEmail(), user.getEmail());
-        assertEquals(registerUser.getName(), user.getName());
-        assertEquals("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK", user.getMasterPasswordHash());
+        assertEquals(registerUser.getEmail(), userDBO.getEmail());
+        assertEquals(registerUser.getName(), userDBO.getName());
+        assertEquals("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK", userDBO.getMasterPasswordHash());
     }
 
     @Test
-    void register_whenUserExistsInRegistrationUnverified_thenThrowException() {
-        var registerUser = createDefaultRegisterUser();
-        var userDBO = createDefaultUser();
-        when(bcryptService.generateSaltedHash(Mockito.anyString())).thenReturn("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
+    void register_whenUserExistsInRegistrationUnverified_thenOverrideUser() {
+        var registerUser = createDefaultUserRequest();
+        var user = createDefaultUser();
+        var userDBO = createDefaultUserDBO();
+        when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(userDBO);
+        when(mappingService.userFromRequest(Mockito.any(UserRequest.class))).thenReturn(user);
+        when(mappingService.userToDBO(user)).thenReturn(userDBO);
+        when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+
+        userService.createUser(registerUser);
+
+        ArgumentCaptor<UserDBO> captor = ArgumentCaptor.forClass(UserDBO.class);
+        verify(userTransactions).tryToCreateUser(captor.capture());
+        userDBO = captor.getValue();
+
+        assertEquals(registerUser.getEmail(), userDBO.getEmail());
+        assertEquals(registerUser.getName(), userDBO.getName());
+        assertEquals("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK", userDBO.getMasterPasswordHash());
+    }
+
+    @Test
+    void register_whenUserExistsNotInRegistrationUnverified_thenThrowException() {
+        var userRequest = createDefaultUserRequest();
+        var userDBO = createDefaultUserDBO();
+        var user = createDefaultUser();
+        userDBO.setCreationDate(LocalDateTime.now().minusDays(2));
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(mappingService.userFromRequest(userRequest)).thenReturn(user);
 
-        userService.createUser(registerUser);
-
-        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userTransaction).tryToCreateUser(captor.capture());
-        var user = captor.getValue();
-
-        assertEquals(registerUser.getEmail(), user.getEmail());
-        assertEquals(registerUser.getName(), user.getName());
-        assertEquals("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK", user.getMasterPasswordHash());
-    }
-
-    @Test
-    void register_whenUserExistsNotInRegistrationUnverified_thenOverrideUser() {
-        var registerUser = createDefaultRegisterUser();
-        var user = createDefaultUser();
-        user.setCreationDate(LocalDateTime.now().minusDays(2));
-        when(bcryptService.generateSaltedHash( Mockito.anyString())).thenReturn("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
-        when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
-        when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
-
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(registerUser));
+        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(userRequest));
     }
 
     @Test
     void register_whenUserExistsNotInRegistrationVerified_thenThrowException() {
-        var registerUser = createDefaultRegisterUser();
+        var userRequest = createDefaultUserRequest();
+        var userDBO = createDefaultUserDBO();
         var user = createDefaultUser();
-        user.setEmailVerified(true);
-        user.setCreationDate(LocalDateTime.now().minusDays(2));
-        when(bcryptService.generateSaltedHash(Mockito.anyString())).thenReturn("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
-        when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
+        userDBO.setEmailVerified(true);
+        userDBO.setCreationDate(LocalDateTime.now().minusDays(2));
+        when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(mappingService.userFromRequest(userRequest)).thenReturn(user);
 
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(registerUser));
+        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(userRequest));
     }
 
     @Test
     void register_whenUserExistsInRegistrationVerified_thenThrowException() {
-        var registerUser = createDefaultRegisterUser();
+        var userRequest = createDefaultUserRequest();
+        var userDBO = createDefaultUserDBO();
         var user = createDefaultUser();
-        user.setEmailVerified(true);
-        when(bcryptService.generateSaltedHash(Mockito.anyString())).thenReturn("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
-        when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(user);
+        userDBO.setEmailVerified(true);
+        when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(mappingService.userFromRequest(userRequest)).thenReturn(user);
 
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(registerUser));
+        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(userRequest));
     }
 
     @Test
     void verifyEmail_validToken_thenSaveUser() {
         var userId = "userid";
         var token = "token";
-        var user = createDefaultUser();
-        when(userRepository.findOneById(anyString())).thenReturn(user);
+        var userDBO = createDefaultUserDBO();
+        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         userService.verifyEmail(userId, token);
@@ -147,8 +182,8 @@ class UserServiceTest {
     void verifyEmail_whenInvalidToken_thenThrowException() {
         var userId = "userid";
         var token = "invalidtoken";
-        var user = createDefaultUser();
-        when(userRepository.findOneById(anyString())).thenReturn(user);
+        var userDBO = createDefaultUserDBO();
+        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         assertThrows(InvalidEmailVerificationTokenException.class, () -> userService.verifyEmail(userId, token));
@@ -158,9 +193,9 @@ class UserServiceTest {
     void verifyEmail_whenUserNotInRegistrationPeriod_thenThrowException() {
         var userId = "userid";
         var token = "invalidtoken";
-        var user = createDefaultUser();
-        user.setCreationDate(LocalDateTime.now().minusDays(2));
-        when(userRepository.findOneById(anyString())).thenReturn(user);
+        var userDBO = createDefaultUserDBO();
+        userDBO.setCreationDate(LocalDateTime.now().minusDays(2));
+        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         assertThrows(EmailVerificationTokenExpiredException.class, () -> userService.verifyEmail(userId, token));
@@ -170,8 +205,10 @@ class UserServiceTest {
     void requestEmailChange_whenUserExists_thenRequestEmailChange() {
         var userId = "userId";
         var email = "email";
+        var userDBO = createDefaultUserDBO();
         var user = createDefaultUser();
-        when(userRepository.findOneById(anyString())).thenReturn(user);
+        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
+        when(mappingService.userFromDBO(userDBO)).thenReturn(user);
 
         userService.requestEmailChange(userId, email);
         verify(userRepository, times(1)).save(any(UserDBO.class));
@@ -183,8 +220,8 @@ class UserServiceTest {
         var userId = "userId";
         var token = "token";
         var email = "email";
-        var user = createDefaultUser();
-        when(userRepository.findOneById(anyString())).thenReturn(user);
+        var userDBO = createDefaultUserDBO();
+        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
 
         userService.emailChange(userId, token, email);
         verify(userRepository, times(1)).save(any(UserDBO.class));
@@ -195,9 +232,36 @@ class UserServiceTest {
         var userId = "userId";
         var token = "invalidtoken";
         var email = "email";
-        var user = createDefaultUser();
-        when(userRepository.findOneById(anyString())).thenReturn(user);
+        var userDBO = createDefaultUserDBO();
+        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
 
         assertThrows(InvalidEmailVerificationTokenException.class, () -> userService.emailChange(userId, token, email));
+    }
+
+    @Test
+    void passwordChange() {
+        var userDBO = createDefaultUserDBO();
+        var passwordChangeRequest = createDefaultPasswordChangeRequest();
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
+        when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
+
+        userService.passwordChange(passwordChangeRequest);
+
+        ArgumentCaptor<UserDBO> captor = ArgumentCaptor.forClass(UserDBO.class);
+        verify(userTransactions).tryToUpdateUser(captor.capture());
+        userDBO = captor.getValue();
+
+        assertEquals("$2a$10$9lAsYfGz8LVxNEr4NB8CHuMjd2H1rlq7YG8eSqpVYYNopZmdsW0ZO", userDBO.getMasterPasswordHash());
+        assertEquals("password is new_password", userDBO.getMasterPasswordHint());
+    }
+
+    @Test
+    void getAllUsers() {
+        var userDBO = createDefaultUserDBO();
+        when(userRepository.findAll()).thenReturn(new ArrayList<>(Collections.singletonList(userDBO)));
+
+        List<User> users = userService.getAllUsers();
+
+        assertEquals(1, users.size());
     }
 }

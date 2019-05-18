@@ -1,6 +1,5 @@
 package me.raddatz.yapam.user.repository;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import me.raddatz.yapam.secret.repository.SecretDBO;
@@ -31,10 +30,11 @@ public class UserDBO {
     private Boolean emailVerified;
     @Column(name = "master_password_hash")
     private String masterPasswordHash;
-    @Column(name = "master_password_salt")
-    private String masterPasswordSalt;
     @Column(name = "master_password_hint")
     private String masterPasswordHint;
+    @Column(name = "public_key")
+    @Lob
+    private String publicKey;
     private String culture;
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -46,11 +46,10 @@ public class UserDBO {
             inverseJoinColumns = { @JoinColumn(name = "role_id") }
     )
     private Set<RoleDBO> role;
-    @JsonIgnore
     @OneToMany(
             mappedBy = "user",
             cascade =  CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<SecretDBO> secretDTOs;
+    private Set<SecretDBO> secrets;
 }
