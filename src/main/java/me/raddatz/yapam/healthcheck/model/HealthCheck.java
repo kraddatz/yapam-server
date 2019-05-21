@@ -2,12 +2,14 @@ package me.raddatz.yapam.healthcheck.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @ApiModel
+@Builder
 @Getter
 @Setter
 public class HealthCheck {
@@ -22,4 +24,6 @@ public class HealthCheck {
     private String error;
     @ApiModelProperty(value = "The DateTime of the Check", example = "2017-01-26T12:00:00Z")
     private LocalDateTime date;
+
+    private HealthCheckResult healthCheckResult;
 }

@@ -5,11 +5,11 @@ import lombok.Getter;
 @Getter
 public class YapamException extends RuntimeException {
 
-    private final String description;
+    private final String error;
 
     public YapamException() {
         super();
-        this.description = this.getClass().getSimpleName();
+        this.error = this.getClass().getSimpleName();
     }
 
 }

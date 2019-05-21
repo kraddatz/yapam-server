@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class YapamExceptionResponse {
 
-    private String description;
+    private String error;
 
     public YapamExceptionResponse(YapamException ex) {
-        this.description = ex.getDescription();
+        this.error = ex.getError();
     }
 }
