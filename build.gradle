@@ -60,6 +60,10 @@ repositories {
     jcenter()
 }
 
+springBoot {
+    buildInfo()
+}
+
 sonarqube {
     properties {
         property 'sonar.coverage.exclusions',
