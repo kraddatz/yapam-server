@@ -32,12 +32,8 @@ class HealthCheckService {
     }
 
     private Boolean getSuccessful(HealthCheckResult healthCheckResult) {
-        Boolean successful = true;
+        boolean successful = true;
         for (HealthCheck healthCheck : healthCheckResult.getHealthChecks()) {
-            if (!Objects.isNull(healthCheck.getHealthCheckResult())) {
-                successful = getSuccessful(healthCheck.getHealthCheckResult());
-                break;
-            }
             if (!healthCheck.getSuccessful()) {
                 successful = false;
                 break;
