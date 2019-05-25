@@ -28,7 +28,7 @@ public class SecretController {
         return secretService.createSecret(secret);
     }
 
-    @PostMapping(value = "secrets/{secretId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "secrets/{secretId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @VerifiedEmail
     public SecretResponse updateSecret(@PathVariable(value = "secretId") String secretId,

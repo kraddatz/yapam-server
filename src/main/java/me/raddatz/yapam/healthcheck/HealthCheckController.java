@@ -27,4 +27,9 @@ public class HealthCheckController {
     public HealthCheckResult healthCheck() {
         return healthCheckService.createHealthCheckResult();
     }
+
+    @GetMapping(value = "/info")
+    public Boolean isOnline() {
+        return true;
+    }
 }

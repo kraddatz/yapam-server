@@ -2,7 +2,7 @@ package me.raddatz.yapam.secret.repository;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.raddatz.yapam.secret.model.SecretType;
+import me.raddatz.yapam.secret.model.SecretTypeEnum;
 import me.raddatz.yapam.user.repository.UserDBO;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -29,7 +29,7 @@ public class SecretDBO {
     private LocalDateTime creationDate;
     @Lob
     private String data;
-    private SecretType type;
+    private SecretTypeEnum type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

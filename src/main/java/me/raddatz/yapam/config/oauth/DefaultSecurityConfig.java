@@ -39,7 +39,9 @@ public class DefaultSecurityConfig extends WebSecurityConfigurerAdapter {
 				.ignoring().antMatchers("/documentation/**",
 						"/users/*/email/verify",
 						"/users/*/email/requestChange",
-						"/users/*/email/change").and()
+						"/users/*/email/change",
+						"/info")
+				.and()
 				.ignoring().antMatchers(HttpMethod.POST, "/users");
 	}
 

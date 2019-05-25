@@ -1,6 +1,6 @@
 package me.raddatz.yapam.secret.model;
 
-public enum SecretType {
+public enum SecretTypeEnum {
     PASSWORD,
     ID,
     WIFI,

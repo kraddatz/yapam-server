@@ -14,7 +14,7 @@ public class Secret {
 
     private String secretId;
     private String data;
-    private SecretType type;
+    private SecretTypeEnum type;
     private Integer version;
     private LocalDateTime creationDate;
     private User user;
