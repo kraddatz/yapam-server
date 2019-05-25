@@ -29,4 +29,12 @@ class HealthCheckControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void whenInfoIsCalled_thenReturnSuccessful() throws Exception {
+        mvc.perform(
+                get("/info")
+        )
+                .andExpect(status().isOk());
+    }
+
 }

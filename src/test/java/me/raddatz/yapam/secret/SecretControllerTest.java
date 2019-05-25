@@ -10,8 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -35,7 +34,7 @@ class SecretControllerTest {
     @Test
     void whenUpdateSecret_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                post("/secrets/{secretId}", "secretId")
+                put("/secrets/{secretId}", "secretId")
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content("{}")
         )
