@@ -58,8 +58,8 @@ class HealthCheckService {
         return buildInformation;
     }
 
-    private List<HealthCheck> createHealthChecks() {
-        List<HealthCheck> healthChecks = new ArrayList<>();
+    private Set<HealthCheck> createHealthChecks() {
+        Set<HealthCheck> healthChecks = new HashSet<>();
         healthChecks.add(createApplicationHealthCheck());
         healthChecks.add(createDatabaseHealthCheck());
         return healthChecks;

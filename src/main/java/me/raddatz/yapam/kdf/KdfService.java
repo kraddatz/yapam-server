@@ -23,7 +23,7 @@ public class KdfService {
     public KdfInfo getKdfInfo() {
         KdfInfo kdfInfo = new KdfInfo();
         var kdfIterations = getKdfIterations();
-        kdfInfo.setIteratitons(kdfIterations);
+        kdfInfo.setIterations(kdfIterations);
         var user = mappingService.userFromDBO(userRepository.findOneByEmail(requestHelperService.getUserName()));
         var currentKdfIterations = user.getMasterPasswordHash().split("\\$")[2];
         kdfInfo.setSecure(Integer.valueOf(currentKdfIterations).equals(kdfIterations));

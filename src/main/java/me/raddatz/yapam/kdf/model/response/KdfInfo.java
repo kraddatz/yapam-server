@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class KdfInfo {
 
-    private Integer iteratitons;
+    private Integer iterations;
     private Boolean secure;
 }
