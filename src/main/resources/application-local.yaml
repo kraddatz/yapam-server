@@ -12,12 +12,6 @@ spring:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
 
-  datasource:
-    name: yapam
-    username: root
-    password: secret
-    url: jdbc:mysql://127.0.0.1/yapam?createDatabaseIfNotExist=true
-
   jpa:
     hibernate:
       ddl-auto: validate
