@@ -1,0 +1,75 @@
+package app.yapam.config;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+
+import javax.sql.DataSource;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+@Getter
+@Setter
+@ConfigurationProperties(prefix = "yapam")
+public class YapamProperties {
+
+    private Duration registrationTimeout;
+    private Security security;
+    private Mail mail;
+    private Datasource datasource;
+
+    @Getter
+    @Setter
+    public static class Security {
+        private Integer bcryptIterations = 10;
+        private Oauth oauth;
+
+        @Getter
+        @Setter
+        public static class Oauth {
+            private Duration accessTokenValidityPeriod;
+            private Duration refreshTokenValidityPeriod;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class Mail {
+
+        private String host;
+        private Integer port;
+        private String username;
+        private String password;
+        private String protocol = "smtp";
+        private Charset defaultEncoding = StandardCharsets.UTF_8;
+        private Map<String, String> properties = new HashMap<>();
+        private String jndiName;
+    }
+
+    @Getter
+    @Setter
+    public static class Datasource {
+        private String username;
+        private String password;
+        private String url;
+        private String name;
+    }
+
+    @ConfigurationProperties(prefix = "yapam.datasource")
+    @Bean
+    @Primary
+    public DataSource dataSource() {
+        return DataSourceBuilder.create()
+                .password(this.datasource.password)
+                .url(this.datasource.url)
+                .username(this.datasource.username)
+                .build();
+    }
+
+}

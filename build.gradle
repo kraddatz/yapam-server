@@ -46,10 +46,10 @@ lombok {
 }
 
 version = '0.0.1-SNAPSHOT'
-group = 'me.raddatz.yapam'
+group = 'app.yapam'
 sourceCompatibility = 11
 targetCompatibility = 11
-mainClassName = 'me.raddatz.yapam.YapamApplication'
+mainClassName = 'app.yapam.YapamApplication'
 
 bootJar {
     archiveFileName.set('yapam.jar')
@@ -67,12 +67,12 @@ springBoot {
 sonarqube {
     properties {
         property 'sonar.coverage.exclusions',
-                "**/me/raddatz/yapam/YapamApplication.java," +
-                "**/me/raddatz/yapam/config/**," +
-                "**/me/raddatz/yapam/common/error/**," +
-                "**/me/raddatz/yapam/swagger/**," +
-                "**/me/raddatz/yapam/**/model/**," +
-                "**/me/raddatz/yapam/**/repository/*.java"
+                "**/app/yapam/YapamApplication.java," +
+                "**/app/yapam/config/**," +
+                "**/app/yapam/common/error/**," +
+                "**/app/yapam/swagger/**," +
+                "**/app/yapam/**/model/**," +
+                "**/app/yapam/**/repository/*.java"
     }
 }
 
