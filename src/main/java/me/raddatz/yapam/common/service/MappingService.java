@@ -61,6 +61,10 @@ public class MappingService {
         return secretToResponse(secretFromDBO(secretDBO));
     }
 
+    public UserResponse userDBOToResponse(UserDBO user) {
+        return userToResponse(userFromDBO(user));
+    }
+
     public User userFromDBO(UserDBO userDBO) {
         var user = new User();
         BeanUtils.copyProperties(userDBO, user);

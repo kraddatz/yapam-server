@@ -34,6 +34,11 @@ public class UserService {
     @Autowired private RequestHelperService requestHelperService;
     @Autowired private MappingService mappingService;
 
+    public UserResponse getCurrentUser() {
+        var user = userRepository.findOneByEmail(requestHelperService.getUserName());
+        return mappingService.userDBOToResponse(user);
+    }
+
     private Boolean userIsInRegistrationPeriod(UserDBO user) {
         return user.getCreationDate().plus(yapamProperties.getRegistrationTimeout()).isAfter(LocalDateTime.now());
     }

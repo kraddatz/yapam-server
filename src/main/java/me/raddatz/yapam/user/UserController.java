@@ -53,4 +53,9 @@ public class UserController {
     public Set<SimpleUserResponse> getAllUsers() {
         return userService.getAllUsers();
     }
+
+    @GetMapping(value = "/api/currentuser")
+    public UserResponse getCurrentUser() {
+        return userService.getCurrentUser();
+    }
 }
