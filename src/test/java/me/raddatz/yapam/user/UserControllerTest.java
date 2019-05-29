@@ -26,7 +26,7 @@ class UserControllerTest {
     @Test
     void whenRegister_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                post("/users")
+                post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content("{}")
         )
@@ -37,7 +37,7 @@ class UserControllerTest {
     void whenEmailValidation_thenReturnSuccessful() throws Exception {
         String userId = "4e3b8827-8d68-43bb-b333-8f5a5795f286";
         mvc.perform(
-                get("/users/{userId}/email/verify", userId)
+                get("/api/users/{userId}/email/verify", userId)
                         .param("token", "token")
         )
                 .andExpect(status().is2xxSuccessful());
@@ -47,7 +47,7 @@ class UserControllerTest {
     void whenEmailChangeRequest_thenReturnSuccessful() throws Exception {
         String userId = "4e3b8827-8d68-43bb-b333-8f5a5795f286";
         mvc.perform(
-                get("/users/{userId}/email/requestChange", userId)
+                get("/api/users/{userId}/email/requestChange", userId)
                         .param("email", "new@email.com")
         )
                 .andExpect(status().is2xxSuccessful());
@@ -57,7 +57,7 @@ class UserControllerTest {
     void whenEmailChange_thenReturnSuccessful() throws Exception {
         String userId = "4e3b8827-8d68-43bb-b333-8f5a5795f286";
         mvc.perform(
-                get("/users/{userId}/email/change", userId)
+                get("/api/users/{userId}/email/change", userId)
                         .param("token", "token")
                         .param("email", "new@email.com")
         )
@@ -67,7 +67,7 @@ class UserControllerTest {
     @Test
     void whenUpdatePassword_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                put("/users/password/change")
+                put("/api/users/password/change")
                 .content("{}")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
         )
@@ -78,7 +78,7 @@ class UserControllerTest {
     @Test
     void whenGetAllUsers_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/users")
+                get("/api/users")
         )
                 .andExpect(status().is2xxSuccessful());
     }

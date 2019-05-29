@@ -16,27 +16,27 @@ public class UserController {
 
     @Autowired private UserService userService;
 
-    @PostMapping(value = "users", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/api/users", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     public UserResponse createUser(@RequestBody UserRequest user) {
         return userService.createUser(user);
     }
 
-    @GetMapping(value = "users/{userId}/email/verify")
+    @GetMapping(value = "/api/users/{userId}/email/verify")
     @UserExists
     public void verifyEmail(@PathVariable(value = "userId") String userId,
                             @RequestParam(value = "token") String token) {
         userService.verifyEmail(userId, token);
     }
 
-    @GetMapping(value = "users/{userId}/email/requestChange")
+    @GetMapping(value = "/api/users/{userId}/email/requestChange")
     @UserExists
     public void requestEmailChange(@PathVariable(value = "userId") String userId,
                                    @RequestParam(value = "email") String email) {
         userService.requestEmailChange(userId, email);
     }
 
-    @GetMapping(value = "users/{userId}/email/change")
+    @GetMapping(value = "/api/users/{userId}/email/change")
     @UserExists
     public void emailChange(@PathVariable(value = "userId") String userId,
                             @RequestParam(value = "token") String token,
@@ -44,12 +44,12 @@ public class UserController {
         userService.emailChange(userId, token, email);
     }
 
-    @PutMapping(value = "users/password/change", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "/api/users/password/change", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
         userService.passwordChange(passwordChangeRequest);
     }
 
-    @GetMapping(value = "users")
+    @GetMapping(value = "/api/users")
     public Set<SimpleUserResponse> getAllUsers() {
         return userService.getAllUsers();
     }

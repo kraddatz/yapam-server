@@ -24,7 +24,7 @@ class SecretControllerTest {
     @Test
     void whenCreateSecret_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                post("/secrets")
+                post("/api//secrets")
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content("{}")
         )
@@ -34,7 +34,7 @@ class SecretControllerTest {
     @Test
     void whenUpdateSecret_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                put("/secrets/{secretId}", "secretId")
+                put("/api/secrets/{secretId}", "secretId")
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content("{}")
         )
@@ -44,7 +44,7 @@ class SecretControllerTest {
     @Test
     void whenGetAllSecrets_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/secrets")
+                get("/api/secrets")
         )
                 .andExpect(status().is2xxSuccessful());
     }

@@ -14,21 +14,21 @@ public class SecretController {
 
     @Autowired private SecretService secretService;
 
-    @GetMapping(value = "secrets")
+    @GetMapping(value = "/api/secrets")
     @ResponseBody
     @VerifiedEmail
     public Set<SecretResponse> getAllSecrets() {
         return secretService.getAllSecrets();
     }
 
-    @PostMapping(value = "secrets", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/api/secrets", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @VerifiedEmail
     public SecretResponse createSecret(@RequestBody SecretRequest secret) {
         return secretService.createSecret(secret);
     }
 
-    @PutMapping(value = "secrets/{secretId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "/api/secrets/{secretId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @VerifiedEmail
     public SecretResponse updateSecret(@PathVariable(value = "secretId") String secretId,

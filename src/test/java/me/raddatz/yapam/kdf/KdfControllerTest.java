@@ -23,7 +23,7 @@ class KdfControllerTest {
     @Test
     void whenGetKdfInfo_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/kdf")
+                get("/api/kdf")
         )
                 .andExpect(status().is2xxSuccessful());
     }

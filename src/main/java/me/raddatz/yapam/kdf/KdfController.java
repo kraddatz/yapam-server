@@ -10,7 +10,7 @@ public class KdfController {
 
     @Autowired private KdfService kdfService;
 
-    @GetMapping(value = "kdf")
+    @GetMapping(value = "/api/kdf")
     public KdfInfo getKdfInfo() {
         return kdfService.getKdfInfo();
     }

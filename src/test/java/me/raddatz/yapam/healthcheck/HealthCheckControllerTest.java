@@ -24,7 +24,7 @@ class HealthCheckControllerTest {
     @Test
     void whenHealthCheckIsCalled_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/health").accept(MediaType.APPLICATION_JSON)
+                get("/api/health").accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk());
     }
@@ -32,7 +32,7 @@ class HealthCheckControllerTest {
     @Test
     void whenInfoIsCalled_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/info")
+                get("/api//info")
         )
                 .andExpect(status().isOk());
     }

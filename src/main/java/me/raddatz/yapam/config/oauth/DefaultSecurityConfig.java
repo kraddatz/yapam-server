@@ -37,12 +37,13 @@ public class DefaultSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) {
 		web
 				.ignoring().antMatchers("/documentation/**",
-						"/users/*/email/verify",
-						"/users/*/email/requestChange",
-						"/users/*/email/change",
-						"/info")
+						"/api/users/*/email/verify",
+						"/api/users/*/email/requestChange",
+						"/api/users/*/email/change",
+						"/api/info",
+						"/api/health")
 				.and()
-				.ignoring().antMatchers(HttpMethod.POST, "/users");
+				.ignoring().antMatchers(HttpMethod.POST, "/api/users");
 	}
 
 	@Override
