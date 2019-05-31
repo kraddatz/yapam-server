@@ -32,7 +32,7 @@ class HealthCheckControllerTest {
     @Test
     void whenInfoIsCalled_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api//info")
+                get("/api/status")
         )
                 .andExpect(status().isOk());
     }

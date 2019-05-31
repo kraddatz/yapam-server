@@ -1,0 +1,31 @@
+language: java
+install: true
+
+jdk: openjdk11
+
+cache:
+  directories:
+    - "./build/libs"
+
+jobs:
+  include:
+    - stage: "Test"
+      name: "Unit tests"
+      script:
+        - "./gradlew test"
+    - stage: "Build"
+      name: "Check if yapam-server builds"
+      script:
+        - "./gradlew clean assemble"
+    - stage: "Docker"
+      name: "Build docker image"
+      script:
+        - "echo \"$DOCKER_PASSWORD\" | docker login -u \"$DOCKER_USERNAME\" --password-stdin"
+        - "docker build -t chronm/yapam-server ."
+        - "docker images"
+        - "docker push chronm/yapam-server"
+
+stages:
+  - test
+  - build
+  - docker

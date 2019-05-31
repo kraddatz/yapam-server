@@ -58,7 +58,7 @@ class KdfServiceTest {
 
         var result = kdfService.getKdfInfo();
         assertFalse(result.getSecure());
-        assertEquals(Integer.valueOf(11), result.getIteratitons());
+        assertEquals(Integer.valueOf(11), result.getIterations());
     }
 
     @Test
@@ -71,6 +71,6 @@ class KdfServiceTest {
 
         var result = kdfService.getKdfInfo();
         assertTrue(result.getSecure());
-        assertEquals(Integer.valueOf(10), result.getIteratitons());
+        assertEquals(Integer.valueOf(10), result.getIterations());
     }
 }

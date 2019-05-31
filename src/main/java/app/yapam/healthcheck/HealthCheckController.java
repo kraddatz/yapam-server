@@ -14,13 +14,13 @@ public class HealthCheckController {
     @Autowired private HealthCheckService healthCheckService;
 
     @GetMapping(value = "/api/status", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public void healthCheck() {
+    public void isHealthy() {
         // Do nothing, just return Status 200 (OK)
     }
 
     @GetMapping(value = "/api/health")
     @ResponseStatus(HttpStatus.OK)
-    public HealthCheckResult isHealthy() {
+    public HealthCheckResult healthCheck() {
         return healthCheckService.createHealthCheckResult();
 
     }

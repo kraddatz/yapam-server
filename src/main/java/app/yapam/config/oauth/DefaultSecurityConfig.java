@@ -40,7 +40,7 @@ public class DefaultSecurityConfig extends WebSecurityConfigurerAdapter {
 						"/api/users/*/email/verify",
 						"/api/users/*/email/requestChange",
 						"/api/users/*/email/change",
-						"/api/info",
+						"/api/status",
 						"/api/health")
 				.and()
 				.ignoring().antMatchers(HttpMethod.POST, "/api/users");
