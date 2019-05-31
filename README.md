@@ -1,4 +1,5 @@
 # Yapam Project
+[![Build Status](https://travis-ci.org/kraddatz/yapam-server.svg?branch=master)](https://travis-ci.org/kraddatz/yapam-server)
 
 ## 1. Contributing
 Before contributing, please read the [contribution-guide][contribution-guide]

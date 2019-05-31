@@ -60,16 +60,4 @@ public class YapamProperties {
         private String url;
         private String name;
     }
-
-    @ConfigurationProperties(prefix = "yapam.datasource")
-    @Bean
-    @Primary
-    public DataSource dataSource() {
-        return DataSourceBuilder.create()
-                .password(this.datasource.password)
-                .url(this.datasource.url)
-                .username(this.datasource.username)
-                .build();
-    }
-
 }
