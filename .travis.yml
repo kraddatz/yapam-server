@@ -29,3 +29,6 @@ stages:
   - test
   - build
   - docker
+
+after_success:
+  - "./gradlew test jacocoTestReport coveralls"
