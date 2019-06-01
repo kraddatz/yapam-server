@@ -30,6 +30,7 @@ buildscript {
 
 plugins {
     id 'application'
+    id 'com.github.kt3k.coveralls' version '2.8.4'
     id 'eclipse'
     id 'idea'
     id 'io.franzbecker.gradle-lombok' version '3.0.0'
@@ -117,6 +118,13 @@ task createPom {
 }
 
 assemble.dependsOn createPom
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
 
 ext['tomcat.version'] = "${tomcatVersion}"
 
