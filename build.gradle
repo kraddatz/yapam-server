@@ -119,16 +119,21 @@ task createPom {
 
 assemble.dependsOn createPom
 
-jacocoTestReport {
-    reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
-        html.enabled = true
-    }
+coveralls {
+    sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${projectDir}/http/build/reports/jacoco/test/jacocoTestReport.xml"
 }
 
-coveralls {
-    saveAsFile = true
-    sendToCoveralls = false
+tasks.coveralls {
+    onlyIf { System.env.'CI' }
+}
+
+jacocoTestReport {
+    dependsOn 'test'
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
 }
 
 ext['tomcat.version'] = "${tomcatVersion}"

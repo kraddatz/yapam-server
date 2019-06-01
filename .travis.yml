@@ -12,7 +12,7 @@ jobs:
     - stage: "Test"
       name: "Unit tests"
       script:
-        - "./gradlew test"
+        - "./gradlew test jacocoTestReport coveralls"
     - stage: "Build"
       name: "Check if yapam-server builds"
       script:
@@ -29,6 +29,3 @@ stages:
   - test
   - build
   - docker
-
-after_success:
-  - "curl -F \"json_file=@build/coveralls/report.json\" \"https://coveralls.io/api/v1/jobs\""
