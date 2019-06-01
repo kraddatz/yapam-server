@@ -126,6 +126,11 @@ jacocoTestReport {
     }
 }
 
+coveralls {
+    saveAsFile = true
+    sendToCoveralls = false
+}
+
 ext['tomcat.version'] = "${tomcatVersion}"
 
 dependencies {
