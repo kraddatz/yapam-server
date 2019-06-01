@@ -5,30 +5,31 @@ jdk: openjdk11
 
 cache:
   directories:
-    - "./build/libs"
+    - ./build/libs
 
 jobs:
   include:
-    - stage: "Test"
-      name: "Unit tests"
+    - stage: Test
+      name: Unit tests
       script:
-        - "./gradlew test jacocoTestReport"
-    - stage: "Build"
-      name: "Check if yapam-server builds"
+        - ./gradlew test
+        - ./gradlew jacocoTestReport coveralls
+    - stage: Build
+      name: Check if yapam-server builds
       script:
-        - "./gradlew clean assemble"
-    - stage: "Docker"
-      name: "Build docker image"
+        - ./gradlew clean assemble
+    - stage: Docker
+      if:
+       - branch = master
+       - type = push
+      name: Build docker image
       script:
-        - "echo \"$DOCKER_PASSWORD\" | docker login -u \"$DOCKER_USERNAME\" --password-stdin"
-        - "docker build -t chronm/yapam-server ."
-        - "docker images"
-        - "docker push chronm/yapam-server"
+        - echo \"$DOCKER_PASSWORD\" | docker login -u \"$DOCKER_USERNAME\" --password-stdin
+        - docker build -t chronm/yapam-server .
+        - docker images
+        - docker push chronm/yapam-server
 
 stages:
   - test
   - build
   - docker
-
-after_success:
-  - "./gradlew jacocoRootReport coveralls"
