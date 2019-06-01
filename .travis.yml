@@ -12,7 +12,7 @@ jobs:
     - stage: "Test"
       name: "Unit tests"
       script:
-        - "./gradlew test jacocoTestReport coveralls"
+        - "./gradlew test jacocoTestReport"
     - stage: "Build"
       name: "Check if yapam-server builds"
       script:
@@ -29,3 +29,6 @@ stages:
   - test
   - build
   - docker
+
+after_success:
+  - "./gradlew jacocoRootReport coveralls"
