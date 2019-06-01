@@ -125,6 +125,19 @@ jacocoTestReport {
         xml.enabled = true
         csv.enabled = false
     }
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+                            "**/app/yapam/YapamApplication.class",
+                            "**/app/yapam/config/**",
+                            "**/app/yapam/common/error/**",
+                            "**/app/yapam/swagger/**",
+                            "**/app/yapam/**/model/**",
+                            "**/app/yapam/**/repository/*.class",
+                    ])
+        })
+    }
 }
 
 task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
@@ -136,9 +149,20 @@ task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
         xml.enabled = true
         csv.enabled = false
     }
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+                            "**/app/yapam/YapamApplication.class",
+                            "**/app/yapam/config/**",
+                            "**/app/yapam/common/error/**",
+                            "**/app/yapam/swagger/**",
+                            "**/app/yapam/**/model/**",
+                            "**/app/yapam/**/repository/*.class",
+                    ])
+        })
+    }
 }
-
-jacocoRootReport.dependsOn test
 
 ext['tomcat.version'] = "${tomcatVersion}"
 
