@@ -5,6 +5,7 @@ import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.repository.SecretDBO;
 import app.yapam.user.model.User;
 import app.yapam.user.model.request.UserRequest;
+import app.yapam.user.model.response.UserResponse;
 import app.yapam.user.repository.UserDBO;
 import app.yapam.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -15,8 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -61,6 +61,12 @@ class MappingServiceTest {
         var userRequest = new UserRequest();
         userRequest.setName("username");
         return userRequest;
+    }
+
+    private UserResponse createDefaultUserResponse() {
+        var userResponse = new UserResponse();
+        userResponse.setEmail("username");
+        return userResponse;
     }
 
     @Test
@@ -138,7 +144,7 @@ class MappingServiceTest {
         var secretDBO = createDefaultSecretDBO();
 
         var result = mappingService.secretDBOToResponse(secretDBO);
-        assertTrue(true);
+        assertNotNull(result);
     }
 
     @Test
@@ -178,6 +184,14 @@ class MappingServiceTest {
         var userDBO = createDefaultUserDBO();
 
         var result = mappingService.userDBOToSimpleResponse(userDBO);
-        assertEquals("username", result.getName());
+        assertNotNull(result);
+    }
+
+    @Test
+    void userDBOToResponse() {
+        var userDBO = createDefaultUserDBO();
+
+        var result = mappingService.userDBOToResponse(userDBO);
+        assertNotNull(result);
     }
 }

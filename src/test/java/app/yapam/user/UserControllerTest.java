@@ -80,4 +80,12 @@ class UserControllerTest {
         )
                 .andExpect(status().is2xxSuccessful());
     }
+
+    @Test
+    void whenGetCurrentUser_thenReturnSuccessful() throws Exception {
+        mvc.perform(
+                get("/api/currentuser")
+        )
+                .andExpect(status().is2xxSuccessful());
+    }
 }
