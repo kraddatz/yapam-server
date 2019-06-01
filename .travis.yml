@@ -31,4 +31,4 @@ stages:
   - docker
 
 after_success:
-  - "./gradlew test jacocoTestReport coveralls"
+  - "./gradlew jacocoTestReport coveralls"
