@@ -11,6 +11,7 @@ import app.yapam.user.model.response.SimpleUserResponse;
 import app.yapam.config.YapamProperties;
 import app.yapam.user.model.User;
 import app.yapam.user.model.request.UserRequest;
+import app.yapam.user.model.response.UserResponse;
 import app.yapam.user.repository.UserDBO;
 import app.yapam.user.repository.UserRepository;
 import app.yapam.user.repository.UserTransactions;
@@ -28,8 +29,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -46,10 +46,17 @@ class UserServiceTest {
     @MockBean private RequestHelperService requestHelperService;
     @MockBean private MappingService mappingService;
 
+    private UserResponse createDefaultUserResponse() {
+        var user = new UserResponse();
+        user.setName("Name");
+        user.setEmail("user@email.com");
+        return user;
+    }
+
     private UserRequest createDefaultUserRequest() {
         var user = new UserRequest();
         user.setName("Name");
-        user.setEmail("email@test.com");
+        user.setEmail("user@email.com");
         user.setMasterPasswordHash("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         return user;
     }
@@ -67,7 +74,7 @@ class UserServiceTest {
         user.setEmailToken("token");
         user.setCreationDate(LocalDateTime.now());
         user.setEmailVerified(false);
-        user.setEmail("email@test.com");
+        user.setEmail("user@email.com");
         user.setMasterPasswordHash("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         return user;
     }
@@ -78,7 +85,7 @@ class UserServiceTest {
         userDBO.setEmailToken("token");
         userDBO.setCreationDate(LocalDateTime.now());
         userDBO.setEmailVerified(false);
-        userDBO.setEmail("email@test.com");
+        userDBO.setEmail("user@email.com");
         userDBO.setMasterPasswordHash("$2a$10$dmhu8DuXzuILmtCZ/QM.AOlBnLsb.Lo06reyMeyRmGDxXGNSV.nfK");
         userDBO.setMasterPasswordHint("password is password");
         return userDBO;
@@ -261,5 +268,18 @@ class UserServiceTest {
         Set<SimpleUserResponse> users = userService.getAllUsers();
 
         assertEquals(1, users.size());
+    }
+
+    @Test
+    void getCurrentUser() {
+        var userDBO = createDefaultUserDBO();
+        var userResponse = createDefaultUserResponse();
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
+        when(userRepository.findOneByEmail("user@email.com")).thenReturn(userDBO);
+        when(mappingService.userDBOToResponse(userDBO)).thenReturn(userResponse);
+
+        userResponse = userService.getCurrentUser();
+
+        assertNotNull(userResponse);
     }
 }
