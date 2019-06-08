@@ -78,7 +78,6 @@ class AnnotationHandlerInterceptorTest {
     }
 
     @Test
-//    @Disabled // TODO: Missing request with VerifiedEmail validator
     void preHandleVerifiedEmail_when_thenReturnFalse() throws NoSuchMethodException {
         var request = createDefaultHttpServletRequest();
         var response = createDefaultHttpServletResponse();

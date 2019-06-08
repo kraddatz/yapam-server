@@ -8,7 +8,7 @@ create table user
     email                varchar(256)            not null unique,
     email_verified       boolean                 not null,
     master_password_hash varchar(88)             not null,
-    master_password_hint varchar(256)            not null,
+    master_password_hint varchar(256)            null,
     culture              varchar(8)              null,
     creation_date        datetime                not null,
     email_token          varchar(64)             not null,
