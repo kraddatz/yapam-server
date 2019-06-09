@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 public class SecretResponse {
 
+    private String title;
     private String secretId;
     private String data;
     private SecretTypeEnum type;

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Secret {
 
+    private String title;
     private String secretId;
     private String data;
     private SecretTypeEnum type;

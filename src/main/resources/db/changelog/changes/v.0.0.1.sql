@@ -32,13 +32,14 @@ create table user_role
 
 create table secret
 (
-    id            varchar(64) not null primary key,
-    secret_id     varchar(64) not null,
-    version       int         not null,
-    user_id       varchar(64) not null,
-    creation_date datetime    not null,
-    data          longtext    not null,
-    type          int         not null,
+    id            varchar(64)  not null primary key,
+    title         varchar(256) not null,
+    secret_id     varchar(64)  not null,
+    version       int          not null,
+    user_id       varchar(64)  not null,
+    creation_date datetime     not null,
+    data          longtext     not null,
+    type          int          not null,
     constraint fk_secret_user_id foreign key (user_id) references user (id),
     key (secret_id)
 );

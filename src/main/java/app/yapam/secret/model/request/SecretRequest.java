@@ -9,9 +9,11 @@ import lombok.Setter;
 @Setter
 public class SecretRequest {
 
-    @ApiModelProperty(value = "PGP encrypted data", example = "data")
+    @ApiModelProperty(value = "Title of the secret", example = "yapam")
+    private String title;
+    @ApiModelProperty(value = "not yet PGP encrypted data", example = "\"{\"username\":\"username\",\"password\":\"password\",\"url\":\"url\",\"notes\":\"notes\"}\"")
     private String data;
-    @ApiModelProperty(value = "Type of the secret", dataType = "string", allowableValues= "PASSWORD, ID, WIFI, NOTE")
+    @ApiModelProperty(value = "Type of the secret", dataType = "string", allowableValues = "PASSWORD, ID, WIFI, NOTE")
     private SecretTypeEnum type;
     @ApiModelProperty(value = "owner of the secret", example = "7ba292c2-7c9b-48ac-a0b5-edb223704f42")
     private String userId;

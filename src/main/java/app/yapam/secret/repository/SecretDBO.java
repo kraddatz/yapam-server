@@ -22,6 +22,7 @@ public class SecretDBO {
     )
     private String id;
 
+    private String title;
     @Column(name = "secret_id")
     private String secretId;
     private Integer version;

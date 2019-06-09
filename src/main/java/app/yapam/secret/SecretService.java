@@ -49,6 +49,7 @@ public class SecretService {
 
     SecretResponse updateSecret(String secretId, SecretRequest secretRequest) {
         var secret = mappingService.secretFromRequest(secretRequest);
+        secretTransactions.saveSecret(mappingService.secretToDBO(secret));
         return mappingService.secretToResponse(updateSecret(secretId, secret));
     }
 
