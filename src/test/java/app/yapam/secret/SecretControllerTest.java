@@ -48,4 +48,12 @@ class SecretControllerTest {
         )
                 .andExpect(status().is2xxSuccessful());
     }
+
+    @Test
+    void whenGetSecretById_thenReturnSuccessful() throws Exception {
+        mvc.perform(
+                get("/api/secrets/{secretId}", "secretId")
+        )
+                .andExpect(status().is2xxSuccessful());
+    }
 }

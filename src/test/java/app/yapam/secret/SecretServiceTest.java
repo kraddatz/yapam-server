@@ -31,7 +31,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(SecretService.class)
 @ActiveProfiles("test")
-public class SecretServiceTest {
+class SecretServiceTest {
 
     @Autowired private SecretService secretService;
     @MockBean private UserRepository userRepository;
@@ -101,6 +101,9 @@ public class SecretServiceTest {
     void getAllSecrets() {
         var userDBO = createDefaultUserDBO();
         var secretResponse = createDefaultSecretResponse();
+        var secrets = new HashSet<SecretDBO>();
+        secrets.add(createDefaultSecretDBO());
+        when(secretRepository.findAllByCurrentByUser(anyString())).thenReturn(secrets);
         when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
         when(mappingService.secretDBOToResponse(any(SecretDBO.class))).thenReturn(secretResponse);
         when(requestHelperService.getUserName()).thenReturn("user@email.com");

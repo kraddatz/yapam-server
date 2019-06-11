@@ -27,7 +27,7 @@ public class SecretService {
 
     private Secret createSecret(Secret secret) {
         secret.setSecretId(UUID.randomUUID().toString());
-        secret.setVersion(0);
+        secret.setVersion(1);
         secret.setCreationDate(LocalDateTime.now());
         secretTransactions.saveSecret(mappingService.secretToDBO(secret));
         return secret;
@@ -36,6 +36,11 @@ public class SecretService {
     SecretResponse createSecret(SecretRequest secretRequest) {
         var secret = mappingService.secretFromRequest(secretRequest);
         return mappingService.secretToResponse(createSecret(secret));
+    }
+
+    SecretResponse getSecretById(String secretId) {
+        var secret = secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId);
+        return mappingService.secretDBOToResponse(secret);
     }
 
     private Secret updateSecret(String secretId, Secret secret) {
@@ -49,11 +54,12 @@ public class SecretService {
 
     SecretResponse updateSecret(String secretId, SecretRequest secretRequest) {
         var secret = mappingService.secretFromRequest(secretRequest);
-        secretTransactions.saveSecret(mappingService.secretToDBO(secret));
         return mappingService.secretToResponse(updateSecret(secretId, secret));
     }
 
     public Set<SecretResponse> getAllSecrets() {
-        return userRepository.findOneByEmail(requestHelperService.getUserName()).getSecrets().stream().map(secret -> mappingService.secretDBOToResponse(secret)).collect(Collectors.toSet());
+        var secrets = secretRepository.findAllByCurrentByUser(requestHelperService.getUserName());
+
+        return secrets.stream().map(secret -> mappingService.secretDBOToResponse(secret)).collect(Collectors.toSet());
     }
 }
