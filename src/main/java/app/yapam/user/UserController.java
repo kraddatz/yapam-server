@@ -22,29 +22,23 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @GetMapping(value = "/api/users/{userId}/email/verify")
-    @UserExists
-    public void verifyEmail(@PathVariable(value = "userId") String userId,
-                            @RequestParam(value = "token") String token) {
-        userService.verifyEmail(userId, token);
+    @GetMapping(value = "/api/currentuser/email/verify")
+    public void verifyEmail(@RequestParam(value = "token") String token) {
+        userService.verifyEmail(token);
     }
 
-    @GetMapping(value = "/api/users/{userId}/email/requestChange")
-    @UserExists
-    public void requestEmailChange(@PathVariable(value = "userId") String userId,
-                                   @RequestParam(value = "email") String email) {
-        userService.requestEmailChange(userId, email);
+    @GetMapping(value = "/api/currentuser/email/requestChange")
+    public void requestEmailChange(@RequestParam(value = "email") String email) {
+        userService.requestEmailChange(email);
     }
 
-    @GetMapping(value = "/api/users/{userId}/email/change")
-    @UserExists
-    public void emailChange(@PathVariable(value = "userId") String userId,
-                            @RequestParam(value = "token") String token,
+    @GetMapping(value = "/api/currentuser/email/change")
+    public void emailChange(@RequestParam(value = "token") String token,
                             @RequestParam(value = "email") String email) {
-        userService.emailChange(userId, token, email);
+        userService.emailChange(token, email);
     }
 
-    @PutMapping(value = "/api/users/password/change", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "/api/currentuser/password/change", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
         userService.passwordChange(passwordChangeRequest);
     }
