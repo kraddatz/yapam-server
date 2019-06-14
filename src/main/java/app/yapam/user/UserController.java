@@ -1,10 +1,9 @@
 package app.yapam.user;
 
-import app.yapam.common.annotation.userexists.UserExists;
 import app.yapam.user.model.request.PasswordChangeRequest;
+import app.yapam.user.model.request.UserRequest;
 import app.yapam.user.model.response.SimpleUserResponse;
 import app.yapam.user.model.response.UserResponse;
-import app.yapam.user.model.request.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
