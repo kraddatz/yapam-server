@@ -15,4 +15,5 @@ public class UserResponse {
     private Boolean emailVerified;
     private String culture;
     private LocalDateTime creationDate;
+    private String publicKey;
 }

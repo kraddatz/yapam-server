@@ -98,6 +98,7 @@ class UserServiceTest {
         var userDBO = createDefaultUserDBO();
         when(mappingService.userFromRequest(Mockito.any(UserRequest.class))).thenReturn(user);
         when(mappingService.userToDBO(user)).thenReturn(userDBO);
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
         userService.createUser(registerUser);
 
@@ -119,6 +120,7 @@ class UserServiceTest {
         when(mappingService.userFromRequest(Mockito.any(UserRequest.class))).thenReturn(user);
         when(mappingService.userToDBO(user)).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
         userService.createUser(registerUser);
 
@@ -140,6 +142,7 @@ class UserServiceTest {
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
         when(mappingService.userFromRequest(userRequest)).thenReturn(user);
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(userRequest));
     }
@@ -154,6 +157,7 @@ class UserServiceTest {
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
         when(mappingService.userFromRequest(userRequest)).thenReturn(user);
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(userRequest));
     }
@@ -167,6 +171,7 @@ class UserServiceTest {
         when(userRepository.findOneByEmail(Mockito.anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
         when(mappingService.userFromRequest(userRequest)).thenReturn(user);
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(userRequest));
     }
@@ -176,22 +181,23 @@ class UserServiceTest {
         var userId = "userid";
         var token = "token";
         var userDBO = createDefaultUserDBO();
-        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
+        when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
-        userService.verifyEmail(userId, token);
+        userService.verifyEmail(token);
         verify(userRepository, times(1)).save(any(UserDBO.class));
     }
 
     @Test
     void verifyEmail_whenInvalidToken_thenThrowException() {
-        var userId = "userid";
         var token = "invalidtoken";
         var userDBO = createDefaultUserDBO();
-        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
+        when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
-        assertThrows(InvalidEmailVerificationTokenException.class, () -> userService.verifyEmail(userId, token));
+        assertThrows(InvalidEmailVerificationTokenException.class, () -> userService.verifyEmail(token));
     }
 
     @Test
@@ -200,10 +206,11 @@ class UserServiceTest {
         var token = "invalidtoken";
         var userDBO = createDefaultUserDBO();
         userDBO.setCreationDate(LocalDateTime.now().minusDays(2));
-        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
+        when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
-        assertThrows(EmailVerificationTokenExpiredException.class, () -> userService.verifyEmail(userId, token));
+        assertThrows(EmailVerificationTokenExpiredException.class, () -> userService.verifyEmail(token));
     }
 
     @Test
@@ -212,10 +219,11 @@ class UserServiceTest {
         var email = "email";
         var userDBO = createDefaultUserDBO();
         var user = createDefaultUser();
-        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
+        when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
         when(mappingService.userFromDBO(userDBO)).thenReturn(user);
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
-        userService.requestEmailChange(userId, email);
+        userService.requestEmailChange(email);
         verify(userRepository, times(1)).save(any(UserDBO.class));
         verify(emailService, times(1)).sendEmailChangeEmail(any(User.class), anyString());
     }
@@ -226,9 +234,10 @@ class UserServiceTest {
         var token = "token";
         var email = "email";
         var userDBO = createDefaultUserDBO();
-        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
+        when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
-        userService.emailChange(userId, token, email);
+        userService.emailChange(token, email);
         verify(userRepository, times(1)).save(any(UserDBO.class));
     }
 
@@ -238,9 +247,10 @@ class UserServiceTest {
         var token = "invalidtoken";
         var email = "email";
         var userDBO = createDefaultUserDBO();
-        when(userRepository.findOneById(anyString())).thenReturn(userDBO);
+        when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
-        assertThrows(InvalidEmailVerificationTokenException.class, () -> userService.emailChange(userId, token, email));
+        assertThrows(InvalidEmailVerificationTokenException.class, () -> userService.emailChange(token, email));
     }
 
     @Test
@@ -249,6 +259,7 @@ class UserServiceTest {
         var passwordChangeRequest = createDefaultPasswordChangeRequest();
         when(requestHelperService.getUserName()).thenReturn("user@email.com");
         when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
         userService.passwordChange(passwordChangeRequest);
 
@@ -264,6 +275,7 @@ class UserServiceTest {
     void getAllUsers() {
         var userDBO = createDefaultUserDBO();
         when(userRepository.findAll()).thenReturn(new ArrayList<>(Collections.singletonList(userDBO)));
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
 
         Set<SimpleUserResponse> users = userService.getAllUsers();
 

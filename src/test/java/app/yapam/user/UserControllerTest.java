@@ -33,9 +33,8 @@ class UserControllerTest {
 
     @Test
     void whenEmailValidation_thenReturnSuccessful() throws Exception {
-        String userId = "4e3b8827-8d68-43bb-b333-8f5a5795f286";
         mvc.perform(
-                get("/api/users/{userId}/email/verify", userId)
+                get("/api/currentuser/email/verify")
                         .param("token", "token")
         )
                 .andExpect(status().is2xxSuccessful());
@@ -43,9 +42,8 @@ class UserControllerTest {
 
     @Test
     void whenEmailChangeRequest_thenReturnSuccessful() throws Exception {
-        String userId = "4e3b8827-8d68-43bb-b333-8f5a5795f286";
         mvc.perform(
-                get("/api/users/{userId}/email/requestChange", userId)
+                get("/api/currentuser/email/requestChange")
                         .param("email", "new@email.com")
         )
                 .andExpect(status().is2xxSuccessful());
@@ -53,9 +51,8 @@ class UserControllerTest {
 
     @Test
     void whenEmailChange_thenReturnSuccessful() throws Exception {
-        String userId = "4e3b8827-8d68-43bb-b333-8f5a5795f286";
         mvc.perform(
-                get("/api/users/{userId}/email/change", userId)
+                get("/api/currentuser/email/change")
                         .param("token", "token")
                         .param("email", "new@email.com")
         )
@@ -65,7 +62,7 @@ class UserControllerTest {
     @Test
     void whenUpdatePassword_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                put("/api/users/password/change")
+                put("/api/currentuser/password/change")
                 .content("{}")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
         )
