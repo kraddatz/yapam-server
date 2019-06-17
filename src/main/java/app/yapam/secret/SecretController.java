@@ -32,8 +32,8 @@ public class SecretController {
     @GetMapping(value = "/api/secrets/{secretId}")
     @ResponseBody
     @VerifiedEmail
-    public SecretResponse getSecretById(@PathVariable String secretId) {
-        return secretService.getSecretById(secretId);
+    public SecretResponse getSecretById(@PathVariable String secretId, @RequestParam("version") Integer version) {
+        return secretService.getSecretById(secretId, version);
     }
 
     @PutMapping(value = "/api/secrets/{secretId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

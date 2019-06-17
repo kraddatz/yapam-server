@@ -19,6 +19,8 @@ public interface SecretRepository extends JpaRepository<SecretDBO, String> {
     @Query(value = "select s.version from secret s where s.secret_id = :secretId order by s.version desc limit 1", nativeQuery = true)
     Integer findCurrentVersion(@Param("secretId") String secretId);
 
+    SecretDBO findFirstBySecretIdAndVersion(String secretId, Integer version);
+
     @Transactional
     void deleteBySecretId(String secretId);
 }

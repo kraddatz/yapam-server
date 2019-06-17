@@ -3,6 +3,7 @@ package app.yapam.secret;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
 import app.yapam.secret.model.response.SecretResponse;
+import app.yapam.secret.repository.SecretDBO;
 import app.yapam.secret.repository.SecretRepository;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.request.SecretRequest;
@@ -42,8 +43,13 @@ public class SecretService {
         secretRepository.deleteBySecretId(secretId);
     }
 
-    SecretResponse getSecretById(String secretId) {
-        var secret = secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId);
+    SecretResponse getSecretById(String secretId, Integer version) {
+        SecretDBO secret;
+        if (version == 0) {
+            secret = secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId);
+        } else {
+            secret = secretRepository.findFirstBySecretIdAndVersion(secretId, version);
+        }
         return mappingService.secretDBOToResponse(secret);
     }
 
