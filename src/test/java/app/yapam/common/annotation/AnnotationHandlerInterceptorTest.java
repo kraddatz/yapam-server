@@ -1,6 +1,5 @@
 package app.yapam.common.annotation;
 
-import app.yapam.common.annotation.userexists.UserExistsValidator;
 import app.yapam.common.annotation.verifiedemail.VerifiedEmailValidator;
 import app.yapam.secret.SecretController;
 import app.yapam.secret.model.request.SecretRequest;
@@ -28,7 +27,6 @@ class AnnotationHandlerInterceptorTest {
 
     @Autowired private AnnotationHandlerInterceptor annotationHandlerInterceptor;
     @MockBean private VerifiedEmailValidator verifiedEmailValidator;
-    @MockBean private UserExistsValidator userExistsValidator;
 
     private MockHttpServletRequest createDefaultHttpServletRequest() {
         return new MockHttpServletRequest();
@@ -51,7 +49,7 @@ class AnnotationHandlerInterceptorTest {
     }
 
     private HandlerMethod createUserExistsHandlerMethod() throws NoSuchMethodException {
-        var method = UserController.class.getMethod("verifyEmail", String.class, String.class);
+        var method = UserController.class.getMethod("verifyEmail", String.class);
 
         return new HandlerMethod(new UserController(), method);
     }
@@ -84,19 +82,6 @@ class AnnotationHandlerInterceptorTest {
         var handlerMethod = createVerifiedEmailHandlerMethod();
 
         when(verifiedEmailValidator.validate()).thenReturn(false);
-
-        boolean result = annotationHandlerInterceptor.preHandle(request, response, handlerMethod);
-
-        assertFalse(result);
-    }
-
-    @Test
-    void preHandleUserExists_whenUserNotExists_thenReturnFalse() throws NoSuchMethodException {
-        var request = createDefaultHttpServletRequest();
-        var response = createDefaultHttpServletResponse();
-        var handlerMethod = createUserExistsHandlerMethod();
-
-        when(userExistsValidator.validate(request)).thenReturn(false);
 
         boolean result = annotationHandlerInterceptor.preHandle(request, response, handlerMethod);
 

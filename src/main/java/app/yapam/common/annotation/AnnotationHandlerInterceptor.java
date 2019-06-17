@@ -1,9 +1,7 @@
 package app.yapam.common.annotation;
 
-import app.yapam.common.annotation.userexists.UserExists;
-import app.yapam.common.annotation.userexists.UserExistsValidator;
-import app.yapam.common.annotation.verifiedemail.VerifiedEmailValidator;
 import app.yapam.common.annotation.verifiedemail.VerifiedEmail;
+import app.yapam.common.annotation.verifiedemail.VerifiedEmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -17,7 +15,6 @@ import java.lang.reflect.Method;
 public class AnnotationHandlerInterceptor implements HandlerInterceptor {
 
     @Autowired private VerifiedEmailValidator verifiedEmailValidator;
-    @Autowired private UserExistsValidator userExistsValidator;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -28,9 +25,6 @@ public class AnnotationHandlerInterceptor implements HandlerInterceptor {
         Method method = ((HandlerMethod) handler).getMethod();
         if (method.isAnnotationPresent(VerifiedEmail.class)) {
             return verifiedEmailValidator.validate();
-        }
-        if (method.isAnnotationPresent(UserExists.class)) {
-            return userExistsValidator.validate(request);
         }
         return true;
     }
