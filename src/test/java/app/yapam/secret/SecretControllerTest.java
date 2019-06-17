@@ -56,4 +56,12 @@ class SecretControllerTest {
         )
                 .andExpect(status().is2xxSuccessful());
     }
+
+    @Test
+    void whenDeleteSecret_thenReturnSuccessful() throws Exception {
+        mvc.perform(
+                delete("/api/secrets/{secretId}", "secretId")
+        )
+                .andExpect(status().is2xxSuccessful());
+    }
 }

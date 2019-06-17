@@ -43,6 +43,7 @@ class SecretServiceTest {
     private UserDBO createDefaultUserDBO() {
         var userDBO = new UserDBO();
         userDBO.setSecrets(new HashSet<>(Collections.singletonList(createDefaultSecretDBO())));
+        userDBO.setId("userId");
         return userDBO;
     }
 
@@ -85,7 +86,7 @@ class SecretServiceTest {
         var secretDBO = createDefaultSecretDBO();
         secretDBO.setVersion(1);
         when(mappingService.secretFromRequest(secretRequest)).thenReturn(secret);
-        when(secretRepository.findFirstVersionBySecretIdOrderByVersionDesc(anyString())).thenReturn(0);
+        when(secretRepository.findCurrentVersion(anyString())).thenReturn(0);
         when(mappingService.secretToDBO(any(Secret.class))).thenReturn(secretDBO);
 
         secretService.updateSecret("secretId", secretRequest);

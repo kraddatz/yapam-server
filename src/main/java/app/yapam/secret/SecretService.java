@@ -38,6 +38,10 @@ public class SecretService {
         return mappingService.secretToResponse(createSecret(secret));
     }
 
+    void deleteSecret(String secretId) {
+        secretRepository.deleteBySecretId(secretId);
+    }
+
     SecretResponse getSecretById(String secretId) {
         var secret = secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId);
         return mappingService.secretDBOToResponse(secret);
@@ -45,7 +49,7 @@ public class SecretService {
 
     private Secret updateSecret(String secretId, Secret secret) {
         secret.setSecretId(secretId);
-        var latestSecretVersion = secretRepository.findFirstVersionBySecretIdOrderByVersionDesc(secretId);
+        var latestSecretVersion = secretRepository.findCurrentVersion(secretId);
         secret.setVersion(latestSecretVersion + 1);
         secret.setCreationDate(LocalDateTime.now());
         secretTransactions.saveSecret(mappingService.secretToDBO(secret));
@@ -58,7 +62,8 @@ public class SecretService {
     }
 
     public Set<SecretResponse> getAllSecrets() {
-        var secrets = secretRepository.findAllByCurrentByUser(requestHelperService.getUserName());
+        var user = userRepository.findOneByEmail(requestHelperService.getUserName());
+        var secrets = secretRepository.findAllByCurrentByUser(user.getId());
 
         return secrets.stream().map(secret -> mappingService.secretDBOToResponse(secret)).collect(Collectors.toSet());
     }

@@ -4,6 +4,7 @@ import app.yapam.common.annotation.verifiedemail.VerifiedEmail;
 import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.model.response.SecretResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,5 +42,12 @@ public class SecretController {
     public SecretResponse updateSecret(@PathVariable(value = "secretId") String secretId,
                                        @RequestBody SecretRequest secret) {
         return secretService.updateSecret(secretId, secret);
+    }
+
+    @DeleteMapping(value = "/api/secrets/{secretId}")
+    @VerifiedEmail
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSecrete(@PathVariable(value = "secretId") String secretId) {
+        secretService.deleteSecret(secretId);
     }
 }
