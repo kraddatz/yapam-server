@@ -39,6 +39,10 @@ public class UserService {
         return mappingService.userDBOToResponse(user);
     }
 
+    public SimpleUserResponse getUserById(String userId) {
+        return mappingService.userDBOToSimpleResponse(userRepository.findOneById(userId));
+    }
+
     private Boolean userIsInRegistrationPeriod(UserDBO user) {
         return user.getCreationDate().plus(yapamProperties.getRegistrationTimeout()).isAfter(LocalDateTime.now());
     }

@@ -47,6 +47,11 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @GetMapping(value = "/api/users/{userId}")
+    public SimpleUserResponse getUserById(@PathVariable("userId") String userId) {
+        return userService.getUserById(userId);
+    }
+
     @GetMapping(value = "/api/currentuser")
     public UserResponse getCurrentUser() {
         return userService.getCurrentUser();
