@@ -48,22 +48,24 @@ public class UserService {
     }
 
     @java.lang.SuppressWarnings("squid:S1066")
-    private void checkExistingUser(User user) {
+    private UserDBO checkExistingUser(User user) {
         var userDBO = userRepository.findOneByEmail(user.getEmail());
         if (!Objects.isNull(userDBO)) {
             if (!(userIsInRegistrationPeriod(userDBO) && !userDBO.getEmailVerified())) {
                 throw new EmailAlreadyExistsException();
             }
         }
+        return Objects.isNull(userDBO) ? new UserDBO() : userDBO;
     }
 
     public UserResponse createUser(UserRequest userRequest) {
         var user = mappingService.userFromRequest(userRequest);
-        checkExistingUser(user);
-        user.setEmailToken(UUID.randomUUID().toString());
-        user.setCreationDate(LocalDateTime.now());
-        user.setEmailVerified(false);
-        userTransactions.tryToCreateUser(mappingService.userToDBO(user));
+        var userDBO = checkExistingUser(user);
+        mappingService.copyUserToDBO(user, userDBO);
+        userDBO.setEmailToken(UUID.randomUUID().toString());
+        userDBO.setCreationDate(LocalDateTime.now());
+        userDBO.setEmailVerified(false);
+        userTransactions.tryToCreateUser(userDBO);
         emailService.sendRegisterEmail(user);
         return mappingService.userToResponse(user);
     }
