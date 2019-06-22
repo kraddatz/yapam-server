@@ -66,7 +66,7 @@ public class UserService {
         userDBO.setCreationDate(LocalDateTime.now());
         userDBO.setEmailVerified(false);
         userTransactions.tryToCreateUser(userDBO);
-        emailService.sendRegisterEmail(user);
+        emailService.sendRegisterEmail(mappingService.userFromDBO(userDBO));
         return mappingService.userToResponse(user);
     }
 
