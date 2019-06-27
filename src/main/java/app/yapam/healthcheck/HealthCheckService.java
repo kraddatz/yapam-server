@@ -10,7 +10,9 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.CannotCreateTransactionException;
 
+import javax.persistence.EntityManager;
 import java.lang.management.ManagementFactory;
+import java.math.BigInteger;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -19,8 +21,8 @@ import java.util.*;
 class HealthCheckService {
 
     @Autowired private AppParameter appParameter;
-    @Autowired private SecretRepository secretRepository;
     @Autowired private BuildProperties buildProperties;
+    @Autowired private EntityManager entityManager;
 
     HealthCheckResult createHealthCheckResult() {
         HealthCheckResult result = new HealthCheckResult();
@@ -77,12 +79,10 @@ class HealthCheckService {
     private HealthCheck createDatabaseHealthCheck() {
         boolean successful = true;
         String error = null;
-        try {
-            secretRepository.findAll();
-        } catch (InvalidDataAccessResourceUsageException e1) {
-            successful = false;
-            error = "Invalid schema on database";
-        } catch (CannotCreateTransactionException e2) {
+
+
+        Integer pingDatabase = (Integer) entityManager.createNativeQuery("select 1").getSingleResult();
+        if (Objects.isNull(pingDatabase)) {
             successful = false;
             error = "Database not connected";
         }

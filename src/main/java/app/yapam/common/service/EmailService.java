@@ -1,6 +1,7 @@
 package app.yapam.common.service;
 
 import app.yapam.config.AppParameter;
+import app.yapam.config.YapamProperties;
 import app.yapam.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -11,11 +12,12 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     @Autowired private AppParameter appParameter;
+    @Autowired private YapamProperties yapamProperties;
     @Autowired private JavaMailSender javaMailSender;
 
     public void sendRegisterEmail(User user) {
         var message = new SimpleMailMessage();
-        message.setFrom("kevin@familie-raddatz.de");
+        message.setFrom(yapamProperties.getMail().getMessageSender());
         message.setTo(user.getEmail());
         message.setSubject("register");
         var registerUrl = appParameter.getHost() + "/users/" + user.getId() + "/email/verify?token=" + user.getEmailToken();
@@ -25,7 +27,7 @@ public class EmailService {
 
     public void sendEmailChangeEmail(User user, String email) {
         var message = new SimpleMailMessage();
-        message.setFrom("kevin@familie-raddatz.de");
+        message.setFrom(yapamProperties.getMail().getMessageSender());
         message.setTo(email);
         message.setSubject("verify your email");
         var emailChangeUrl = appParameter.getHost() + "/users/" + user.getId() + "/email/change?email=" + email + "&token=" + user.getEmailToken();

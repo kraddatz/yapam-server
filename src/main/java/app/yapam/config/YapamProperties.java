@@ -46,14 +46,12 @@ public class YapamProperties {
         private Charset defaultEncoding = StandardCharsets.UTF_8;
         private Map<String, String> properties = new HashMap<>();
         private String jndiName;
+        private String messageSender;
     }
 
     @Getter
     @Setter
     public static class Datasource {
-        private String username;
-        private String password;
         private String url;
-        private String name;
     }
 }

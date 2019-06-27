@@ -21,23 +21,25 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @GetMapping(value = "/api/currentuser/email/verify")
-    public void verifyEmail(@RequestParam(value = "token") String token) {
-        userService.verifyEmail(token);
+    @GetMapping(value = "/api/users/{userId}/email/verify")
+    public void verifyEmail(@PathVariable("userId") String userId,
+                            @RequestParam(value = "token") String token) {
+        userService.verifyEmail(userId, token);
     }
 
-    @GetMapping(value = "/api/currentuser/email/requestChange")
+    @GetMapping(value = "/api/users/currentuser/email/request-change")
     public void requestEmailChange(@RequestParam(value = "email") String email) {
         userService.requestEmailChange(email);
     }
 
-    @GetMapping(value = "/api/currentuser/email/change")
-    public void emailChange(@RequestParam(value = "token") String token,
+    @GetMapping(value = "/api/users/{userId}/email/change")
+    public void emailChange(@PathVariable("userId") String userId,
+                            @RequestParam(value = "token") String token,
                             @RequestParam(value = "email") String email) {
-        userService.emailChange(token, email);
+        userService.emailChange(userId, token, email);
     }
 
-    @PutMapping(value = "/api/currentuser/password/change", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "/api/users/currentuser/password/change", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
         userService.passwordChange(passwordChangeRequest);
     }
@@ -49,10 +51,10 @@ public class UserController {
 
     @GetMapping(value = "/api/users/{userId}")
     public SimpleUserResponse getUserById(@PathVariable("userId") String userId) {
-        return userService.getUserById(userId);
+        return userService.getSimpleUserById(userId);
     }
 
-    @GetMapping(value = "/api/currentuser")
+    @GetMapping(value = "/api/users/currentuser")
     public UserResponse getCurrentUser() {
         return userService.getCurrentUser();
     }

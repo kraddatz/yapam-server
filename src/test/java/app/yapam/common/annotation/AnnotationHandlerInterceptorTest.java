@@ -1,5 +1,6 @@
 package app.yapam.common.annotation;
 
+import app.yapam.YapamBaseTest;
 import app.yapam.common.annotation.verifiedemail.VerifiedEmailValidator;
 import app.yapam.secret.SecretController;
 import app.yapam.secret.model.request.SecretRequest;
@@ -23,36 +24,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(AnnotationHandlerInterceptor.class)
 @ActiveProfiles("test")
-class AnnotationHandlerInterceptorTest {
+class AnnotationHandlerInterceptorTest extends YapamBaseTest {
 
     @Autowired private AnnotationHandlerInterceptor annotationHandlerInterceptor;
     @MockBean private VerifiedEmailValidator verifiedEmailValidator;
-
-    private MockHttpServletRequest createDefaultHttpServletRequest() {
-        return new MockHttpServletRequest();
-    }
-
-    private MockHttpServletResponse createDefaultHttpServletResponse() {
-        return new MockHttpServletResponse();
-    }
-
-    private HandlerMethod createNoAnnotationHandlerMethod() throws NoSuchMethodException {
-        var method = UserController.class.getMethod("createUser", UserRequest.class);
-
-        return new HandlerMethod(new UserController(), method);
-    }
-
-    private HandlerMethod createVerifiedEmailHandlerMethod() throws NoSuchMethodException {
-        var method = SecretController.class.getMethod("createSecret", SecretRequest.class);
-
-        return new HandlerMethod(new SecretController(), method);
-    }
-
-    private HandlerMethod createUserExistsHandlerMethod() throws NoSuchMethodException {
-        var method = UserController.class.getMethod("verifyEmail", String.class);
-
-        return new HandlerMethod(new UserController(), method);
-    }
 
     @Test
     void preHandle_whenHandlerMethodIsNull_thenReturnTrue() {

@@ -1,5 +1,6 @@
 package app.yapam.user;
 
+import app.yapam.YapamBaseTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(UserController.class)
 @ActiveProfiles("test")
-class UserControllerTest {
+class UserControllerTest extends YapamBaseTest {
 
     @Autowired private MockMvc mvc;
     @MockBean private UserService userService;
@@ -24,7 +25,7 @@ class UserControllerTest {
     @Test
     void whenRegister_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                post("/api/users")
+                post(API_USERS_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content("{}")
         )
@@ -34,8 +35,8 @@ class UserControllerTest {
     @Test
     void whenEmailValidation_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api/currentuser/email/verify")
-                        .param("token", "token")
+                get(API_USERS_EMAIL_VERIFY_URL, DEFAULT_USER_ID)
+                        .param(API_HEADER_TOKEN, DEFAULT_USER_EMAIL_TOKEN)
         )
                 .andExpect(status().is2xxSuccessful());
     }
@@ -43,8 +44,8 @@ class UserControllerTest {
     @Test
     void whenEmailChangeRequest_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api/currentuser/email/requestChange")
-                        .param("email", "new@email.com")
+                get(API_USERS_CURRENT_USER_EMAIL_REQUEST_CHANGE)
+                        .param(API_HEADER_EMAIL, NEW_USER_EMAIL)
         )
                 .andExpect(status().is2xxSuccessful());
     }
@@ -52,9 +53,9 @@ class UserControllerTest {
     @Test
     void whenEmailChange_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api/currentuser/email/change")
-                        .param("token", "token")
-                        .param("email", "new@email.com")
+                get(API_USERS_EMAIL_CHANGE, DEFAULT_USER_ID)
+                        .param(API_HEADER_TOKEN, DEFAULT_USER_EMAIL_TOKEN)
+                        .param(API_HEADER_EMAIL, NEW_USER_EMAIL)
         )
                 .andExpect(status().is2xxSuccessful());
     }
@@ -62,7 +63,7 @@ class UserControllerTest {
     @Test
     void whenUpdatePassword_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                put("/api/currentuser/password/change")
+                put(API_USERS_CURRENT_USER_PASSWORD_CHANGE)
                 .content("{}")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
         )
@@ -73,7 +74,7 @@ class UserControllerTest {
     @Test
     void whenGetAllUsers_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api/users")
+                get(API_USERS_BASE_URL)
         )
                 .andExpect(status().is2xxSuccessful());
     }
@@ -81,7 +82,7 @@ class UserControllerTest {
     @Test
     void whenGetCurrentUser_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api/currentuser")
+                get(API_USERS_CURRENT_USER)
         )
                 .andExpect(status().is2xxSuccessful());
     }

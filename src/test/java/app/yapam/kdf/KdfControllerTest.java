@@ -1,5 +1,6 @@
 package app.yapam.kdf;
 
+import app.yapam.YapamBaseTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(KdfController.class)
 @ActiveProfiles("test")
-class KdfControllerTest {
+class KdfControllerTest extends YapamBaseTest {
 
     @Autowired private MockMvc mvc;
     @MockBean private KdfService kdfService;
@@ -23,7 +24,7 @@ class KdfControllerTest {
     @Test
     void whenGetKdfInfo_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api/kdf")
+                get(API_KDF_INFO_URL)
         )
                 .andExpect(status().is2xxSuccessful());
     }

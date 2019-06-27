@@ -1,5 +1,6 @@
 package app.yapam.healthcheck;
 
+import app.yapam.YapamBaseTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(HealthCheckController.class)
 @ActiveProfiles("test")
-class HealthCheckControllerTest {
+class HealthCheckControllerTest extends YapamBaseTest {
 
     @Autowired private MockMvc mvc;
     @MockBean private HealthCheckService healthCheckService;
@@ -24,7 +25,7 @@ class HealthCheckControllerTest {
     @Test
     void whenHealthCheckIsCalled_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api/health").accept(MediaType.APPLICATION_JSON)
+                get(API_STATUS_URL).accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk());
     }
@@ -32,7 +33,7 @@ class HealthCheckControllerTest {
     @Test
     void whenInfoIsCalled_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api/status")
+                get(API_HEALTH_URL)
         )
                 .andExpect(status().isOk());
     }

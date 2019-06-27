@@ -32,7 +32,8 @@ public class SecretController {
     @GetMapping(value = "/api/secrets/{secretId}")
     @ResponseBody
     @VerifiedEmail
-    public SecretResponse getSecretById(@PathVariable String secretId, @RequestParam("version") Integer version) {
+    public SecretResponse getSecretById(@PathVariable String secretId,
+                                        @RequestParam(value = "version", defaultValue = "0") Integer version) {
         return secretService.getSecretById(secretId, version);
     }
 

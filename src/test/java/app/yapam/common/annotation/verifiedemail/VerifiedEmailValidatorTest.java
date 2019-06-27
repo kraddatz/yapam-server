@@ -1,9 +1,9 @@
 package app.yapam.common.annotation.verifiedemail;
 
+import app.yapam.YapamBaseTest;
 import app.yapam.common.error.EmailNotVerifiedException;
 import app.yapam.common.service.RequestHelperService;
 import app.yapam.common.error.UserNotFoundException;
-import app.yapam.user.repository.UserDBO;
 import app.yapam.user.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,23 +21,17 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(VerifiedEmailValidator.class)
 @ActiveProfiles("test")
-class VerifiedEmailValidatorTest {
+class VerifiedEmailValidatorTest extends YapamBaseTest {
 
     @Autowired private VerifiedEmailValidator verifiedEmailValidator;
     @MockBean private RequestHelperService requestHelperService;
     @MockBean private UserRepository userRepository;
 
-    private UserDBO createDefaultUser() {
-        var user = new UserDBO();
-        user.setEmailVerified(true);
-        return user;
-    }
-
     @Test
     void validate_whenUserExists_thenReturnTrue() {
-        var user = createDefaultUser();
-        when(requestHelperService.getUserName()).thenReturn("userSecrets@email.com");
-        when(userRepository.findOneByEmail("userSecrets@email.com")).thenReturn(user);
+        var user = createDefaultUserDBO();
+        when(requestHelperService.getUserName()).thenReturn("user@email.com");
+        when(userRepository.findOneByEmail("user@email.com")).thenReturn(user);
 
         var result = verifiedEmailValidator.validate();
 
@@ -54,7 +48,7 @@ class VerifiedEmailValidatorTest {
 
     @Test
     void validate_whenUserEmailNotVerified_thenThrowException() {
-        var user = createDefaultUser();
+        var user = createDefaultUserDBO();
         user.setEmailVerified(false);
         when(requestHelperService.getUserName()).thenReturn("invaliduser@email.com");
         when(userRepository.findOneByEmail("invaliduser@email.com")).thenReturn(user);

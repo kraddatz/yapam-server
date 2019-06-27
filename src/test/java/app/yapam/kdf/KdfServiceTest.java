@@ -1,5 +1,6 @@
 package app.yapam.kdf;
 
+import app.yapam.YapamBaseTest;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
 import app.yapam.config.YapamProperties;
@@ -16,12 +17,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(KdfService.class)
 @ActiveProfiles("test")
-class KdfServiceTest {
+class KdfServiceTest extends YapamBaseTest {
 
     @Autowired private KdfService kdfService;
     @MockBean private RequestHelperService requestHelperService;
@@ -29,34 +31,17 @@ class KdfServiceTest {
     @MockBean private MappingService mappingService;
     @MockBean private UserRepository userRepository;
 
-    private YapamProperties.Security createDefaultYapamSecurityProperties() {
-        var security = new YapamProperties.Security();
-        security.setBcryptIterations(10);
-        return security;
-    }
-
-    private UserDBO createDefaultUserDBO() {
-        var userDBO = new UserDBO();
-        userDBO.setMasterPasswordHash("$2a$10$2t0Y7BXreyVzBrvPiyqcDOR/dwUyTMpxAhVJBVEy0YUBUXbNWC/Tq");
-        return userDBO;
-    }
-
-    private User createDefaultUser() {
-        var user = new User();
-        user.setMasterPasswordHash("$2a$10$2t0Y7BXreyVzBrvPiyqcDOR/dwUyTMpxAhVJBVEy0YUBUXbNWC/Tq");
-        return user;
-    }
-
     @Test
     void whenKdfIterationsOutdated() {
         var yapamSecurityProperties = createDefaultYapamSecurityProperties();
         yapamSecurityProperties.setBcryptIterations(11);
         when(yapamProperties.getSecurity()).thenReturn(yapamSecurityProperties);
-        when(requestHelperService.getUserName()).thenReturn("user@email.com");
-        when(userRepository.findOneByEmail("user@email.com")).thenReturn(createDefaultUserDBO());
+        when(requestHelperService.getUserName()).thenReturn(DEFAULT_USER_EMAIL);
+        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(createDefaultUserDBO());
         when(mappingService.userFromDBO(any(UserDBO.class))).thenReturn(createDefaultUser());
 
         var result = kdfService.getKdfInfo();
+
         assertFalse(result.getSecure());
         assertEquals(Integer.valueOf(11), result.getIterations());
     }
@@ -65,11 +50,12 @@ class KdfServiceTest {
     void whenKdfIterationsNotOutdated() {
         var yapamSecurityProperties = createDefaultYapamSecurityProperties();
         when(yapamProperties.getSecurity()).thenReturn(yapamSecurityProperties);
-        when(requestHelperService.getUserName()).thenReturn("user@email.com");
-        when(userRepository.findOneByEmail("user@email.com")).thenReturn(createDefaultUserDBO());
+        when(requestHelperService.getUserName()).thenReturn(DEFAULT_USER_EMAIL);
+        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(createDefaultUserDBO());
         when(mappingService.userFromDBO(any(UserDBO.class))).thenReturn(createDefaultUser());
 
         var result = kdfService.getKdfInfo();
+
         assertTrue(result.getSecure());
         assertEquals(Integer.valueOf(10), result.getIterations());
     }

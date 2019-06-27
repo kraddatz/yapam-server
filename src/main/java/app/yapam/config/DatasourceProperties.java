@@ -14,9 +14,7 @@ public class DatasourceProperties {
     @Primary
     public DataSource dataSource(YapamProperties yapamProperties) {
         return DataSourceBuilder.create()
-                .password(yapamProperties.getDatasource().getPassword())
                 .url(yapamProperties.getDatasource().getUrl())
-                .username(yapamProperties.getDatasource().getUsername())
                 .build();
     }
 }

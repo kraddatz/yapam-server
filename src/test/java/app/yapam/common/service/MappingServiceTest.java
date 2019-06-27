@@ -1,11 +1,6 @@
 package app.yapam.common.service;
 
-import app.yapam.secret.model.Secret;
-import app.yapam.secret.model.request.SecretRequest;
-import app.yapam.secret.repository.SecretDBO;
-import app.yapam.user.model.User;
-import app.yapam.user.model.request.UserRequest;
-import app.yapam.user.model.response.UserResponse;
+import app.yapam.YapamBaseTest;
 import app.yapam.user.repository.UserDBO;
 import app.yapam.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -17,126 +12,143 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(MappingService.class)
 @ActiveProfiles("test")
-class MappingServiceTest {
+class MappingServiceTest extends YapamBaseTest {
 
     @Autowired private MappingService mappingService;
     @MockBean private UserRepository userRepository;
 
-    private Secret createDefaultSecret() {
-        var secret = new Secret();
-        secret.setData("data");
-        return secret;
-    }
-
-    private SecretDBO createDefaultSecretDBO() {
-        var secretDBO = new SecretDBO();
-        secretDBO.setData("Data");
-        return secretDBO;
-    }
-
-    private SecretRequest createDefaultSecretRequest() {
-        var secretRequest = new SecretRequest();
-        secretRequest.setData("data");
-        return secretRequest;
-    }
-
-    private UserDBO createDefaultUserDBO() {
-        var userDBO = new UserDBO();
-        userDBO.setName("username");
-        return userDBO;
-    }
-
-    private User createDefaultUser() {
-        var user = new User();
-        user.setName("username");
-        return user;
-    }
-
-    private UserRequest createDefaultUserRequest() {
-        var userRequest = new UserRequest();
-        userRequest.setName("username");
-        return userRequest;
-    }
-
-    private UserResponse createDefaultUserResponse() {
-        var userResponse = new UserResponse();
-        userResponse.setEmail("username");
-        return userResponse;
-    }
-
     @Test
     void secretFromDBO_whenSecretDBOHasNoUser() {
         var secretDBO = createDefaultSecretDBO();
+        secretDBO.setUser(null);
 
         var result = mappingService.secretFromDBO(secretDBO);
-        assertEquals("Data", result.getData());
+
+        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
+        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
+        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data faileed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
+        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
     }
 
     @Test
     void secretFromDBO_whenSecretDBOHasUser() {
         var secretDBO = createDefaultSecretDBO();
-        secretDBO.setUser(createDefaultUserDBO());
 
         var result = mappingService.secretFromDBO(secretDBO);
-        assertEquals("username", result.getUser().getName());
+
+        assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "user failed");
+        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
+        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
+        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
     }
 
     @Test
     void secretToDBO_whenSecretHasNoUser() {
         var secret = createDefaultSecret();
+        secret.setUser(null);
 
         var result = mappingService.secretToDBO(secret);
-        assertEquals("data", result.getData());
+
+        assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
+        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
+        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
+        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertNull(result.getId(), "id failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
     }
 
     @Test
     void secretToDBO_whenSecretHasUser() {
         var secret = createDefaultSecret();
-        secret.setUser(createDefaultUser());
 
         var result = mappingService.secretToDBO(secret);
-        assertEquals("username", result.getUser().getName());
+
+        assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "username failed");
+        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
+        assertNull(result.getId(), "id failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
+        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
     }
 
     @Test
     void secretFromRequest_whenSecretRequestHasNoUserId() {
         var secretRequest = createDefaultSecretRequest();
+        secretRequest.setUserId(null);
 
         var result = mappingService.secretFromRequest(secretRequest);
-        assertEquals("data", result.getData());
+
+        assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
+        assertNull(result.getVersion(), "version failed");
+        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
+        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
+        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
+        assertNull(result.getSecretId(), "secretid failed");
+        assertNull(result.getCreationDate(), "creationdate failed");
     }
 
     @Test
     void secretFromRequest_whenSecretRequestHasUserId() {
         var secretRequest = createDefaultSecretRequest();
         var userDBO = createDefaultUserDBO();
-        secretRequest.setUserId("userId");
-        when(userRepository.findOneById("userId")).thenReturn(userDBO);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDBO);
 
         var result = mappingService.secretFromRequest(secretRequest);
-        assertEquals("username", result.getUser().getName());
+
+        assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "user failed");
+        assertNull(result.getCreationDate(), "creationdate failed");
+        assertNull(result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
+        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
+        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
+        assertNull(result.getVersion());
     }
 
     @Test
     void secretToResponse_whenSecretHasNoUser() {
         var secret = createDefaultSecret();
+        secret.setUser(null);
 
         var result = mappingService.secretToResponse(secret);
-        assertEquals("data", result.getData());
+
+        assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
+        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
+        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
     }
 
     @Test
     void secretToResponse_whenSecretHasUser() {
         var secret = createDefaultSecret();
-        secret.setUser(createDefaultUser());
 
         var result = mappingService.secretToResponse(secret);
-        assertEquals("username", result.getUser().getName());
+
+        assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "name failed");
+        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
+        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
     }
 
     @Test
@@ -144,6 +156,7 @@ class MappingServiceTest {
         var secretDBO = createDefaultSecretDBO();
 
         var result = mappingService.secretDBOToResponse(secretDBO);
+
         assertNotNull(result);
     }
 
@@ -152,7 +165,17 @@ class MappingServiceTest {
         var userDBO = createDefaultUserDBO();
 
         var result = mappingService.userFromDBO(userDBO);
-        assertEquals("username", result.getName());
+
+        assertEquals(DEFAULT_USER_NAME, result.getName(), "name failed");
+        assertEquals(DEFAULT_USER_CULTURE, result.getCulture(), "culture failed");
+        assertEquals(DEFAULT_USER_EMAIL, result.getEmail(), "email failed");
+        assertEquals(DEFAULT_USER_EMAIL_TOKEN, result.getEmailToken(), "token failed");
+        assertEquals(DEFAULT_USER_ID, result.getId(), "id failed");
+        assertEquals(DEFAULT_USER_PASSWORD_HASH, result.getMasterPasswordHash(), "hash failed");
+        assertEquals(DEFAULT_USER_PASSWORD_HINT, result.getMasterPasswordHint(), "hint failed");
+        assertEquals(DEFAULT_USER_PUBLIC_KEY, result.getPublicKey(), "publickey failed");
+        assertEquals(DEFAULT_USER_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAULT_USER_EMAIL_VERIFIED, result.getEmailVerified(), "verified failed");
     }
 
     @Test
@@ -160,7 +183,17 @@ class MappingServiceTest {
         var userRequest = createDefaultUserRequest();
 
         var result = mappingService.userFromRequest(userRequest);
-        assertEquals("username", result.getName());
+
+        assertEquals(DEFAULT_USER_NAME, result.getName(), "name failed");
+        assertEquals(DEFAULT_USER_CULTURE, result.getCulture(), "culture failed");
+        assertEquals(DEFAULT_USER_EMAIL, result.getEmail(), "email failed");
+        assertNull(result.getEmailToken(), "token failed");
+        assertNull(result.getId(), "id failed");
+        assertEquals(DEFAULT_USER_PASSWORD_HASH, result.getMasterPasswordHash(), "hash failed");
+        assertEquals(DEFAULT_USER_PASSWORD_HINT, result.getMasterPasswordHint(), "hint failed");
+        assertEquals(DEFAULT_USER_PUBLIC_KEY, result.getPublicKey(), "publickey failed");
+        assertNull(result.getCreationDate(), "creationdate failed");
+        assertNull(result.getEmailVerified(), "verified failed");
     }
 
     @Test
@@ -168,7 +201,17 @@ class MappingServiceTest {
         var user = createDefaultUser();
 
         var result = mappingService.userToDBO(user);
-        assertEquals("username", result.getName());
+
+        assertEquals(DEFAULT_USER_NAME, result.getName(), "name failed");
+        assertEquals(DEFAULT_USER_CULTURE, result.getCulture(), "culture failed");
+        assertEquals(DEFAULT_USER_EMAIL, result.getEmail(), "email failed");
+        assertEquals(DEFAULT_USER_EMAIL_TOKEN, result.getEmailToken(), "token failed");
+        assertEquals(DEFAULT_USER_ID, result.getId(), "id failed");
+        assertEquals(DEFAULT_USER_PASSWORD_HASH, result.getMasterPasswordHash(), "hash failed");
+        assertEquals(DEFAULT_USER_PASSWORD_HINT, result.getMasterPasswordHint(), "hint failed");
+        assertEquals(DEFAULT_USER_PUBLIC_KEY, result.getPublicKey(), "publickey failed");
+        assertEquals(DEFAULT_USER_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAULT_USER_EMAIL_VERIFIED, result.getEmailVerified(), "verified failed");
     }
 
     @Test
@@ -176,7 +219,14 @@ class MappingServiceTest {
         var user = createDefaultUser();
 
         var result = mappingService.userToResponse(user);
-        assertEquals("username", result.getName());
+
+        assertEquals(DEFAULT_USER_NAME, result.getName());
+        assertEquals(DEFAULT_USER_CULTURE, result.getCulture());
+        assertEquals(DEFAULT_USER_EMAIL, result.getEmail());
+        assertEquals(DEFAULT_USER_ID, result.getId());
+        assertEquals(DEFAULT_USER_PUBLIC_KEY, result.getPublicKey());
+        assertEquals(DEFAULT_USER_CREATION_DATE, result.getCreationDate());
+        assertEquals(DEFAULT_USER_EMAIL_VERIFIED, result.getEmailVerified());
     }
 
     @Test
@@ -184,6 +234,7 @@ class MappingServiceTest {
         var userDBO = createDefaultUserDBO();
 
         var result = mappingService.userDBOToSimpleResponse(userDBO);
+
         assertNotNull(result);
     }
 
@@ -192,6 +243,41 @@ class MappingServiceTest {
         var userDBO = createDefaultUserDBO();
 
         var result = mappingService.userDBOToResponse(userDBO);
+
         assertNotNull(result);
+    }
+
+    @Test
+    void copyUserRequestToDBO() {
+        var userRequest = createDefaultUserRequest();
+        userRequest.setName("newName");
+        userRequest.setEmail("newemail@email.com");
+        userRequest.setPublicKey("newPublicKey");
+        userRequest.setMasterPasswordHint("passwordisnewpassword");
+        userRequest.setMasterPasswordHash("$2a$10$N2ksTrW68GDLA2PEdRuJm.zUHCWi9Mi2H6fYbXBjhk3AAa.29x1Sq");
+        userRequest.setCulture("en-EN");
+        var userDBO = createDefaultUserDBO();
+
+        userDBO = mappingService.copyUserRequestToDBO(userRequest, userDBO);
+
+        assertEquals("newName", userDBO.getName());
+        assertEquals("newemail@email.com", userDBO.getEmail());
+        assertEquals("newPublicKey", userDBO.getPublicKey());
+        assertEquals("passwordisnewpassword", userDBO.getMasterPasswordHint());
+        assertEquals("$2a$10$N2ksTrW68GDLA2PEdRuJm.zUHCWi9Mi2H6fYbXBjhk3AAa.29x1Sq", userDBO.getMasterPasswordHash());
+    }
+
+    @Test
+    void copyUserToNullDBO() {
+        var userRequest = createDefaultUserRequest();
+        var userDBO = new UserDBO();
+
+        userDBO = mappingService.copyUserRequestToDBO(userRequest, userDBO);
+
+        assertEquals(DEFAULT_USER_NAME, userDBO.getName());
+        assertEquals(DEFAULT_USER_EMAIL, userDBO.getEmail());
+        assertEquals(DEFAULT_USER_PUBLIC_KEY, userDBO.getPublicKey());
+        assertEquals(DEFAULT_USER_PASSWORD_HINT, userDBO.getMasterPasswordHint());
+        assertEquals(DEFAULT_USER_PASSWORD_HASH, userDBO.getMasterPasswordHash());
     }
 }

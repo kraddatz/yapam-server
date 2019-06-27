@@ -13,7 +13,6 @@ import app.yapam.user.model.response.UserResponse;
 import app.yapam.user.repository.UserDBO;
 import app.yapam.user.repository.UserRepository;
 import app.yapam.user.repository.UserTransactions;
-import app.yapam.user.model.User;
 import app.yapam.user.model.request.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class UserService {
         return mappingService.userDBOToResponse(user);
     }
 
-    public SimpleUserResponse getUserById(String userId) {
+    public SimpleUserResponse getSimpleUserById(String userId) {
         return mappingService.userDBOToSimpleResponse(userRepository.findOneById(userId));
     }
 
@@ -48,8 +47,8 @@ public class UserService {
     }
 
     @java.lang.SuppressWarnings("squid:S1066")
-    private UserDBO checkExistingUser(User user) {
-        var userDBO = userRepository.findOneByEmail(user.getEmail());
+    private UserDBO checkExistingUser(String email) {
+        var userDBO = userRepository.findOneByEmail(email);
         if (!Objects.isNull(userDBO)) {
             if (!(userIsInRegistrationPeriod(userDBO) && !userDBO.getEmailVerified())) {
                 throw new EmailAlreadyExistsException();
@@ -59,19 +58,19 @@ public class UserService {
     }
 
     public UserResponse createUser(UserRequest userRequest) {
-        var user = mappingService.userFromRequest(userRequest);
-        var userDBO = checkExistingUser(user);
-        mappingService.copyUserToDBO(user, userDBO);
+        var userDBO = checkExistingUser(userRequest.getEmail());
+        userDBO = mappingService.copyUserRequestToDBO(userRequest, userDBO);
         userDBO.setEmailToken(UUID.randomUUID().toString());
         userDBO.setCreationDate(LocalDateTime.now());
         userDBO.setEmailVerified(false);
         userTransactions.tryToCreateUser(userDBO);
-        emailService.sendRegisterEmail(mappingService.userFromDBO(userDBO));
+        var user = mappingService.userFromDBO(userDBO);
+        emailService.sendRegisterEmail(user);
         return mappingService.userToResponse(user);
     }
 
-    public void verifyEmail(String token) {
-        var user = userRepository.findOneByEmail(requestHelperService.getUserName());
+    public void verifyEmail(String userId, String token) {
+        var user = userRepository.findOneById(userId);
         if (user.getCreationDate().plus(yapamProperties.getRegistrationTimeout()).isBefore(LocalDateTime.now())) {
             throw new EmailVerificationTokenExpiredException();
         }
@@ -90,8 +89,8 @@ public class UserService {
         emailService.sendEmailChangeEmail(mappingService.userFromDBO(userDBO), email);
     }
 
-    public void emailChange(String token, String email) {
-        var userDBO = userRepository.findOneByEmail(requestHelperService.getUserName());
+    public void emailChange(String userId, String token, String email) {
+        var userDBO = userRepository.findOneById(userId);
         if (userDBO.getEmailToken().equals(token)) {
             userDBO.setEmail(email);
             userRepository.save(userDBO);

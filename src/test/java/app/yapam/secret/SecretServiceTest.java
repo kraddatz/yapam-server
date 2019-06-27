@@ -1,5 +1,6 @@
 package app.yapam.secret;
 
+import app.yapam.YapamBaseTest;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
 import app.yapam.secret.model.Secret;
@@ -31,7 +32,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(SecretService.class)
 @ActiveProfiles("test")
-class SecretServiceTest {
+class SecretServiceTest extends YapamBaseTest {
 
     @Autowired private SecretService secretService;
     @MockBean private UserRepository userRepository;
@@ -40,37 +41,14 @@ class SecretServiceTest {
     @MockBean private MappingService mappingService;
     @MockBean private SecretRepository secretRepository;
 
-    private UserDBO createDefaultUserDBO() {
-        var userDBO = new UserDBO();
-        userDBO.setSecrets(new HashSet<>(Collections.singletonList(createDefaultSecretDBO())));
-        userDBO.setId("userId");
-        return userDBO;
-    }
-
-    private SecretRequest createDefaultSecretRequest() {
-        return new SecretRequest();
-    }
-
-    private SecretDBO createDefaultSecretDBO() {
-        return new SecretDBO();
-    }
-
-    private SecretResponse createDefaultSecretResponse() {
-        return new SecretResponse();
-    }
-
-    private Secret createDefaultSecret() {
-        return new Secret();
-    }
-
     @Test
     void createSecret_whenUserForSecretExists_thenCreateSecret() {
         var user = createDefaultUserDBO();
         var secretRequest = createDefaultSecretRequest();
         var secret = createDefaultSecret();
         var secretDBO = createDefaultSecretDBO();
-        when(requestHelperService.getUserName()).thenReturn("user@email.com");
-        when(userRepository.findOneByEmail("user@email.com")).thenReturn(user);
+        when(requestHelperService.getUserName()).thenReturn(DEFAULT_USER_EMAIL);
+        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(user);
         when(mappingService.secretFromRequest(secretRequest)).thenReturn(secret);
         when(mappingService.secretToDBO(secret)).thenReturn(secretDBO);
 
@@ -89,7 +67,7 @@ class SecretServiceTest {
         when(secretRepository.findCurrentVersion(anyString())).thenReturn(0);
         when(mappingService.secretToDBO(any(Secret.class))).thenReturn(secretDBO);
 
-        secretService.updateSecret("secretId", secretRequest);
+        secretService.updateSecret(DEFAUlT_SECRET_SECRETID, secretRequest);
 
         ArgumentCaptor<SecretDBO> captor = ArgumentCaptor.forClass(SecretDBO.class);
         verify(secretTransactions).saveSecret(captor.capture());
@@ -104,10 +82,10 @@ class SecretServiceTest {
         var secretResponse = createDefaultSecretResponse();
         var secrets = new HashSet<SecretDBO>();
         secrets.add(createDefaultSecretDBO());
-        when(secretRepository.findAllByCurrentByUser(anyString())).thenReturn(secrets);
-        when(userRepository.findOneByEmail(anyString())).thenReturn(userDBO);
+        when(secretRepository.findAllByCurrentByUser(DEFAULT_USER_ID)).thenReturn(secrets);
+        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDBO);
         when(mappingService.secretDBOToResponse(any(SecretDBO.class))).thenReturn(secretResponse);
-        when(requestHelperService.getUserName()).thenReturn("user@email.com");
+        when(requestHelperService.getUserName()).thenReturn(DEFAULT_USER_EMAIL);
 
         var result = secretService.getAllSecrets();
         assertEquals(1, result.size());

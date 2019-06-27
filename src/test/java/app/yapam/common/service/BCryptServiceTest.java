@@ -1,5 +1,6 @@
 package app.yapam.common.service;
 
+import app.yapam.YapamBaseTest;
 import app.yapam.user.repository.UserDBO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,25 +14,25 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(BCryptService.class)
 @ActiveProfiles("test")
-class BCryptServiceTest {
+class BCryptServiceTest extends YapamBaseTest {
 
     @Autowired private BCryptService bcryptService;
 
     @Test
     void equals_whenPasswordIsValid_thenReturnTrue() {
-        var user = new UserDBO();
-        user.setMasterPasswordHash("$2a$10$2t0Y7BXreyVzBrvPiyqcDOR/dwUyTMpxAhVJBVEy0YUBUXbNWC/Tq");
+        var user = createDefaultUserDBO();
 
         var result = bcryptService.checkHash("password", user);
+
         assertTrue(result);
     }
 
     @Test
     void equals_whenPasswordIsInvalid_thenReturnFalse() {
-        var user = new UserDBO();
-        user.setMasterPasswordHash("$2a$10$2t0Y7BXreyVzBrvPiyqcDOR/dwUyTMpxAhVJBVEy0YUBUXbNWC/Tq");
+        var user = createDefaultUserDBO();
 
         var result = bcryptService.checkHash("wrong_password", user);
+
         assertFalse(result);
     }
 }

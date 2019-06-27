@@ -1,5 +1,6 @@
 package app.yapam.secret;
 
+import app.yapam.YapamBaseTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(SecretController.class)
 @ActiveProfiles("test")
-class SecretControllerTest {
+class SecretControllerTest extends YapamBaseTest {
 
     @Autowired private MockMvc mvc;
     @MockBean private SecretService secretService;
@@ -24,7 +25,7 @@ class SecretControllerTest {
     @Test
     void whenCreateSecret_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                post("/api//secrets")
+                post(API_SECRETS_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content("{}")
         )
@@ -34,7 +35,7 @@ class SecretControllerTest {
     @Test
     void whenUpdateSecret_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                put("/api/secrets/{secretId}", "secretId")
+                put(API_SINGLE_SECRET_URL, "secretId")
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content("{}")
         )
@@ -44,7 +45,7 @@ class SecretControllerTest {
     @Test
     void whenGetAllSecrets_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api/secrets")
+                get(API_SECRETS_BASE_URL)
         )
                 .andExpect(status().is2xxSuccessful());
     }
@@ -52,7 +53,7 @@ class SecretControllerTest {
     @Test
     void whenGetSecretById_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                get("/api/secrets/{secretId}", "secretId")
+                get(API_SINGLE_SECRET_URL, "secretId")
         )
                 .andExpect(status().is2xxSuccessful());
     }
@@ -60,7 +61,7 @@ class SecretControllerTest {
     @Test
     void whenDeleteSecret_thenReturnSuccessful() throws Exception {
         mvc.perform(
-                delete("/api/secrets/{secretId}", "secretId")
+                delete(API_SINGLE_SECRET_URL, "secretId")
         )
                 .andExpect(status().is2xxSuccessful());
     }

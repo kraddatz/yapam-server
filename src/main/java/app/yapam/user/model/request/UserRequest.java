@@ -14,6 +14,8 @@ public class UserRequest {
     private String name;
     @ApiModelProperty(value = "Email of the user", example = "max.mustermann@email.com")
     private String email;
+    @ApiModelProperty(value = "Culture of the user", example = "de-DE")
+    private String culture;
     @ApiModelProperty(value = "Hash of the password of the user", example = "$2a$10$2t0Y7BXreyVzBrvPiyqcDOR/dwUyTMpxAhVJBVEy0YUBUXbNWC/Tq")
     private String masterPasswordHash;
     @ApiModelProperty(value = "Password hint", example = "password is password")

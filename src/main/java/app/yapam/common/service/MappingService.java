@@ -83,8 +83,9 @@ public class MappingService {
         return userDBO;
     }
 
-    public void copyUserToDBO(User from, UserDBO to) {
+    public UserDBO copyUserRequestToDBO(UserRequest from, UserDBO to) {
         BeanUtils.copyProperties(from, to, "id", "emailVerified", "emailToken", "creationDate");
+        return to;
     }
 
     public UserResponse userToResponse(User user) {

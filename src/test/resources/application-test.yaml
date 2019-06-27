@@ -20,6 +20,6 @@ app:
     - http
     - https
 
-
-jwarden:
-  registration-timeout: P1D
+yapam:
+  mail:
+    message-sender: yapam@yourdomain.com
