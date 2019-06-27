@@ -15,6 +15,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "yapam")
 public class YapamProperties {
 
+    private String host;
     private Duration registrationTimeout;
     private Security security;
     private Mail mail;

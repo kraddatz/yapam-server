@@ -26,6 +26,7 @@ public class YapamBaseTest {
 
     protected final String EMAIL_GENERIC_EMAIL_VERIFY_URL = DEFAULT_HOST_BASE_URL + "/users/%s/email/verify?token=%s";
     protected final String EMAIL_GENERIC_EMAIL_CHANGE_URL = DEFAULT_HOST_BASE_URL + "/users/%s/email/change?email=%s&token=%s";
+    protected final String EMAIL_MESSAGE_SENDER = "yapam@yourdomain.com";
 
     protected final String API_STATUS_URL = "/api/status";
     protected final String API_HEALTH_URL = "/api/health";

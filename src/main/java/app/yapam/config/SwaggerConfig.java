@@ -23,14 +23,14 @@ public class SwaggerConfig implements WebMvcConfigurer {
 
 
     @Bean
-    public Docket apiDocket(AppParameter appParameter) {
+    public Docket apiDocket(YapamProperties yapamProperties, AppParameter appParameter) {
         return new Docket(DocumentationType.SWAGGER_2)
                 .protocols(appParameter.getSwaggerSchemes())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("app.yapam"))
                 .paths(PathSelectors.any())
                 .build()
-                .host(appParameter.getHost())
+                .host(yapamProperties.getHost())
                 .securitySchemes(securitySchemes())
                 .securityContexts(securityContexts())
                 .apiInfo(apiInfo());

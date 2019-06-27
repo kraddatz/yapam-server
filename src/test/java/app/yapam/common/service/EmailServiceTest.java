@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -28,14 +29,15 @@ import static org.mockito.Mockito.when;
 class EmailServiceTest extends YapamBaseTest {
 
     @Autowired private EmailService emailService;
-    @Autowired private YapamProperties yapamProperties;
-    @MockBean private AppParameter appParameter;
+    @MockBean private YapamProperties yapamProperties;
     @MockBean private JavaMailSender javaMailSender;
 
     @Test
     void sendRegisterEmail() {
         var user = createDefaultUser();
-        when(appParameter.getHost()).thenReturn(DEFAULT_HOST_BASE_URL);
+        when(yapamProperties.getHost()).thenReturn(DEFAULT_HOST_BASE_URL);
+        when(yapamProperties.getMail()).thenReturn(mock(YapamProperties.Mail.class));
+        when(yapamProperties.getMail().getMessageSender()).thenReturn(EMAIL_MESSAGE_SENDER);
 
         emailService.sendRegisterEmail(user);
 
@@ -56,8 +58,10 @@ class EmailServiceTest extends YapamBaseTest {
     @Test
     void sendEmailChangeRequest() {
         var user = createDefaultUser();
-        var newEmail = "newemail@email.com";
-        when(appParameter.getHost()).thenReturn(DEFAULT_HOST_BASE_URL);
+        var newEmail = NEW_USER_EMAIL;
+        when(yapamProperties.getHost()).thenReturn(DEFAULT_HOST_BASE_URL);
+        when(yapamProperties.getMail()).thenReturn(mock(YapamProperties.Mail.class));
+        when(yapamProperties.getMail().getMessageSender()).thenReturn(EMAIL_MESSAGE_SENDER);
 
         emailService.sendEmailChangeEmail(user, newEmail);
 
