@@ -37,6 +37,7 @@ public class YapamBaseTest {
     protected final String API_SECRETS_BASE_URL = "/api/secrets";
     protected final String API_SINGLE_SECRET_URL = API_SECRETS_BASE_URL + "/{secretId}";
     protected final String API_USERS_BASE_URL = "/api/users";
+    protected final String API_USERS_USER_BY_ID = API_USERS_BASE_URL + "/{userId}";
     protected final String API_USERS_EMAIL_VERIFY_URL = API_USERS_BASE_URL + "/{userId}/email/verify";
     protected final String API_USERS_EMAIL_CHANGE = API_USERS_BASE_URL + "/{userId}/email/change";
     protected final String API_USERS_CURRENT_USER = API_USERS_BASE_URL + "/currentuser";

@@ -23,6 +23,14 @@ class UserControllerTest extends YapamBaseTest {
     @MockBean private UserService userService;
 
     @Test
+    void whenGetUserById_thenReturnSuccessful() throws Exception {
+        mvc.perform(
+                get(API_USERS_USER_BY_ID, DEFAULT_USER_ID)
+        )
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
     void whenRegister_thenReturnSuccessful() throws Exception {
         mvc.perform(
                 post(API_USERS_BASE_URL)

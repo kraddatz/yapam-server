@@ -47,6 +47,18 @@ class UserServiceTest extends YapamBaseTest {
     @MockBean private MappingService mappingService;
 
     @Test
+    void simpleUserById() {
+        var userDBO = createDefaultUserDBO();
+        var simpleUserResponse = createDefaultSimpleUserResponse();
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDBO);
+        when(mappingService.userDBOToSimpleResponse(userDBO)).thenReturn(simpleUserResponse);
+
+        var result = userService.getSimpleUserById(DEFAULT_USER_ID);
+
+        assertNotNull(result);
+    }
+
+    @Test
     void register_whenUserNotExists_thenRegisterUser() {
         var registerUser = createDefaultUserRequest();
         var userDBO = createDefaultUserDBO();
