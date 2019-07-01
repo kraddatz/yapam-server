@@ -55,8 +55,8 @@ public class SecretService {
 
     private Secret updateSecret(String secretId, Secret secret) {
         secret.setSecretId(secretId);
-        var latestSecretVersion = secretRepository.findCurrentVersion(secretId);
-        secret.setVersion(latestSecretVersion + 1);
+        var latestSecretVersion = secretRepository.findFirstDistinctVersionBySecretIdOrderByVersionDesc(secretId);
+        secret.setVersion(latestSecretVersion.getVersion() + 1);
         secret.setCreationDate(LocalDateTime.now());
         secretTransactions.saveSecret(mappingService.secretToDBO(secret));
         return secret;
@@ -69,7 +69,7 @@ public class SecretService {
 
     public Set<SecretResponse> getAllSecrets() {
         var user = userRepository.findOneByEmail(requestHelperService.getUserName());
-        var secrets = secretRepository.findAllByCurrentByUser(user.getId());
+        var secrets = secretRepository.highestSecretsForUser(user.getId());
 
         return secrets.stream().map(secret -> mappingService.secretDBOToResponse(secret)).collect(Collectors.toSet());
     }

@@ -4,7 +4,6 @@ import app.yapam.YapamBaseTest;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
 import app.yapam.config.YapamProperties;
-import app.yapam.user.model.User;
 import app.yapam.user.repository.UserDBO;
 import app.yapam.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)

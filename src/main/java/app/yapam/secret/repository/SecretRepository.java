@@ -11,13 +11,12 @@ import java.util.Set;
 @Repository
 public interface SecretRepository extends JpaRepository<SecretDBO, String> {
 
+    SecretVersionProjection findFirstDistinctVersionBySecretIdOrderByVersionDesc(String secretId);
+
     SecretDBO findFirstBySecretIdOrderByVersionDesc(String secretId);
 
-    @Query(value = "select s1.* from secret s1 left outer join secret s2 on s1.secret_id = s2.secret_id and s1.version < s2.version where s2.version is null and s1.user_id=:userId", nativeQuery = true)
-    Set<SecretDBO> findAllByCurrentByUser(@Param("userId") String userId);
-
-    @Query(value = "select s.version from secret s where s.secret_id = :secretId order by s.version desc limit 1", nativeQuery = true)
-    Integer findCurrentVersion(@Param("secretId") String secretId);
+    @Query(value = "select s1 from SecretDBO s1 left outer join SecretDBO s2 on s1.secretId = s2.secretId and s1.version < s2.version where s2.version is null and s1.user.id=:userId")
+    Set<SecretDBO> highestSecretsForUser(@Param("userId") String userId);
 
     SecretDBO findFirstBySecretIdAndVersion(String secretId, Integer version);
 
