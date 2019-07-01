@@ -21,7 +21,6 @@ import java.util.List;
 @EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {
 
-
     @Bean
     public Docket apiDocket(YapamProperties yapamProperties, AppParameter appParameter) {
         return new Docket(DocumentationType.SWAGGER_2)

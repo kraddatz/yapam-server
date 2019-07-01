@@ -1,17 +1,18 @@
 package app.yapam.secret.repository;
 
-import lombok.Getter;
-import lombok.Setter;
 import app.yapam.secret.model.SecretTypeEnum;
 import app.yapam.user.repository.UserDBO;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "secret")
+@Entity
 @Getter
 @Setter
+@Table(name = "secret")
 public class SecretDBO {
 
     @Id

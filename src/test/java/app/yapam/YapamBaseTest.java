@@ -14,12 +14,15 @@ import app.yapam.user.model.request.UserRequest;
 import app.yapam.user.model.response.SimpleUserResponse;
 import app.yapam.user.model.response.UserResponse;
 import app.yapam.user.repository.UserDBO;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
 
 import java.time.LocalDateTime;
 
+@Disabled
+@java.lang.SuppressWarnings("squid:S2187")
 public class YapamBaseTest {
 
     protected final String DEFAULT_HOST_BASE_URL = "http://localhost";
@@ -73,8 +76,8 @@ public class YapamBaseTest {
         return passwordChangeRequest;
     }
 
-    protected YapamProperties.Security createDefaultYapamSecurityProperties() {
-        var security = new YapamProperties.Security();
+    protected YapamProperties.YapamSecurity createDefaultYapamSecurityProperties() {
+        var security = new YapamProperties.YapamSecurity();
         security.setBcryptIterations(10);
         return security;
     }

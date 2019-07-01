@@ -3,16 +3,12 @@ package app.yapam.healthcheck;
 import app.yapam.config.AppParameter;
 import app.yapam.healthcheck.model.HealthCheck;
 import app.yapam.healthcheck.model.HealthCheckResult;
-import app.yapam.secret.repository.SecretRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.CannotCreateTransactionException;
 
 import javax.persistence.EntityManager;
 import java.lang.management.ManagementFactory;
-import java.math.BigInteger;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;

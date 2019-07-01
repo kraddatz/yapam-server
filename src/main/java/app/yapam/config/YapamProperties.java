@@ -17,13 +17,13 @@ public class YapamProperties {
 
     private String host;
     private Duration registrationTimeout;
-    private Security security;
-    private Mail mail;
-    private Datasource datasource;
+    private YapamSecurity security;
+    private YapamMail mail;
+    private YapamDatasource datasource;
 
     @Getter
     @Setter
-    public static class Security {
+    public static class YapamSecurity {
         private Integer bcryptIterations = 10;
         private Oauth oauth;
 
@@ -37,7 +37,7 @@ public class YapamProperties {
 
     @Getter
     @Setter
-    public static class Mail {
+    public static class YapamMail {
 
         private String host;
         private Integer port;
@@ -47,12 +47,13 @@ public class YapamProperties {
         private Charset defaultEncoding = StandardCharsets.UTF_8;
         private Map<String, String> properties = new HashMap<>();
         private String jndiName;
+        private Boolean testConnection;
         private String messageSender;
     }
 
     @Getter
     @Setter
-    public static class Datasource {
+    public static class YapamDatasource {
         private String url;
     }
 }

@@ -8,10 +8,10 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.Set;
 
-
-@Entity(name = "role")
+@Entity
 @Getter
 @Setter
+@Table(name = "role")
 public class RoleDBO {
 
 	@Id

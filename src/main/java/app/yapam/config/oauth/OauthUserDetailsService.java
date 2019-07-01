@@ -7,6 +7,7 @@ import app.yapam.user.repository.RoleRepository;
 import app.yapam.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
+@Profile("!test")
 public class OauthUserDetailsService implements UserDetailsService {
 
 	@Autowired private UserRepository userRepository;

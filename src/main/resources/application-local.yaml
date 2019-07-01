@@ -27,7 +27,6 @@ app:
   java-version: @javaVersion@
   spring-boot-version: @springBootVersion@
   tomcat-version: @tomcatVersion@
-  host: localhost:8080
   swagger-schemes:
     - http
     - https

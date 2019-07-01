@@ -48,7 +48,7 @@ public class SecretController {
     @DeleteMapping(value = "/api/secrets/{secretId}")
     @VerifiedEmail
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteSecrete(@PathVariable(value = "secretId") String secretId) {
+    public void deleteSecret(@PathVariable(value = "secretId") String secretId) {
         secretService.deleteSecret(secretId);
     }
 }

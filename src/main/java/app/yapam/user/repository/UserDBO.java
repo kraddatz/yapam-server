@@ -9,9 +9,10 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Entity(name = "user")
+@Entity
 @Getter
 @Setter
+@Table(name = "user")
 public class UserDBO {
 
     @Id

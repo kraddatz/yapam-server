@@ -5,9 +5,9 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
 
-public class OauthUserDetails extends User {
+class OauthUserDetails extends User {
 
-	public OauthUserDetails(String userName, String password, Collection<? extends GrantedAuthority> authorities) {
+	OauthUserDetails(String userName, String password, Collection<? extends GrantedAuthority> authorities) {
 		super(userName, password, authorities);
 	}
 

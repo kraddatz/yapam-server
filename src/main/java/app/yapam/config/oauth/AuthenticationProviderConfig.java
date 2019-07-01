@@ -4,6 +4,7 @@ import app.yapam.common.service.BCryptService;
 import app.yapam.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 @Configuration
+@Profile("!test")
 public class AuthenticationProviderConfig implements AuthenticationProvider {
 
     @Autowired private UserRepository userRepository;
