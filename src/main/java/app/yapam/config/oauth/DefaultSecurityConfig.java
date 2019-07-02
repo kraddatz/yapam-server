@@ -17,36 +17,36 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class DefaultSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired private OauthUserDetailsService oauthUserDetailsService;
+    @Autowired private OauthUserDetailsService oauthUserDetailsService;
 
-	@Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private PasswordEncoder passwordEncoder;
 
-	@Autowired private AuthenticationProviderConfig authProvider;
+    @Autowired private CentralIdentityAuthenticator authProvider;
 
-	@Override
-	public void configure(AuthenticationManagerBuilder auth) {
-	auth.authenticationProvider(authProvider);
-	}
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(oauthUserDetailsService).passwordEncoder(this.passwordEncoder);
-	}
+    @Override
+    public void configure(WebSecurity web) {
+        web
+                .ignoring().antMatchers("/documentation/**",
+                "/api/status",
+                "/api/health")
+                .and()
+                .ignoring().antMatchers(HttpMethod.POST, "/api/users");
+    }
 
-	@Override
-	public void configure(WebSecurity web) {
-		web
-				.ignoring().antMatchers("/documentation/**",
-						"/api/status",
-						"/api/health")
-				.and()
-				.ignoring().antMatchers(HttpMethod.POST, "/api/users");
-	}
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(authProvider);
+    }
 
-	@Override
-	@Bean
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(oauthUserDetailsService).passwordEncoder(this.passwordEncoder);
+    }
 
 }

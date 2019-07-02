@@ -15,7 +15,7 @@ import java.util.Objects;
 
 @Configuration
 @Profile("!test")
-public class AuthenticationProviderConfig implements AuthenticationProvider {
+public class CentralIdentityAuthenticator implements AuthenticationProvider {
 
     @Autowired private UserRepository userRepository;
 
