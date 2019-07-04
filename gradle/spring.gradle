@@ -1,0 +1,12 @@
+bootJar {
+    archiveFileName.set('yapam.jar')
+}
+
+springBoot {
+    buildInfo()
+}
+
+bootRun {
+    bootRun.systemProperty 'spring.profiles.active', 'local'
+    bootRun.systemProperty 'spring.config.location', 'classpath:application-local.yaml,file:./yapam.yaml'
+}

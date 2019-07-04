@@ -1,0 +1,18 @@
+task createPom {
+    outputs.file "pom.xml"
+    inputs.property('group', project.group)
+    inputs.property('name', project.name)
+    inputs.property('version', project.version)
+
+    doLast {
+        pom {
+            project {
+                groupId inputs.properties['group']
+                artifactId inputs.properties['name']
+                version inputs.properties['version']
+            }
+        }.writeTo("pom.xml")
+    }
+}
+
+assemble.dependsOn createPom
