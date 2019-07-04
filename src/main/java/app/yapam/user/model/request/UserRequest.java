@@ -20,6 +20,6 @@ public class UserRequest {
     private String masterPasswordHash;
     @ApiModelProperty(value = "Password hint", example = "password is password")
     private String masterPasswordHint;
-    @ApiModelProperty(value = "Public key of the userSecrets", example = "public_key")
+    @ApiModelProperty(value = "Public key of the user", example = "public_key")
     private String publicKey;
 }

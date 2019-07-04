@@ -68,7 +68,6 @@ public class YapamBaseTest {
     protected final String NEW_USER_PASSWORD = "$2a$10$UGqevBtOypBHAbCAcBN2POIo4zWM3YbUSGHtAcm52osTw6RszcZF2";
     protected final String NEW_USER_PASSWORD_HINT = "passwordisnewpassword";
     protected final String NEW_USER_EMAIL = "newemail@email.com";
-    protected final String NEW_USER_NAME = "newName";
 
     protected PasswordChangeRequest createDefaultPasswordChangeRequest() {
         var passwordChangeRequest = new PasswordChangeRequest();

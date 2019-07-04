@@ -26,9 +26,6 @@ yapam:
       access-token-validity-period: P1D
       refresh-token-validity-period: P1D
 
-  datasource:
-    url: jdbc:mysql://localhost/yapam?createDatabaseIfNotExist=true&user=root&password=secret
-
   mail:
     host: host@domain.com
     port: 587
@@ -37,3 +34,6 @@ yapam:
     protocol: smtp
     test-connection: false
     message-sender: yapam@yourdomain.com
+
+  datasource:
+    url: 'jdbc:h2:mem:'

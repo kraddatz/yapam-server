@@ -40,6 +40,5 @@ create table secret
     creation_date datetime     not null,
     data          longtext     not null,
     type          int          not null,
-    constraint fk_secret_user_id foreign key (user_id) references user (id),
-    key (secret_id)
+    constraint fk_secret_user_id foreign key (user_id) references user (id)
 );
