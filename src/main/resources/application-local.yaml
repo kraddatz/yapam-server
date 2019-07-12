@@ -26,7 +26,6 @@ app:
   app-name: Yapam-Server
   java-version: @javaVersion@
   spring-boot-version: @springBootVersion@
-  tomcat-version: @tomcatVersion@
   swagger-schemes:
     - http
     - https

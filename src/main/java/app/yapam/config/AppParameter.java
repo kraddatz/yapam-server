@@ -15,6 +15,5 @@ public class AppParameter {
     private String appName;
     private String javaVersion;
     private String springBootVersion;
-    private String tomcatVersion;
     private Set<String> swaggerSchemes;
 }

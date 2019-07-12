@@ -8,6 +8,7 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import javax.servlet.ServletContext;
 import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ class HealthCheckService {
     @Autowired private AppParameter appParameter;
     @Autowired private BuildProperties buildProperties;
     @Autowired private EntityManager entityManager;
+    @Autowired ServletContext context;
 
     HealthCheckResult createHealthCheckResult() {
         HealthCheckResult result = new HealthCheckResult();
@@ -50,7 +52,7 @@ class HealthCheckService {
         Map<String, Object> buildInformation = new HashMap<>();
         buildInformation.put("Buildtime", appParameter.getBuildTime());
         buildInformation.put("Java version", System.getProperty("java.version"));
-        buildInformation.put("Built-in TomCat version", appParameter.getTomcatVersion());
+        buildInformation.put("Built-in TomCat version", context.getServerInfo());
         buildInformation.put("Spring-Boot version", appParameter.getSpringBootVersion());
         buildInformation.put("Application version", buildProperties.getVersion());
         return buildInformation;
