@@ -57,5 +57,4 @@ public class SwaggerController {
     public String resources() {
         return "forward:/swagger-resources";
     }
-
 }

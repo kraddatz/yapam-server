@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 
 @Disabled
 @java.lang.SuppressWarnings("squid:S2187")
-public class YapamBaseTest {
+public abstract class YapamBaseTest {
 
     protected final String DEFAULT_HOST_BASE_URL = "http://localhost";
 

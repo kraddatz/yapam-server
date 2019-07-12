@@ -1,7 +1,10 @@
 package app.yapam.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -12,6 +15,9 @@ import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.DocExpansion;
+import springfox.documentation.swagger.web.UiConfiguration;
+import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Collections;
@@ -19,7 +25,10 @@ import java.util.List;
 
 @Configuration
 @EnableSwagger2
+@Profile("!test")
 public class SwaggerConfig implements WebMvcConfigurer {
+
+    @Autowired private BuildProperties buildProperties;
 
     @Bean
     public Docket apiDocket(YapamProperties yapamProperties, AppParameter appParameter) {
@@ -37,11 +46,16 @@ public class SwaggerConfig implements WebMvcConfigurer {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Yapam")
-                .description("The LicenseManagement manages the licenses a car inherits. Licenses can be created and " +
-                        "updated for a car. They expire after a specific time. Information of a car in regard to " +
-                        "licenses can be obtained from LicenseManagement.")
-                .version("1.0")
+                .title("yapam-server")
+                .description("yapam-server is the server component of the yapam environment. It manages the users and secrets.")
+                .version(buildProperties.getVersion())
+                .build();
+    }
+
+    @Bean
+    UiConfiguration uiConfig() {
+        return UiConfigurationBuilder.builder()
+                .docExpansion(DocExpansion.LIST) // or DocExpansion.NONE or DocExpansion.FULL
                 .build();
     }
 
