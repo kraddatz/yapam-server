@@ -42,17 +42,11 @@ public class UserService {
         return mappingService.userDBOToSimpleResponse(userRepository.findOneById(userId));
     }
 
-    private Boolean userIsInRegistrationPeriod(UserDBO user) {
-        return user.getCreationDate().plus(yapamProperties.getRegistrationTimeout()).isAfter(LocalDateTime.now());
-    }
-
     @java.lang.SuppressWarnings("squid:S1066")
     private UserDBO checkExistingUser(String email) {
         var userDBO = userRepository.findOneByEmail(email);
-        if (!Objects.isNull(userDBO)) {
-            if (!(userIsInRegistrationPeriod(userDBO) && !userDBO.getEmailVerified())) {
-                throw new EmailAlreadyExistsException();
-            }
+        if (Objects.nonNull(userDBO) && userDBO.getEmailVerified()) {
+            throw new EmailAlreadyExistsException();
         }
         return Objects.isNull(userDBO) ? new UserDBO() : userDBO;
     }

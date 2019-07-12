@@ -77,13 +77,12 @@ class UserServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void register_whenUserExistsInRegistrationUnverified_thenOverrideUser() {
+    void register_whenUserExistsUnverified_thenOverrideUser() {
         var registerUser = createDefaultUserRequest();
         var userDBO = createDefaultUserDBO();
         userDBO.setEmailVerified(false);
         when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDBO);
         when(mappingService.copyUserRequestToDBO(any(UserRequest.class), any(UserDBO.class))).thenReturn(userDBO);
-        when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
 
         userService.createUser(registerUser);
 
@@ -97,38 +96,12 @@ class UserServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void register_whenUserExistsNotInRegistrationUnverified_thenThrowException() {
-        var userRequest = createDefaultUserRequest();
-        var userDBO = createDefaultUserDBO();
-        userDBO.setEmailVerified(false);
-        userDBO.setCreationDate(LocalDateTime.now().minusDays(2));
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDBO);
-        when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
-
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(userRequest));
-    }
-
-    @Test
-    void register_whenUserExistsNotInRegistrationVerified_thenThrowException() {
+    void register_whenUserExistsVerified_thenThrowException() {
         var userRequest = createDefaultUserRequest();
         var userDBO = createDefaultUserDBO();
         var user = createDefaultUser();
         userDBO.setEmailVerified(true);
         userDBO.setCreationDate(LocalDateTime.now().minusDays(2));
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDBO);
-        when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
-        when(mappingService.userFromRequest(userRequest)).thenReturn(user);
-        when(requestHelperService.getUserName()).thenReturn(DEFAULT_USER_EMAIL);
-
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(userRequest));
-    }
-
-    @Test
-    void register_whenUserExistsInRegistrationVerified_thenThrowException() {
-        var userRequest = createDefaultUserRequest();
-        var userDBO = createDefaultUserDBO();
-        var user = createDefaultUser();
-        userDBO.setEmailVerified(true);
         when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
         when(mappingService.userFromRequest(userRequest)).thenReturn(user);
