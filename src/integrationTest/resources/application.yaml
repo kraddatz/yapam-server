@@ -26,6 +26,8 @@ yapam:
       access-token-validity-period: P1D
       refresh-token-validity-period: P1D
 
+  registration-timeout: P1D
+
   mail:
     host: host@domain.com
     port: 587

@@ -19,60 +19,9 @@ sonarqube {
     }
 }
 
-asciidoctor.dependsOn clean
-
 configurations {
     cucumberRuntime {
         extendsFrom integrationTestCompile
     }
 }
 
-asciidoctor {
-    sourceDir 'src/main/asciidoc'
-    attributes snippets: file('target/generated-snippets')
-}
-
-jacocoTestReport {
-    reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
-    }
-    afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it,
-                    exclude: [
-                            "**/app/yapam/YapamApplication.class",
-                            "**/app/yapam/config/**",
-                            "**/app/yapam/common/error/**",
-                            "**/app/yapam/swagger/**",
-                            "**/app/yapam/**/model/**",
-                            "**/app/yapam/**/repository/*.class",
-                    ])
-        })
-    }
-}
-
-task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
-    sourceDirectories = files(sourceSets.main.allSource.srcDirs)
-    classDirectories =  files(sourceSets.main.output)
-    executionData = files(jacocoTestReport.executionData)
-    reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
-    }
-    afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it,
-                    exclude: [
-                            "**/app/yapam/YapamApplication.class",
-                            "**/app/yapam/config/**",
-                            "**/app/yapam/common/error/**",
-                            "**/app/yapam/swagger/**",
-                            "**/app/yapam/**/model/**",
-                            "**/app/yapam/**/repository/*.class",
-                    ])
-        })
-    }
-}
