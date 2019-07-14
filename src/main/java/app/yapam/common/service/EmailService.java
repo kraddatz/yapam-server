@@ -1,8 +1,10 @@
 package app.yapam.common.service;
 
+import app.yapam.common.error.InvalidEmailRecipientException;
 import app.yapam.config.YapamProperties;
 import app.yapam.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,11 @@ public class EmailService {
         message.setSubject("register");
         var registerUrl = yapamProperties.getHost() + "/users/" + user.getId() + "/email/verify?token=" + user.getEmailToken();
         message.setText(registerUrl);
-        javaMailSender.send(message);
+        try {
+            javaMailSender.send(message);
+        } catch (MailSendException e) {
+            throw new InvalidEmailRecipientException();
+        }
     }
 
     public void sendEmailChangeEmail(User user, String email) {
@@ -30,6 +36,10 @@ public class EmailService {
         message.setSubject("verify your email");
         var emailChangeUrl = yapamProperties.getHost() + "/users/" + user.getId() + "/email/change?email=" + email + "&token=" + user.getEmailToken();
         message.setText(emailChangeUrl);
-        javaMailSender.send(message);
+        try {
+            javaMailSender.send(message);
+        } catch (MailSendException e) {
+            throw new InvalidEmailRecipientException();
+        }
     }
 }

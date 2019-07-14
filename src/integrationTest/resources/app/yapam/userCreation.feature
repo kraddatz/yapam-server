@@ -29,7 +29,7 @@ Feature: Create an account
       }
     """
     When the user posts data to "/api/users"
-    Then status is 200
+    Then status is 400
 
   Scenario: The email is already used and verified
     Given user with data exists

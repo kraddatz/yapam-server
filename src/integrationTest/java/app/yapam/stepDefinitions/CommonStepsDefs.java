@@ -24,6 +24,7 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.reset;
 
 public class CommonStepsDefs extends YapamSteps {
 
@@ -31,7 +32,7 @@ public class CommonStepsDefs extends YapamSteps {
     @Autowired private ContextHolderService context;
     @Autowired private JavaMailSender javaMailSender;
     @LocalServerPort protected Integer port;
-    @MockBean private EmailService emailService;
+//    @MockBean private EmailService emailService;
 
     @Given("The email does not exist")
     public void theEmailDoesNotExist() {
@@ -71,5 +72,6 @@ public class CommonStepsDefs extends YapamSteps {
     @After
     public void tearDown() {
         userRepository.deleteAll();
+        reset(javaMailSender);
     }
 }
