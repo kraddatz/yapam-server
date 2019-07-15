@@ -4,6 +4,7 @@ import app.yapam.YapamBaseTest;
 import app.yapam.common.error.EmailAlreadyExistsException;
 import app.yapam.common.error.EmailVerificationTokenExpiredException;
 import app.yapam.common.error.InvalidEmailVerificationTokenException;
+import app.yapam.common.error.UserNotFoundException;
 import app.yapam.common.service.EmailService;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
@@ -111,7 +112,12 @@ class UserServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void verifyEmail_validToken_thenSaveUser() {
+    void verifyEmail_whenInvalidUser_thenThrowException() {
+        assertThrows(UserNotFoundException.class, () -> userService.verifyEmail(DEFAULT_USER_ID, DEFAULT_USER_EMAIL_TOKEN));
+    }
+
+    @Test
+    void verifyEmail_whenValidToken_thenSaveUser() {
         var userDBO = createDefaultUserDBO();
         when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDBO);
         when(yapamProperties.getRegistrationTimeout()).thenReturn(Duration.parse("P1D"));
@@ -155,6 +161,11 @@ class UserServiceTest extends YapamBaseTest {
         userService.requestEmailChange(NEW_USER_EMAIL);
         verify(userRepository, times(1)).save(any(UserDBO.class));
         verify(emailService, times(1)).sendEmailChangeEmail(any(User.class), anyString());
+    }
+
+    @Test
+    void emailChange_whenInvalidUser_thenThrowException() {
+        assertThrows(UserNotFoundException.class, () -> userService.emailChange(DEFAULT_USER_ID, DEFAULT_USER_EMAIL_TOKEN, NEW_USER_EMAIL));
     }
 
     @Test
