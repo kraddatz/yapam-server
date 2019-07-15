@@ -33,6 +33,8 @@ public class DefaultSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) {
         web
                 .ignoring().antMatchers("/documentation/**",
+                "/api/users/**/email/verify",
+                "/api/users/**/email/change",
                 "/api/status",
                 "/api/health")
                 .and()

@@ -1,7 +1,7 @@
 Feature: Create an account
 
-  Scenario: The email is not already used
-    Given request with body
+  Scenario: with an unused email
+    Given a request body
     """
       {
         "culture": "de-DE",
@@ -12,12 +12,12 @@ Feature: Create an account
         "publicKey": "publicKey"
       }
     """
-    When the user posts data to "/api/users"
+    When I send a post request to /api/users
     Then status is 200
 
-  Scenario: The email does not exist
-    Given The email does not exist
-    Given request with body
+  Scenario: but the email is invalid
+    Given The email is invalid
+    And a request body
     """
       {
         "culture": "de-DE",
@@ -28,14 +28,15 @@ Feature: Create an account
         "publicKey": "publicKey"
       }
     """
-    When the user posts data to "/api/users"
+    When I send a post request to /api/users
     Then status is 400
+    And exception is "InvalidEmailRecipientException"
 
-  Scenario: The email is already used and verified
-    Given user with data exists
+  Scenario: but the email is already used and verified
+    Given an existing user
       | email    | max.mustermann@email.com |
       | verified | true                     |
-    And request with body
+    And a request body
     """
       {
         "culture": "de-DE",
@@ -46,14 +47,15 @@ Feature: Create an account
         "publicKey": "publicKey"
       }
     """
-    When the user posts data to "/api/users"
+    When I send a post request to /api/users
     Then status is 400
+    And exception is "EmailAlreadyExistsException"
 
-  Scenario: The email is already used, but not verified
-    Given user with data exists
+  Scenario: but the email is already used and not verified
+    Given an existing user
       | email    | max.mustermann@email.com |
       | verified | false                    |
-    And request with body
+    And a request body
     """
       {
         "culture": "de-DE",
@@ -64,5 +66,5 @@ Feature: Create an account
         "publicKey": "publicKey"
       }
     """
-    When the user posts data to "/api/users"
+    When I send a post request to /api/users
     Then status is 200

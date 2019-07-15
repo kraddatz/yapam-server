@@ -3,6 +3,7 @@ package app.yapam.user;
 import app.yapam.common.error.EmailAlreadyExistsException;
 import app.yapam.common.error.EmailVerificationTokenExpiredException;
 import app.yapam.common.error.InvalidEmailVerificationTokenException;
+import app.yapam.common.error.UserNotFoundException;
 import app.yapam.common.service.EmailService;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
@@ -64,13 +65,16 @@ public class UserService {
     }
 
     public void verifyEmail(String userId, String token) {
-        var user = userRepository.findOneById(userId);
-        if (user.getCreationDate().plus(yapamProperties.getRegistrationTimeout()).isBefore(LocalDateTime.now())) {
+        var userDBO = userRepository.findOneById(userId);
+        if (Objects.isNull(userDBO)) {
+            throw new UserNotFoundException();
+        }
+        if (userDBO.getCreationDate().plus(yapamProperties.getRegistrationTimeout()).isBefore(LocalDateTime.now())) {
             throw new EmailVerificationTokenExpiredException();
         }
-        if (user.getEmailToken().equals(token)) {
-            user.setEmailVerified(true);
-            userRepository.save(user);
+        if (userDBO.getEmailToken().equals(token)) {
+            userDBO.setEmailVerified(true);
+            userRepository.save(userDBO);
         } else {
             throw new InvalidEmailVerificationTokenException();
         }
@@ -85,6 +89,9 @@ public class UserService {
 
     public void emailChange(String userId, String token, String email) {
         var userDBO = userRepository.findOneById(userId);
+        if (Objects.isNull(userDBO)) {
+            throw new UserNotFoundException();
+        }
         if (userDBO.getEmailToken().equals(token)) {
             userDBO.setEmail(email);
             userRepository.save(userDBO);
