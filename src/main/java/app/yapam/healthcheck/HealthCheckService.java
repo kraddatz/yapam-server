@@ -1,6 +1,7 @@
 package app.yapam.healthcheck;
 
 import app.yapam.config.AppParameter;
+import app.yapam.healthcheck.model.BuildInformation;
 import app.yapam.healthcheck.model.HealthCheck;
 import app.yapam.healthcheck.model.HealthCheckResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +10,10 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletContext;
-import java.lang.management.ManagementFactory;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 class HealthCheckService {
@@ -26,7 +27,6 @@ class HealthCheckService {
         HealthCheckResult result = new HealthCheckResult();
         result.setBuildInformation(createBuildInformation());
         result.setHealthChecks(createHealthChecks());
-        result.setMetrics(createMetrics());
         result.setSuccessful(getSuccessful(result));
         return result;
     }
@@ -42,20 +42,14 @@ class HealthCheckService {
         return successful;
     }
 
-    private Map<String, Object> createMetrics() {
-        Map<String, Object> metrics = new HashMap<>();
-        metrics.put("Uptime", Duration.ofMillis(ManagementFactory.getRuntimeMXBean().getUptime()));
-        return metrics;
-    }
-
-    private Map<String, Object> createBuildInformation() {
-        Map<String, Object> buildInformation = new HashMap<>();
-        buildInformation.put("Buildtime", appParameter.getBuildTime());
-        buildInformation.put("Java version", System.getProperty("java.version"));
-        buildInformation.put("Built-in TomCat version", context.getServerInfo());
-        buildInformation.put("Spring-Boot version", appParameter.getSpringBootVersion());
-        buildInformation.put("Application version", buildProperties.getVersion());
-        return buildInformation;
+    private BuildInformation createBuildInformation() {
+        return new BuildInformation(
+                appParameter.getBuildTime(),
+                System.getProperty("java.version"),
+                context.getServerInfo(),
+                appParameter.getSpringBootVersion(),
+                buildProperties.getVersion()
+        );
     }
 
     private Set<HealthCheck> createHealthChecks() {

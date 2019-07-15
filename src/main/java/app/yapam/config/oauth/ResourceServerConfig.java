@@ -3,7 +3,6 @@ package app.yapam.config.oauth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -15,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableResourceServer
-@Order(1)
 @Profile("!test")
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
@@ -36,8 +34,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests()
-                .anyRequest().authenticated() // authenticate all other urls
+                .authorizeRequests().antMatchers("/actuator/**").permitAll()
+                .and()
+                .authorizeRequests().anyRequest().authenticated()
         ;
     }
 

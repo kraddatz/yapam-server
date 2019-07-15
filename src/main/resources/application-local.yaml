@@ -21,6 +21,15 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: metrics, health, info
+
 app:
   build-time: @buildTime@
   app-name: Yapam-Server
