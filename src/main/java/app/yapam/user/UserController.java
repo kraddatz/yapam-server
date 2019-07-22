@@ -3,6 +3,7 @@ package app.yapam.user;
 import app.yapam.user.model.request.PasswordChangeRequest;
 import app.yapam.user.model.request.UserRequest;
 import app.yapam.user.model.response.SimpleUserResponse;
+import app.yapam.user.model.response.SimpleUserResponseWrapper;
 import app.yapam.user.model.response.UserResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -66,7 +67,7 @@ public class UserController {
 
     @ApiOperation(value = "Get all users reachable by the user")
     @GetMapping(value = "/api/users", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Set<SimpleUserResponse> getAllUsers() {
+    public SimpleUserResponseWrapper getAllUsers() {
         return userService.getAllUsers();
     }
 

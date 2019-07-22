@@ -4,6 +4,7 @@ import app.yapam.YapamBaseTest;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
 import app.yapam.secret.model.Secret;
+import app.yapam.secret.model.response.SecretResponseWrapper;
 import app.yapam.secret.repository.SecretDBO;
 import app.yapam.secret.repository.SecretRepository;
 import app.yapam.secret.repository.SecretTransactions;
@@ -129,7 +130,7 @@ class SecretServiceTest extends YapamBaseTest {
         when(mappingService.secretDBOToResponse(any(SecretDBO.class))).thenReturn(secretResponse);
         when(requestHelperService.getUserName()).thenReturn(DEFAULT_USER_EMAIL);
 
-        var result = secretService.getAllSecrets();
-        assertEquals(1, result.size());
+        SecretResponseWrapper result = secretService.getAllSecrets();
+        assertEquals(1, result.getSecrets().size());
     }
 }

@@ -12,6 +12,7 @@ import app.yapam.user.model.response.SimpleUserResponse;
 import app.yapam.config.YapamProperties;
 import app.yapam.user.model.User;
 import app.yapam.user.model.request.UserRequest;
+import app.yapam.user.model.response.SimpleUserResponseWrapper;
 import app.yapam.user.repository.UserDBO;
 import app.yapam.user.repository.UserRepository;
 import app.yapam.user.repository.UserTransactions;
@@ -211,9 +212,9 @@ class UserServiceTest extends YapamBaseTest {
         when(userRepository.findAll()).thenReturn(new ArrayList<>(Collections.singletonList(userDBO)));
         when(requestHelperService.getUserName()).thenReturn(DEFAULT_USER_EMAIL);
 
-        Set<SimpleUserResponse> users = userService.getAllUsers();
+        SimpleUserResponseWrapper users = userService.getAllUsers();
 
-        assertEquals(1, users.size());
+        assertEquals(1, users.getUsers().size());
     }
 
     @Test

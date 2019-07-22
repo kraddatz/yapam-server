@@ -10,6 +10,7 @@ import app.yapam.common.service.RequestHelperService;
 import app.yapam.config.YapamProperties;
 import app.yapam.user.model.request.PasswordChangeRequest;
 import app.yapam.user.model.response.SimpleUserResponse;
+import app.yapam.user.model.response.SimpleUserResponseWrapper;
 import app.yapam.user.model.response.UserResponse;
 import app.yapam.user.repository.UserDBO;
 import app.yapam.user.repository.UserRepository;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -107,7 +107,10 @@ public class UserService {
         userTransactions.tryToUpdateUser(userDBO);
     }
 
-    public Set<SimpleUserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(user -> mappingService.userDBOToSimpleResponse(user)).collect(Collectors.toSet());
+    public SimpleUserResponseWrapper getAllUsers() {
+        var simpleUserResponse = userRepository.findAll().stream().map(user -> mappingService.userDBOToSimpleResponse(user)).collect(Collectors.toSet());
+        var simpleUserResponseWrapper = new SimpleUserResponseWrapper();
+        simpleUserResponseWrapper.setUsers(simpleUserResponse);
+        return simpleUserResponseWrapper;
     }
 }

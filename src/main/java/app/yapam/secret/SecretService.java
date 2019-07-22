@@ -3,6 +3,7 @@ package app.yapam.secret;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
 import app.yapam.secret.model.response.SecretResponse;
+import app.yapam.secret.model.response.SecretResponseWrapper;
 import app.yapam.secret.repository.SecretDBO;
 import app.yapam.secret.repository.SecretRepository;
 import app.yapam.secret.model.Secret;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -67,10 +67,14 @@ public class SecretService {
         return mappingService.secretToResponse(updateSecret(secretId, secret));
     }
 
-    public Set<SecretResponse> getAllSecrets() {
+    public SecretResponseWrapper getAllSecrets() {
         var user = userRepository.findOneByEmail(requestHelperService.getUserName());
         var secrets = secretRepository.highestSecretsForUser(user.getId());
 
-        return secrets.stream().map(secret -> mappingService.secretDBOToResponse(secret)).collect(Collectors.toSet());
+        var secretResponse = secrets.stream().map(secret -> mappingService.secretDBOToResponse(secret)).collect(Collectors.toSet());
+        var secretResponseWrapper = new SecretResponseWrapper();
+        secretResponseWrapper.setSecrets(secretResponse);
+
+        return secretResponseWrapper;
     }
 }

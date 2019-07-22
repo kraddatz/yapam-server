@@ -3,6 +3,7 @@ package app.yapam.secret;
 import app.yapam.common.annotation.verifiedemail.VerifiedEmail;
 import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.model.response.SecretResponse;
+import app.yapam.secret.model.response.SecretResponseWrapper;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +31,7 @@ public class SecretController {
     @GetMapping(value = "/api/secrets", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @VerifiedEmail
-    public Set<SecretResponse> getAllSecrets() {
+    public SecretResponseWrapper getAllSecrets() {
         return secretService.getAllSecrets();
     }
 
