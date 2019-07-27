@@ -2,7 +2,7 @@ package app.yapam.secret.model;
 
 public enum SecretTypeEnum {
     CREDITCARD,
-    PASSWORD,
+    LOGIN,
     ID,
     WIFI,
     NOTE

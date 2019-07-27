@@ -47,7 +47,7 @@ public class SecretController {
         return secretService.getSecretById(secretId, version);
     }
 
-    @ApiOperation(value = "Update a secret by di")
+    @ApiOperation(value = "Update a secret by id")
     @ApiImplicitParams(
             @ApiImplicitParam(name = "secretId", value = "Internal id of the secret", required = true)
     )

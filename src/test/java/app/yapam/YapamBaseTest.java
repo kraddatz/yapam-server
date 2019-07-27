@@ -53,7 +53,7 @@ public abstract class YapamBaseTest {
     protected final String DEFAUlT_SECRET_ID = "4c7e1860-5ae4-4c40-8645-9c5a52d1b007";
     protected final LocalDateTime DEFAUlT_SECRET_CREATION_DATE = LocalDateTime.now();
     protected final Integer DEFAUlT_SECRET_VERSION = 1;
-    protected final SecretTypeEnum DEFAUlT_SECRET_TYPE = SecretTypeEnum.PASSWORD;
+    protected final SecretTypeEnum DEFAUlT_SECRET_TYPE = SecretTypeEnum.LOGIN;
 
     protected final String DEFAULT_USER_ID = "fec7a584-fe73-4a0a-975c-c23f5b9632f8";
     protected final String DEFAULT_USER_CULTURE = "de-DE";
