@@ -71,9 +71,9 @@ public class SecretService {
         var user = userRepository.findOneByEmail(requestHelperService.getUserName());
         var secrets = secretRepository.highestSecretsForUser(user.getId());
 
-        var secretResponse = secrets.stream().map(secret -> mappingService.secretDBOToResponse(secret)).collect(Collectors.toSet());
+        var simpleSecretResponse = secrets.stream().map(secret -> mappingService.secretDBOToSimpleResponse(secret)).collect(Collectors.toSet());
         var secretResponseWrapper = new SecretResponseWrapper();
-        secretResponseWrapper.setSecrets(secretResponse);
+        secretResponseWrapper.setSecrets(simpleSecretResponse);
 
         return secretResponseWrapper;
     }

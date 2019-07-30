@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
-
 @RestController
 public class UserController {
 
@@ -24,26 +22,6 @@ public class UserController {
     @ResponseBody
     public UserResponse createUser(@RequestBody UserRequest user) {
         return userService.createUser(user);
-    }
-
-    @ApiOperation(value = "Verify the email of a user")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "Internal id of the user", required = true),
-            @ApiImplicitParam(name = "token", value = "Token for verification", required = true)
-    })
-    @GetMapping(value = "/api/users/{userId}/email/verify")
-    public void verifyEmail(@PathVariable("userId") String userId,
-                            @RequestParam(value = "token") String token) {
-        userService.verifyEmail(userId, token);
-    }
-
-    @ApiOperation(value = "Request to change the email")
-    @ApiImplicitParams(
-            @ApiImplicitParam(name = "email", value = "The new email", required = true)
-    )
-    @GetMapping(value = "/api/users/currentuser/email/request-change")
-    public void requestEmailChange(@RequestParam(value = "email") String email) {
-        userService.requestEmailChange(email);
     }
 
     @ApiOperation(value = "Do change the email with verification token")
@@ -59,16 +37,16 @@ public class UserController {
         userService.emailChange(userId, token, email);
     }
 
-    @ApiOperation(value = "Change the users password")
-    @PutMapping(value = "/api/users/currentuser/password/change", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public void updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
-        userService.passwordChange(passwordChangeRequest);
-    }
-
     @ApiOperation(value = "Get all users reachable by the user")
     @GetMapping(value = "/api/users", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public SimpleUserResponseWrapper getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    @ApiOperation(value = "Get the current user")
+    @GetMapping(value = "/api/users/currentuser", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public UserResponse getCurrentUser() {
+        return userService.getCurrentUser();
     }
 
     @ApiOperation(value = "Get a user by id")
@@ -80,9 +58,29 @@ public class UserController {
         return userService.getSimpleUserById(userId);
     }
 
-    @ApiOperation(value = "Get the current user")
-    @GetMapping(value = "/api/users/currentuser", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public UserResponse getCurrentUser() {
-        return userService.getCurrentUser();
+    @ApiOperation(value = "Request to change the email")
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "email", value = "The new email", required = true)
+    )
+    @GetMapping(value = "/api/users/currentuser/email/request-change")
+    public void requestEmailChange(@RequestParam(value = "email") String email) {
+        userService.requestEmailChange(email);
+    }
+
+    @ApiOperation(value = "Change the users password")
+    @PutMapping(value = "/api/users/currentuser/password/change", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
+        userService.passwordChange(passwordChangeRequest);
+    }
+
+    @ApiOperation(value = "Verify the email of a user")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "Internal id of the user", required = true),
+            @ApiImplicitParam(name = "token", value = "Token for verification", required = true)
+    })
+    @GetMapping(value = "/api/users/{userId}/email/verify")
+    public void verifyEmail(@PathVariable("userId") String userId,
+                            @RequestParam(value = "token") String token) {
+        userService.verifyEmail(userId, token);
     }
 }

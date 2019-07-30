@@ -33,8 +33,8 @@ class MappingServiceTest extends YapamBaseTest {
         assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
         assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
         assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data faileed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
         assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
         assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
     }
@@ -47,8 +47,8 @@ class MappingServiceTest extends YapamBaseTest {
 
         assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "user failed");
         assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
         assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
         assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
         assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
@@ -65,9 +65,9 @@ class MappingServiceTest extends YapamBaseTest {
         assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
         assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
         assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
         assertNull(result.getId(), "id failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
         assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
     }
 
@@ -79,10 +79,10 @@ class MappingServiceTest extends YapamBaseTest {
 
         assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "username failed");
         assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
         assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
         assertNull(result.getId(), "id failed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
         assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
         assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
     }
@@ -99,8 +99,8 @@ class MappingServiceTest extends YapamBaseTest {
         assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
         assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
         assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
-        assertNull(result.getSecretId(), "secretid failed");
-        assertNull(result.getCreationDate(), "creationdate failed");
+        assertNull(result.getSecretId(), "secretId failed");
+        assertNull(result.getCreationDate(), "creationDate failed");
     }
 
     @Test
@@ -112,8 +112,8 @@ class MappingServiceTest extends YapamBaseTest {
         var result = mappingService.secretFromRequest(secretRequest);
 
         assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "user failed");
-        assertNull(result.getCreationDate(), "creationdate failed");
-        assertNull(result.getSecretId(), "secretid failed");
+        assertNull(result.getCreationDate(), "creationDate failed");
+        assertNull(result.getSecretId(), "secretId failed");
         assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
         assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
         assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
@@ -129,9 +129,9 @@ class MappingServiceTest extends YapamBaseTest {
 
         assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
         assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
         assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
         assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
         assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
     }
@@ -144,9 +144,9 @@ class MappingServiceTest extends YapamBaseTest {
 
         assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "name failed");
         assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretid failed");
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
         assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationdate failed");
+        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
         assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
         assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
     }
@@ -156,6 +156,25 @@ class MappingServiceTest extends YapamBaseTest {
         var secretDBO = createDefaultSecretDBO();
 
         var result = mappingService.secretDBOToResponse(secretDBO);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void secretToSimpleResponse() {
+        var secret = createDefaultSecret();
+
+        var result = mappingService.secretToSimpleResponse(secret);
+
+        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
+        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
+    }
+
+    @Test
+    void secretDBOToSimpleResponse() {
+        var secretDBO = createDefaultSecretDBO();
+
+        var result = mappingService.secretDBOToSimpleResponse(secretDBO);
 
         assertNotNull(result);
     }

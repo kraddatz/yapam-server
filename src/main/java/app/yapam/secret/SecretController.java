@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
-
 @RestController
 public class SecretController {
 
@@ -25,6 +23,14 @@ public class SecretController {
     @VerifiedEmail
     public SecretResponse createSecret(@RequestBody SecretRequest secret) {
         return secretService.createSecret(secret);
+    }
+
+    @ApiOperation(value = "Delete a secret by id")
+    @DeleteMapping(value = "/api/secrets/{secretId}")
+    @VerifiedEmail
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSecret(@PathVariable(value = "secretId") String secretId) {
+        secretService.deleteSecret(secretId);
     }
 
     @ApiOperation(value = "Get all secrets accessible for a user")
@@ -57,13 +63,5 @@ public class SecretController {
     public SecretResponse updateSecret(@PathVariable(value = "secretId") String secretId,
                                        @RequestBody SecretRequest secret) {
         return secretService.updateSecret(secretId, secret);
-    }
-
-    @ApiOperation(value = "Delete a secret by id")
-    @DeleteMapping(value = "/api/secrets/{secretId}")
-    @VerifiedEmail
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteSecret(@PathVariable(value = "secretId") String secretId) {
-        secretService.deleteSecret(secretId);
     }
 }

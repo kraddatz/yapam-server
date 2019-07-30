@@ -9,5 +9,5 @@ import java.util.Set;
 @Setter
 public class SecretResponseWrapper {
 
-    private Set<SecretResponse> secrets;
+    private Set<SimpleSecretResponse> secrets;
 }

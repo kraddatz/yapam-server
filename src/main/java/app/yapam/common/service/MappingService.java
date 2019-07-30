@@ -3,6 +3,7 @@ package app.yapam.common.service;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.model.response.SecretResponse;
+import app.yapam.secret.model.response.SimpleSecretResponse;
 import app.yapam.secret.repository.SecretDBO;
 import app.yapam.user.model.User;
 import app.yapam.user.model.request.UserRequest;
@@ -57,8 +58,18 @@ public class MappingService {
         return secretResponse;
     }
 
+    public SimpleSecretResponse secretToSimpleResponse(Secret secret) {
+        var simpleSecretResponse = new SimpleSecretResponse();
+        BeanUtils.copyProperties(secret, simpleSecretResponse);
+        return simpleSecretResponse;
+    }
+
     public SecretResponse secretDBOToResponse(SecretDBO secretDBO) {
         return secretToResponse(secretFromDBO(secretDBO));
+    }
+
+    public SimpleSecretResponse secretDBOToSimpleResponse(SecretDBO secretDBO) {
+        return secretToSimpleResponse(secretFromDBO(secretDBO));
     }
 
     public UserResponse userDBOToResponse(UserDBO user) {
