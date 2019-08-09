@@ -1,7 +1,7 @@
 package app.yapam.secret.repository;
 
 import app.yapam.secret.model.SecretTypeEnum;
-import app.yapam.user.repository.UserDBO;
+import app.yapam.user.repository.UserDao;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "secret")
-public class SecretDBO {
+public class SecretDao {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -35,5 +35,5 @@ public class SecretDBO {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserDBO user;
+    private UserDao user;
 }

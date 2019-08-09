@@ -12,8 +12,7 @@ public class UserResponse {
     private String id;
     private String name;
     private String email;
-    private Boolean emailVerified;
-    private String culture;
+    private String locale;
     private LocalDateTime creationDate;
     private String publicKey;
 }

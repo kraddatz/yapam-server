@@ -2,7 +2,7 @@ package app.yapam.stepDefinitions;
 
 import app.yapam.ContextHolderService;
 import app.yapam.YapamSteps;
-import app.yapam.user.repository.UserDBO;
+import app.yapam.user.repository.UserDao;
 import app.yapam.user.repository.UserRepository;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -39,24 +39,19 @@ public class CommonStepsDefs extends YapamSteps {
         context.setRequest(given().port(port).baseUri("http://localhost"));
     }
 
-    @Given("The email is invalid")
-    public void given_theEmailDoesNotExist() {
-        doThrow(MailSendException.class).when(javaMailSender).send(any(SimpleMailMessage.class));
+    @Given("an authorized user")
+    public void given_anAuthorizedUser() {
+        context.getRequest().header("Authorization", "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ4aXVzcDJqdjJKdmEwNGtCRlRSLWZJRG5rMTJzUy1SLVNDalpuTXRkNm5vIn0.eyJqdGkiOiI1Y2JhNDM1Ny01YmM3LTQ1ZGYtYmUwNi1iNTVlMjM3NGY0ZjkiLCJleHAiOjE1NjUzNzY4NDMsIm5iZiI6MCwiaWF0IjoxNTY1Mzc2NTQzLCJpc3MiOiJodHRwczovL2lkZW50aXR5LnJhZGRhdHoubWUvYXV0aC9yZWFsbXMveWFwYW0iLCJhdWQiOlsibW9iaWxlIiwiYWNjb3VudCJdLCJzdWIiOiJhNzQwMTlhYS1lOWQxLTQyMTEtOGM4OC1hZjFlZWI1MjE0MzciLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJ3ZWIiLCJhdXRoX3RpbWUiOjAsInNlc3Npb25fc3RhdGUiOiJhZTk4MmVmZi03OTY3LTQxZDgtOGJkZi02OWU2NDlhZWI3MWEiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiIsInVzZXIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJ3ZWIiOnsicm9sZXMiOlsidXNlciJdfSwibW9iaWxlIjp7InJvbGVzIjpbIlVTRVIiXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IktldmluIFJhZGRhdHoiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJrZXZpbkBmYW1pbGllLXJhZGRhdHouZGUiLCJnaXZlbl9uYW1lIjoiS2V2aW4iLCJmYW1pbHlfbmFtZSI6IlJhZGRhdHoiLCJlbWFpbCI6ImtldmluQGZhbWlsaWUtcmFkZGF0ei5kZSJ9.hmUDxlXp_zos55qX-DgVCDoEGszduBTOh0xEsC6x7KrxfhcKuPsHeNhNZP742PrqJHo5RGT3RYofmbH1XBJ8spdAgdJHZYm00CkyOGmJ8c-4CX9ASWJzrUjKspDSzTc2MKyIBZrvd9ky00AHBnpUWRaooankCvUVpWilmDkk48aaCLMbz9jOK2ji1xhdLZXeZXGHtksEe2jL4m75TUDxqGKJfLL8PZMSgqfIDrKOl1suVwk2avWyv3qELYpSfw-49I9ilJZSXicOTxFGzTN-X3WRFUkdKETZQ3xQLXwtN2qRNdQkKK89UXajIkDU3ccqMPd4A9w30uDC-Unsr9vngg");
     }
 
     @Given("an existing user")
     public void given_anExistingUser(Map<String, String> data) {
-        var userDBO = new UserDBO();
+        var userDBO = new UserDao();
         userDBO.setName(data.getOrDefault("name", "Max Mustermann"));
         userDBO.setPublicKey(data.getOrDefault("publicKey", "publicKey"));
-        userDBO.setMasterPasswordHint(data.getOrDefault("masterPasswordHint", "passwordispassword"));
-        userDBO.setMasterPasswordHash(data.getOrDefault("masterPasswordHash", "$2a$10$HFeBQjv4d.iGubQvGZe31uMBxWqoaHLQt9O1na7KlFZKhxvPkf7ge"));
-        userDBO.setEmailVerified("true".equals(data.getOrDefault("verified", "true")));
         userDBO.setEmail(data.getOrDefault("email", "max.mustermann@email.com"));
-        userDBO.setCulture("de-DE");
         var creationDate = data.containsKey("creationDate") ? LocalDateTime.parse(data.get("creationDate")) : LocalDateTime.now();
         userDBO.setCreationDate(creationDate);
-        userDBO.setEmailToken(data.getOrDefault("emailToken", UUID.randomUUID().toString()));
         userRepository.save(userDBO);
      }
 

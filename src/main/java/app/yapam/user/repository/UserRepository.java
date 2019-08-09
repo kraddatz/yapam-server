@@ -2,8 +2,9 @@ package app.yapam.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<UserDBO, String> {
+public interface UserRepository extends JpaRepository<UserDao, String> {
 
-    UserDBO findOneById(String userId);
-    UserDBO findOneByEmail(String email);
+    UserDao findOneByEmail(String email);
+
+    UserDao findOneById(String userId);
 }

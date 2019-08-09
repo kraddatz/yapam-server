@@ -1,7 +1,6 @@
 package app.yapam.common.service;
 
 import app.yapam.YapamBaseTest;
-import app.yapam.user.repository.UserDBO;
 import app.yapam.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +11,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -22,13 +20,14 @@ class MappingServiceTest extends YapamBaseTest {
 
     @Autowired private MappingService mappingService;
     @MockBean private UserRepository userRepository;
+    @MockBean private RequestHelperService requestHelperService;
 
     @Test
     void secretFromDBO_whenSecretDBOHasNoUser() {
         var secretDBO = createDefaultSecretDBO();
         secretDBO.setUser(null);
 
-        var result = mappingService.secretFromDBO(secretDBO);
+        var result = mappingService.secretFromDao(secretDBO);
 
         assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
         assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
@@ -43,7 +42,7 @@ class MappingServiceTest extends YapamBaseTest {
     void secretFromDBO_whenSecretDBOHasUser() {
         var secretDBO = createDefaultSecretDBO();
 
-        var result = mappingService.secretFromDBO(secretDBO);
+        var result = mappingService.secretFromDao(secretDBO);
 
         assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "user failed");
         assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
@@ -59,7 +58,7 @@ class MappingServiceTest extends YapamBaseTest {
         var secret = createDefaultSecret();
         secret.setUser(null);
 
-        var result = mappingService.secretToDBO(secret);
+        var result = mappingService.secretToDao(secret);
 
         assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
         assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
@@ -75,7 +74,7 @@ class MappingServiceTest extends YapamBaseTest {
     void secretToDBO_whenSecretHasUser() {
         var secret = createDefaultSecret();
 
-        var result = mappingService.secretToDBO(secret);
+        var result = mappingService.secretToDao(secret);
 
         assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "username failed");
         assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
@@ -106,7 +105,7 @@ class MappingServiceTest extends YapamBaseTest {
     @Test
     void secretFromRequest_whenSecretRequestHasUserId() {
         var secretRequest = createDefaultSecretRequest();
-        var userDBO = createDefaultUserDBO();
+        var userDBO = createDefaultUserDao();
         when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDBO);
 
         var result = mappingService.secretFromRequest(secretRequest);
@@ -155,7 +154,7 @@ class MappingServiceTest extends YapamBaseTest {
     void secretDBOToResponse() {
         var secretDBO = createDefaultSecretDBO();
 
-        var result = mappingService.secretDBOToResponse(secretDBO);
+        var result = mappingService.secretDaoToResponse(secretDBO);
 
         assertNotNull(result);
     }
@@ -174,63 +173,51 @@ class MappingServiceTest extends YapamBaseTest {
     void secretDBOToSimpleResponse() {
         var secretDBO = createDefaultSecretDBO();
 
-        var result = mappingService.secretDBOToSimpleResponse(secretDBO);
+        var result = mappingService.secretDaoToSimpleResponse(secretDBO);
 
         assertNotNull(result);
     }
 
     @Test
     void userFromDBO() {
-        var userDBO = createDefaultUserDBO();
+        var userDBO = createDefaultUserDao();
 
-        var result = mappingService.userFromDBO(userDBO);
+        var result = mappingService.userFromDao(userDBO);
 
         assertEquals(DEFAULT_USER_NAME, result.getName(), "name failed");
-        assertEquals(DEFAULT_USER_CULTURE, result.getCulture(), "culture failed");
+        assertEquals(DEFAULT_USER_LOCALE, result.getLocale(), "locale failed");
         assertEquals(DEFAULT_USER_EMAIL, result.getEmail(), "email failed");
-        assertEquals(DEFAULT_USER_EMAIL_TOKEN, result.getEmailToken(), "token failed");
         assertEquals(DEFAULT_USER_ID, result.getId(), "id failed");
-        assertEquals(DEFAULT_USER_PASSWORD_HASH, result.getMasterPasswordHash(), "hash failed");
-        assertEquals(DEFAULT_USER_PASSWORD_HINT, result.getMasterPasswordHint(), "hint failed");
         assertEquals(DEFAULT_USER_PUBLIC_KEY, result.getPublicKey(), "publickey failed");
         assertEquals(DEFAULT_USER_CREATION_DATE, result.getCreationDate(), "creationdate failed");
-        assertEquals(DEFAULT_USER_EMAIL_VERIFIED, result.getEmailVerified(), "verified failed");
     }
 
     @Test
     void userFromRequest() {
         var userRequest = createDefaultUserRequest();
+        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
 
         var result = mappingService.userFromRequest(userRequest);
 
         assertEquals(DEFAULT_USER_NAME, result.getName(), "name failed");
-        assertEquals(DEFAULT_USER_CULTURE, result.getCulture(), "culture failed");
+        assertEquals(DEFAULT_USER_LOCALE, result.getLocale(), "culture failed");
         assertEquals(DEFAULT_USER_EMAIL, result.getEmail(), "email failed");
-        assertNull(result.getEmailToken(), "token failed");
         assertNull(result.getId(), "id failed");
-        assertEquals(DEFAULT_USER_PASSWORD_HASH, result.getMasterPasswordHash(), "hash failed");
-        assertEquals(DEFAULT_USER_PASSWORD_HINT, result.getMasterPasswordHint(), "hint failed");
         assertEquals(DEFAULT_USER_PUBLIC_KEY, result.getPublicKey(), "publickey failed");
         assertNull(result.getCreationDate(), "creationdate failed");
-        assertNull(result.getEmailVerified(), "verified failed");
     }
 
     @Test
     void userToDBO() {
         var user = createDefaultUser();
 
-        var result = mappingService.userToDBO(user);
+        var result = mappingService.userToDao(user);
 
         assertEquals(DEFAULT_USER_NAME, result.getName(), "name failed");
-        assertEquals(DEFAULT_USER_CULTURE, result.getCulture(), "culture failed");
         assertEquals(DEFAULT_USER_EMAIL, result.getEmail(), "email failed");
-        assertEquals(DEFAULT_USER_EMAIL_TOKEN, result.getEmailToken(), "token failed");
         assertEquals(DEFAULT_USER_ID, result.getId(), "id failed");
-        assertEquals(DEFAULT_USER_PASSWORD_HASH, result.getMasterPasswordHash(), "hash failed");
-        assertEquals(DEFAULT_USER_PASSWORD_HINT, result.getMasterPasswordHint(), "hint failed");
         assertEquals(DEFAULT_USER_PUBLIC_KEY, result.getPublicKey(), "publickey failed");
         assertEquals(DEFAULT_USER_CREATION_DATE, result.getCreationDate(), "creationdate failed");
-        assertEquals(DEFAULT_USER_EMAIL_VERIFIED, result.getEmailVerified(), "verified failed");
     }
 
     @Test
@@ -240,63 +227,28 @@ class MappingServiceTest extends YapamBaseTest {
         var result = mappingService.userToResponse(user);
 
         assertEquals(DEFAULT_USER_NAME, result.getName());
-        assertEquals(DEFAULT_USER_CULTURE, result.getCulture());
+        assertEquals(DEFAULT_USER_LOCALE, result.getLocale());
         assertEquals(DEFAULT_USER_EMAIL, result.getEmail());
         assertEquals(DEFAULT_USER_ID, result.getId());
         assertEquals(DEFAULT_USER_PUBLIC_KEY, result.getPublicKey());
         assertEquals(DEFAULT_USER_CREATION_DATE, result.getCreationDate());
-        assertEquals(DEFAULT_USER_EMAIL_VERIFIED, result.getEmailVerified());
     }
 
     @Test
     void userDBOToSimpleResponse() {
-        var userDBO = createDefaultUserDBO();
+        var userDBO = createDefaultUserDao();
 
-        var result = mappingService.userDBOToSimpleResponse(userDBO);
+        var result = mappingService.userDaoToSimpleResponse(userDBO);
 
         assertNotNull(result);
     }
 
     @Test
     void userDBOToResponse() {
-        var userDBO = createDefaultUserDBO();
+        var userDBO = createDefaultUserDao();
 
-        var result = mappingService.userDBOToResponse(userDBO);
+        var result = mappingService.userDaoToResponse(userDBO);
 
         assertNotNull(result);
-    }
-
-    @Test
-    void copyUserRequestToDBO() {
-        var userRequest = createDefaultUserRequest();
-        userRequest.setName("newName");
-        userRequest.setEmail("newemail@email.com");
-        userRequest.setPublicKey("newPublicKey");
-        userRequest.setMasterPasswordHint("passwordisnewpassword");
-        userRequest.setMasterPasswordHash("$2a$10$N2ksTrW68GDLA2PEdRuJm.zUHCWi9Mi2H6fYbXBjhk3AAa.29x1Sq");
-        userRequest.setCulture("en-EN");
-        var userDBO = createDefaultUserDBO();
-
-        userDBO = mappingService.copyUserRequestToDBO(userRequest, userDBO);
-
-        assertEquals("newName", userDBO.getName());
-        assertEquals("newemail@email.com", userDBO.getEmail());
-        assertEquals("newPublicKey", userDBO.getPublicKey());
-        assertEquals("passwordisnewpassword", userDBO.getMasterPasswordHint());
-        assertEquals("$2a$10$N2ksTrW68GDLA2PEdRuJm.zUHCWi9Mi2H6fYbXBjhk3AAa.29x1Sq", userDBO.getMasterPasswordHash());
-    }
-
-    @Test
-    void copyUserToNullDBO() {
-        var userRequest = createDefaultUserRequest();
-        var userDBO = new UserDBO();
-
-        userDBO = mappingService.copyUserRequestToDBO(userRequest, userDBO);
-
-        assertEquals(DEFAULT_USER_NAME, userDBO.getName());
-        assertEquals(DEFAULT_USER_EMAIL, userDBO.getEmail());
-        assertEquals(DEFAULT_USER_PUBLIC_KEY, userDBO.getPublicKey());
-        assertEquals(DEFAULT_USER_PASSWORD_HINT, userDBO.getMasterPasswordHint());
-        assertEquals(DEFAULT_USER_PASSWORD_HASH, userDBO.getMasterPasswordHash());
     }
 }

@@ -1,12 +1,11 @@
 package app.yapam.common.service;
 
 import app.yapam.YapamBaseTest;
-import app.yapam.common.error.UnauthorizedUserException;
+import app.yapam.common.error.InvalidAccessTokenException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -20,45 +19,26 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ActiveProfiles("test")
 class RequestHelperServiceTest extends YapamBaseTest {
 
-    private final String validToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTc2NDgwNTQsInVzZXJfbmFtZSI6InVzZXJAZW1haWwuY29tIiwianRpIjoiZjYyYTk2MGEtZGM4My00MGYzLTgyMjctY2YzOTU2NzBhZTM5IiwiY2xpZW50X2lkIjoiandhcmRlbiIsInNjb3BlIjpbInJlYWQiLCJ3cml0ZSJdfQ.ef9i1BqVt7EACKOUk9e-yLAsjqbHA4ZjvAgmxHBgA7o";
-    private final String invalidToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTc2NDgwNTQsImp0aSI6ImY2MmE5NjBhLWRjODMtNDBmMy04MjI3LWNmMzk1NjcwYWUzOSIsImNsaWVudF9pZCI6Imp3YXJkZW4iLCJzY29wZSI6WyJyZWFkIiwid3JpdGUiXX0.l6IIcbrkGG2EmvQS1mk58DurMXVsmBNCtsYGUBDjPOs";
-    private final String malformedToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAifQ==.EoEbyNXjh5_7qHl7I78l32P9eQpr6HuZ_R1FaZX8ED4";
+    private final String validToken = "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCIsImtpZCI6InhpdXNwMmp2Mkp2YTA0a0JGVFItZklEbmsxMnNTLVItU0NqWm5NdGQ2bm8ifQ.eyJqdGkiOiJkMDlmMGI4Zi04OTk1LTQ2NzAtYjU4NS1iYjlhYTQ3NWJjMjciLCJleHAiOjE1NjUzMDAxOTMsIm5iZiI6MCwiaWF0IjoxNTY1Mjk5ODkzLCJpc3MiOiIiLCJhdWQiOlsibW9iaWxlIiwiYWNjb3VudCJdLCJzdWIiOiJhNzQwMTlhYS1lOWQxLTQyMTEtOGM4OC1hZjFlZWI1MjE0MzciLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJ3ZWIiLCJhdXRoX3RpbWUiOjAsInNlc3Npb25fc3RhdGUiOiIxYmU0NjE4My05YjkyLTQ3ZDQtODkxMS04MmQ1ZDlmNzcxMjkiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiIsInVzZXIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJ3ZWIiOnsicm9sZXMiOlsidXNlciJdfSwibW9iaWxlIjp7InJvbGVzIjpbIlVTRVIiXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6Ik1heCBNdXN0ZXJtYW5uIiwicHJlZmVycmVkX3VzZXJuYW1lIjoidXNlckBlbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiTWF4IiwiZmFtaWx5X25hbWUiOiJNdXN0ZXJtYW5uIiwiZW1haWwiOiJ1c2VyQGVtYWlsLmNvbSJ9.-4HKbDV5OtEx2zXoNq4yT8s-rrVeeC88blOhHp08fmvIa16UgoAai8WVPNdtGeE6Yocqx01vY4Z2BhzhYESotQ";
+    private final String malformedtoken = "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCIsImtpZCI6InhpdXNwMmp2Mkp2YTA0a0JGVFItZklEbmsxMnNTLVItU0NqWm5NdGQ2bm8ifQ.ewogICJqdGkiOiAiZDA5ZjBiOGYtODk5NS00NjcwLWI1ODUtYmI5YWE0NzViYzI3IiwKICAiZXhwIjogMTU2NTMwMDE5MywKICAibmJmIjogMCwKICAiaWF0IjogMTU2NTI5OTg5MywKICAiaXNzIjogIiIsCiAgImF1ZCI6IFsKICAgICJ0ZXN0IiA6ICJtb2JpbGUiLAogICAgImFjY291bnQiCiAgXQp9.-4HKbDV5OtEx2zXoNq4yT8s-rrVeeC88blOhHp08fmvIa16UgoAai8WVPNdtGeE6Yocqx01vY4Z2BhzhYESotQ";
 
     @Autowired private RequestHelperService requestHelperService;
 
     @Test
     void whenInvalidHttpServletRequest_thenThrowException() {
-        RequestContextHolder.setRequestAttributes(null);
-        assertThrows(Exception.class, () -> requestHelperService.getUserName());
-    }
-
-    @Test
-    void whenATMalformed_thenThrowException() {
         var request = createDefaultHttpServletRequest();
-        request.removeHeader("Authorization");
-        request.addHeader("Authorization", malformedToken);
+        request.addHeader("Authorization", malformedtoken);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-
-        assertThrows(UnauthorizedUserException.class, () -> requestHelperService.getUserName());
+        assertThrows(InvalidAccessTokenException.class, () -> requestHelperService.getEmail());
     }
 
     @Test
-    void whenATPropertyNotFound_thenThrowException() {
-        var request = createDefaultHttpServletRequest();
-        request.removeHeader("Authorization");
-        request.addHeader("Authorization", invalidToken);
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-
-        assertThrows(UnauthorizedUserException.class, () -> requestHelperService.getUserName());
-    }
-
-    @Test
-    void whenATPropertyFound_thenThrowException() {
+    void whenEmailFound_thenReturnEmail() {
         var request = createDefaultHttpServletRequest();
         request.addHeader("Authorization", validToken);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        var response = requestHelperService.getUserName();
+        var response = requestHelperService.getEmail();
 
         assertEquals(DEFAULT_USER_EMAIL, response);
     }

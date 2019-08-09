@@ -4,11 +4,10 @@ import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
 import app.yapam.secret.model.response.SecretResponse;
 import app.yapam.secret.model.response.SecretResponseWrapper;
-import app.yapam.secret.repository.SecretDBO;
+import app.yapam.secret.repository.SecretDao;
 import app.yapam.secret.repository.SecretRepository;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.request.SecretRequest;
-import app.yapam.secret.repository.SecretTransactions;
 import app.yapam.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 public class SecretService {
 
     @Autowired private SecretRepository secretRepository;
-    @Autowired private SecretTransactions secretTransactions;
     @Autowired private MappingService mappingService;
     @Autowired private RequestHelperService requestHelperService;
     @Autowired private UserRepository userRepository;
@@ -30,7 +28,7 @@ public class SecretService {
         secret.setSecretId(UUID.randomUUID().toString());
         secret.setVersion(1);
         secret.setCreationDate(LocalDateTime.now());
-        secretTransactions.saveSecret(mappingService.secretToDBO(secret));
+        secretRepository.save(mappingService.secretToDao(secret));
         return secret;
     }
 
@@ -44,13 +42,13 @@ public class SecretService {
     }
 
     SecretResponse getSecretById(String secretId, Integer version) {
-        SecretDBO secret;
+        SecretDao secret;
         if (version == 0) {
             secret = secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId);
         } else {
             secret = secretRepository.findFirstBySecretIdAndVersion(secretId, version);
         }
-        return mappingService.secretDBOToResponse(secret);
+        return mappingService.secretDaoToResponse(secret);
     }
 
     private Secret updateSecret(String secretId, Secret secret) {
@@ -58,7 +56,7 @@ public class SecretService {
         var latestSecretVersion = secretRepository.findFirstDistinctVersionBySecretIdOrderByVersionDesc(secretId);
         secret.setVersion(latestSecretVersion.getVersion() + 1);
         secret.setCreationDate(LocalDateTime.now());
-        secretTransactions.saveSecret(mappingService.secretToDBO(secret));
+        secretRepository.save(mappingService.secretToDao(secret));
         return secret;
     }
 
@@ -68,10 +66,10 @@ public class SecretService {
     }
 
     public SecretResponseWrapper getAllSecrets() {
-        var user = userRepository.findOneByEmail(requestHelperService.getUserName());
+        var user = userRepository.findOneByEmail(requestHelperService.getEmail());
         var secrets = secretRepository.highestSecretsForUser(user.getId());
 
-        var simpleSecretResponse = secrets.stream().map(secret -> mappingService.secretDBOToSimpleResponse(secret)).collect(Collectors.toSet());
+        var simpleSecretResponse = secrets.stream().map(secret -> mappingService.secretDaoToSimpleResponse(secret)).collect(Collectors.toSet());
         var secretResponseWrapper = new SecretResponseWrapper();
         secretResponseWrapper.setSecrets(simpleSecretResponse);
 

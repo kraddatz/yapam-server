@@ -9,16 +9,16 @@ import javax.transaction.Transactional;
 import java.util.Set;
 
 @Repository
-public interface SecretRepository extends JpaRepository<SecretDBO, String> {
+public interface SecretRepository extends JpaRepository<SecretDao, String> {
 
     SecretVersionProjection findFirstDistinctVersionBySecretIdOrderByVersionDesc(String secretId);
 
-    SecretDBO findFirstBySecretIdOrderByVersionDesc(String secretId);
+    SecretDao findFirstBySecretIdOrderByVersionDesc(String secretId);
 
-    @Query(value = "select s1 from SecretDBO s1 left outer join SecretDBO s2 on s1.secretId = s2.secretId and s1.version < s2.version where s2.version is null and s1.user.id=:userId")
-    Set<SecretDBO> highestSecretsForUser(@Param("userId") String userId);
+    @Query(value = "select s1 from SecretDao s1 left outer join SecretDao s2 on s1.secretId = s2.secretId and s1.version < s2.version where s2.version is null and s1.user.id=:userId")
+    Set<SecretDao> highestSecretsForUser(@Param("userId") String userId);
 
-    SecretDBO findFirstBySecretIdAndVersion(String secretId, Integer version);
+    SecretDao findFirstBySecretIdAndVersion(String secretId, Integer version);
 
     @Transactional
     void deleteBySecretId(String secretId);

@@ -17,23 +17,8 @@ public class YapamProperties {
 
     private String host;
     private Duration registrationTimeout;
-    private YapamSecurity security;
     private YapamMail mail;
     private YapamDatasource datasource;
-
-    @Getter
-    @Setter
-    public static class YapamSecurity {
-        private Integer bcryptIterations = 10;
-        private Oauth oauth;
-
-        @Getter
-        @Setter
-        public static class Oauth {
-            private Duration accessTokenValidityPeriod;
-            private Duration refreshTokenValidityPeriod;
-        }
-    }
 
     @Getter
     @Setter

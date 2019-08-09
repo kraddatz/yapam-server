@@ -41,47 +41,9 @@ class UserControllerTest extends YapamBaseTest {
     }
 
     @Test
-    void whenEmailValidation_thenReturnSuccessful() throws Exception {
-        mvc.perform(
-                get(API_USERS_EMAIL_VERIFY_URL, DEFAULT_USER_ID)
-                        .param(API_HEADER_TOKEN, DEFAULT_USER_EMAIL_TOKEN)
-        )
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    void whenEmailChangeRequest_thenReturnSuccessful() throws Exception {
-        mvc.perform(
-                get(API_USERS_CURRENT_USER_EMAIL_REQUEST_CHANGE)
-                        .param(API_HEADER_EMAIL, NEW_USER_EMAIL)
-        )
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    void whenEmailChange_thenReturnSuccessful() throws Exception {
-        mvc.perform(
-                get(API_USERS_EMAIL_CHANGE, DEFAULT_USER_ID)
-                        .param(API_HEADER_TOKEN, DEFAULT_USER_EMAIL_TOKEN)
-                        .param(API_HEADER_EMAIL, NEW_USER_EMAIL)
-        )
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    void whenUpdatePassword_thenReturnSuccessful() throws Exception {
-        mvc.perform(
-                put(API_USERS_CURRENT_USER_PASSWORD_CHANGE)
-                .content("{}")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-        )
-                .andExpect(status().is2xxSuccessful());
-    }
-
-
-    @Test
     void whenGetAllUsers_thenReturnSuccessful() throws Exception {
         mvc.perform(
+
                 get(API_USERS_BASE_URL)
         )
                 .andExpect(status().is2xxSuccessful());

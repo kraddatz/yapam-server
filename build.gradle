@@ -19,10 +19,10 @@ apply from: 'gradle/publishing.gradle'
 apply from: 'gradle/dependencies.gradle'
 apply from: 'gradle/spring.gradle'
 
-version = '0.0.1-SNAPSHOT'
+version = '0.1.0-SNAPSHOT'
 group = 'app.yapam'
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 12
+targetCompatibility = 12
 mainClassName = 'app.yapam.YapamApplication'
 
 import org.apache.tools.ant.filters.ReplaceTokens

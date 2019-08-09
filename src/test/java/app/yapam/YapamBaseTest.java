@@ -1,23 +1,17 @@
 package app.yapam;
 
-import app.yapam.config.YapamProperties;
-import app.yapam.secret.SecretController;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.SecretTypeEnum;
 import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.model.response.SecretResponse;
-import app.yapam.secret.repository.SecretDBO;
-import app.yapam.user.UserController;
+import app.yapam.secret.repository.SecretDao;
 import app.yapam.user.model.User;
-import app.yapam.user.model.request.PasswordChangeRequest;
 import app.yapam.user.model.request.UserRequest;
 import app.yapam.user.model.response.SimpleUserResponse;
 import app.yapam.user.model.response.UserResponse;
-import app.yapam.user.repository.UserDBO;
+import app.yapam.user.repository.UserDao;
 import org.junit.jupiter.api.Disabled;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.web.method.HandlerMethod;
 
 import java.time.LocalDateTime;
 
@@ -27,25 +21,16 @@ public abstract class YapamBaseTest {
 
     protected final String DEFAULT_HOST_BASE_URL = "http://localhost";
 
-    protected final String EMAIL_GENERIC_EMAIL_VERIFY_URL = DEFAULT_HOST_BASE_URL + "/users/%s/email/verify?token=%s";
-    protected final String EMAIL_GENERIC_EMAIL_CHANGE_URL = DEFAULT_HOST_BASE_URL + "/users/%s/email/change?email=%s&token=%s";
+    protected final String EMAIL_WELCOME_TEXT = "welcome";
     protected final String EMAIL_MESSAGE_SENDER = "yapam@yourdomain.com";
 
     protected final String API_STATUS_URL = "/api/status";
     protected final String API_HEALTH_URL = "/api/health";
-    protected final String API_KDF_INFO_URL = "/api/kdf";
     protected final String API_SECRETS_BASE_URL = "/api/secrets";
     protected final String API_SINGLE_SECRET_URL = API_SECRETS_BASE_URL + "/{secretId}";
     protected final String API_USERS_BASE_URL = "/api/users";
     protected final String API_USERS_USER_BY_ID = API_USERS_BASE_URL + "/{userId}";
-    protected final String API_USERS_EMAIL_VERIFY_URL = API_USERS_BASE_URL + "/{userId}/email/verify";
-    protected final String API_USERS_EMAIL_CHANGE = API_USERS_BASE_URL + "/{userId}/email/change";
     protected final String API_USERS_CURRENT_USER = API_USERS_BASE_URL + "/currentuser";
-    protected final String API_USERS_CURRENT_USER_EMAIL_REQUEST_CHANGE = API_USERS_CURRENT_USER + "/email/request-change";
-    protected final String API_USERS_CURRENT_USER_PASSWORD_CHANGE = API_USERS_CURRENT_USER + "/password/change";
-
-    protected final String API_HEADER_TOKEN = "token";
-    protected final String API_HEADER_EMAIL = "email";
 
     protected final String DEFAUlT_SECRET_TITLE = "secretTitle";
     protected final String DEFAUlT_SECRET_DATA = "secretData";
@@ -56,31 +41,11 @@ public abstract class YapamBaseTest {
     protected final SecretTypeEnum DEFAUlT_SECRET_TYPE = SecretTypeEnum.LOGIN;
 
     protected final String DEFAULT_USER_ID = "fec7a584-fe73-4a0a-975c-c23f5b9632f8";
-    protected final String DEFAULT_USER_CULTURE = "de-DE";
+    protected final String DEFAULT_USER_LOCALE = "de-DE";
     protected final String DEFAULT_USER_EMAIL = "user@email.com";
-    protected final String DEFAULT_USER_PASSWORD_HASH = "$2a$10$HFeBQjv4d.iGubQvGZe31uMBxWqoaHLQt9O1na7KlFZKhxvPkf7ge";
-    protected final String DEFAULT_USER_PASSWORD_HINT = "passwordispassword";
     protected final String DEFAULT_USER_NAME = "Name";
     protected final String DEFAULT_USER_PUBLIC_KEY = "publicKey";
-    protected final String DEFAULT_USER_EMAIL_TOKEN = "66dc10dc-114d-498e-9ff4-65613084eced";
     protected final LocalDateTime DEFAULT_USER_CREATION_DATE = LocalDateTime.now();
-    protected final Boolean DEFAULT_USER_EMAIL_VERIFIED = true;
-    protected final String NEW_USER_PASSWORD = "$2a$10$UGqevBtOypBHAbCAcBN2POIo4zWM3YbUSGHtAcm52osTw6RszcZF2";
-    protected final String NEW_USER_PASSWORD_HINT = "passwordisnewpassword";
-    protected final String NEW_USER_EMAIL = "newemail@email.com";
-
-    protected PasswordChangeRequest createDefaultPasswordChangeRequest() {
-        var passwordChangeRequest = new PasswordChangeRequest();
-        passwordChangeRequest.setMasterPasswordHash(NEW_USER_PASSWORD);
-        passwordChangeRequest.setMasterPasswordHint(NEW_USER_PASSWORD_HINT);
-        return passwordChangeRequest;
-    }
-
-    protected YapamProperties.YapamSecurity createDefaultYapamSecurityProperties() {
-        var security = new YapamProperties.YapamSecurity();
-        security.setBcryptIterations(10);
-        return security;
-    }
 
     protected SecretResponse createDefaultSecretResponse() {
         var secretResponse = new SecretResponse();
@@ -106,12 +71,12 @@ public abstract class YapamBaseTest {
         return secret;
     }
 
-    protected SecretDBO createDefaultSecretDBO() {
-        var secretDBO = new SecretDBO();
+    protected SecretDao createDefaultSecretDBO() {
+        var secretDBO = new SecretDao();
         secretDBO.setTitle(DEFAUlT_SECRET_TITLE);
         secretDBO.setData(DEFAUlT_SECRET_DATA);
         secretDBO.setType(DEFAUlT_SECRET_TYPE);
-        secretDBO.setUser(createDefaultUserDBO());
+        secretDBO.setUser(createDefaultUserDao());
         secretDBO.setCreationDate(DEFAUlT_SECRET_CREATION_DATE);
         secretDBO.setId(DEFAUlT_SECRET_ID);
         secretDBO.setVersion(DEFAUlT_SECRET_VERSION);
@@ -130,10 +95,7 @@ public abstract class YapamBaseTest {
 
     protected UserRequest createDefaultUserRequest() {
         var userRequest = new UserRequest();
-        userRequest.setCulture(DEFAULT_USER_CULTURE);
-        userRequest.setEmail(DEFAULT_USER_EMAIL);
-        userRequest.setMasterPasswordHash(DEFAULT_USER_PASSWORD_HASH);
-        userRequest.setMasterPasswordHint(DEFAULT_USER_PASSWORD_HINT);
+        userRequest.setLocale(DEFAULT_USER_LOCALE);
         userRequest.setName(DEFAULT_USER_NAME);
         userRequest.setPublicKey(DEFAULT_USER_PUBLIC_KEY);
         return userRequest;
@@ -144,8 +106,7 @@ public abstract class YapamBaseTest {
         userResponse.setName(DEFAULT_USER_NAME);
         userResponse.setEmail(DEFAULT_USER_EMAIL);
         userResponse.setPublicKey(DEFAULT_USER_PUBLIC_KEY);
-        userResponse.setEmailVerified(DEFAULT_USER_EMAIL_VERIFIED);
-        userResponse.setCulture(DEFAULT_USER_CULTURE);
+        userResponse.setLocale(DEFAULT_USER_LOCALE);
         userResponse.setCreationDate(DEFAULT_USER_CREATION_DATE);
         userResponse.setId(DEFAULT_USER_ID);
         return userResponse;
@@ -164,50 +125,26 @@ public abstract class YapamBaseTest {
         var user = new User();
         user.setId(DEFAULT_USER_ID);
         user.setCreationDate(DEFAULT_USER_CREATION_DATE);
-        user.setCulture(DEFAULT_USER_CULTURE);
+        user.setLocale(DEFAULT_USER_LOCALE);
         user.setEmail(DEFAULT_USER_EMAIL);
-        user.setEmailToken(DEFAULT_USER_EMAIL_TOKEN);
-        user.setMasterPasswordHash(DEFAULT_USER_PASSWORD_HASH);
-        user.setMasterPasswordHint(DEFAULT_USER_PASSWORD_HINT);
         user.setName(DEFAULT_USER_NAME);
         user.setPublicKey(DEFAULT_USER_PUBLIC_KEY);
-        user.setEmailVerified(DEFAULT_USER_EMAIL_VERIFIED);
         return user;
     }
 
-    protected UserDBO createDefaultUserDBO() {
-        var userDBO = new UserDBO();
+    protected UserDao createDefaultUserDao() {
+        var userDBO = new UserDao();
         userDBO.setId(DEFAULT_USER_ID);
         userDBO.setCreationDate(DEFAULT_USER_CREATION_DATE);
-        userDBO.setCulture(DEFAULT_USER_CULTURE);
         userDBO.setEmail(DEFAULT_USER_EMAIL);
-        userDBO.setEmailToken(DEFAULT_USER_EMAIL_TOKEN);
-        userDBO.setMasterPasswordHash(DEFAULT_USER_PASSWORD_HASH);
-        userDBO.setMasterPasswordHint(DEFAULT_USER_PASSWORD_HINT);
         userDBO.setName(DEFAULT_USER_NAME);
         userDBO.setPublicKey(DEFAULT_USER_PUBLIC_KEY);
-        userDBO.setEmailVerified(DEFAULT_USER_EMAIL_VERIFIED);
+        userDBO.setLocale(DEFAULT_USER_LOCALE);
         return userDBO;
-    }
-
-    protected HandlerMethod createNoAnnotationHandlerMethod() throws NoSuchMethodException {
-        var method = UserController.class.getMethod("createUser", UserRequest.class);
-
-        return new HandlerMethod(new UserController(), method);
-    }
-
-    protected HandlerMethod createVerifiedEmailHandlerMethod() throws NoSuchMethodException {
-        var method = SecretController.class.getMethod("createSecret", SecretRequest.class);
-
-        return new HandlerMethod(new SecretController(), method);
     }
 
     protected MockHttpServletRequest createDefaultHttpServletRequest() {
         return new MockHttpServletRequest();
-    }
-
-    protected MockHttpServletResponse createDefaultHttpServletResponse() {
-        return new MockHttpServletResponse();
     }
 
 }

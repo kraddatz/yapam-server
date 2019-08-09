@@ -39,7 +39,7 @@ class EmailServiceTest extends YapamBaseTest {
         when(yapamProperties.getMail()).thenReturn(mock(YapamProperties.YapamMail.class));
         when(yapamProperties.getMail().getMessageSender()).thenReturn(EMAIL_MESSAGE_SENDER);
 
-        assertThrows(InvalidEmailRecipientException.class, () -> emailService.sendRegisterEmail(user));
+        assertThrows(InvalidEmailRecipientException.class, () -> emailService.sendWelcomeMail(user));
     }
 
     @Test
@@ -49,7 +49,7 @@ class EmailServiceTest extends YapamBaseTest {
         when(yapamProperties.getMail()).thenReturn(mock(YapamProperties.YapamMail.class));
         when(yapamProperties.getMail().getMessageSender()).thenReturn(EMAIL_MESSAGE_SENDER);
 
-        emailService.sendRegisterEmail(user);
+        emailService.sendWelcomeMail(user);
 
         ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
         Mockito.verify(javaMailSender).send(captor.capture());
@@ -61,40 +61,7 @@ class EmailServiceTest extends YapamBaseTest {
         } else {
             fail();
         }
-        assertEquals("register", message.getSubject());
-        assertEquals(String.format(EMAIL_GENERIC_EMAIL_VERIFY_URL, user.getId(), user.getEmailToken()), message.getText());
-    }
-
-    @Test
-    void sendEmailChangeRequest_whenInvalidRecipient_thenThrowException() {
-        var user = createDefaultUser();
-        doThrow(MailSendException.class).when(javaMailSender).send(any(SimpleMailMessage.class));
-        when(yapamProperties.getHost()).thenReturn(DEFAULT_HOST_BASE_URL);
-        when(yapamProperties.getMail()).thenReturn(mock(YapamProperties.YapamMail.class));
-        when(yapamProperties.getMail().getMessageSender()).thenReturn(EMAIL_MESSAGE_SENDER);
-
-        assertThrows(InvalidEmailRecipientException.class, () -> emailService.sendEmailChangeEmail(user, NEW_USER_EMAIL));
-    }
-
-    @Test
-    void sendEmailChangeRequest() {
-        var user = createDefaultUser();
-        var newEmail = NEW_USER_EMAIL;
-        when(yapamProperties.getHost()).thenReturn(DEFAULT_HOST_BASE_URL);
-        when(yapamProperties.getMail()).thenReturn(mock(YapamProperties.YapamMail.class));
-        when(yapamProperties.getMail().getMessageSender()).thenReturn(EMAIL_MESSAGE_SENDER);
-
-        emailService.sendEmailChangeEmail(user, newEmail);
-
-        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
-        Mockito.verify(javaMailSender).send(captor.capture());
-        var message = captor.getValue();
-
-        assertEquals(yapamProperties.getMail().getMessageSender(), message.getFrom());
-        if (!Objects.isNull(message.getTo())) {
-            assertTrue(Arrays.asList(message.getTo()).contains(newEmail));
-        }
-        assertEquals("verify your email", message.getSubject());
-        assertEquals(String.format(EMAIL_GENERIC_EMAIL_CHANGE_URL, user.getId(), newEmail, user.getEmailToken()), message.getText());
+        assertEquals("welcome", message.getSubject());
+        assertEquals(EMAIL_WELCOME_TEXT, message.getText());
     }
 }

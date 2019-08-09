@@ -12,11 +12,7 @@ public class User {
     private String id;
     private String name;
     private String email;
-    private Boolean emailVerified;
-    private String emailToken;
-    private String masterPasswordHash;
-    private String masterPasswordHint;
     private String publicKey;
-    private String culture;
+    private String locale;
     private LocalDateTime creationDate;
 }

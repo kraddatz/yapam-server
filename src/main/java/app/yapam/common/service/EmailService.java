@@ -15,27 +15,12 @@ public class EmailService {
     @Autowired private YapamProperties yapamProperties;
     @Autowired private JavaMailSender javaMailSender;
 
-    public void sendRegisterEmail(User user) {
+    public void sendWelcomeMail(User user) {
         var message = new SimpleMailMessage();
         message.setFrom(yapamProperties.getMail().getMessageSender());
         message.setTo(user.getEmail());
-        message.setSubject("register");
-        var registerUrl = yapamProperties.getHost() + "/users/" + user.getId() + "/email/verify?token=" + user.getEmailToken();
-        message.setText(registerUrl);
-        try {
-            javaMailSender.send(message);
-        } catch (MailSendException e) {
-            throw new InvalidEmailRecipientException();
-        }
-    }
-
-    public void sendEmailChangeEmail(User user, String email) {
-        var message = new SimpleMailMessage();
-        message.setFrom(yapamProperties.getMail().getMessageSender());
-        message.setTo(email);
-        message.setSubject("verify your email");
-        var emailChangeUrl = yapamProperties.getHost() + "/users/" + user.getId() + "/email/change?email=" + email + "&token=" + user.getEmailToken();
-        message.setText(emailChangeUrl);
+        message.setSubject("welcome");
+        message.setText("welcome");
         try {
             javaMailSender.send(message);
         } catch (MailSendException e) {

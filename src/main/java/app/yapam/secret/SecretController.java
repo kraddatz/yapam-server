@@ -1,6 +1,5 @@
 package app.yapam.secret;
 
-import app.yapam.common.annotation.verifiedemail.VerifiedEmail;
 import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.model.response.SecretResponse;
 import app.yapam.secret.model.response.SecretResponseWrapper;
@@ -20,14 +19,12 @@ public class SecretController {
     @ApiOperation(value = "Create a new secret")
     @PostMapping(value = "/api/secrets", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @VerifiedEmail
     public SecretResponse createSecret(@RequestBody SecretRequest secret) {
         return secretService.createSecret(secret);
     }
 
     @ApiOperation(value = "Delete a secret by id")
     @DeleteMapping(value = "/api/secrets/{secretId}")
-    @VerifiedEmail
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSecret(@PathVariable(value = "secretId") String secretId) {
         secretService.deleteSecret(secretId);
@@ -36,7 +33,6 @@ public class SecretController {
     @ApiOperation(value = "Get all secrets accessible for a user")
     @GetMapping(value = "/api/secrets", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @VerifiedEmail
     public SecretResponseWrapper getAllSecrets() {
         return secretService.getAllSecrets();
     }
@@ -47,7 +43,6 @@ public class SecretController {
     )
     @GetMapping(value = "/api/secrets/{secretId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @VerifiedEmail
     public SecretResponse getSecretById(@PathVariable String secretId,
                                         @RequestParam(value = "version", defaultValue = "0") Integer version) {
         return secretService.getSecretById(secretId, version);
@@ -59,7 +54,6 @@ public class SecretController {
     )
     @PutMapping(value = "/api/secrets/{secretId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @VerifiedEmail
     public SecretResponse updateSecret(@PathVariable(value = "secretId") String secretId,
                                        @RequestBody SecretRequest secret) {
         return secretService.updateSecret(secretId, secret);

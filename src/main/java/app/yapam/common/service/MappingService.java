@@ -4,12 +4,12 @@ import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.model.response.SecretResponse;
 import app.yapam.secret.model.response.SimpleSecretResponse;
-import app.yapam.secret.repository.SecretDBO;
+import app.yapam.secret.repository.SecretDao;
 import app.yapam.user.model.User;
 import app.yapam.user.model.request.UserRequest;
 import app.yapam.user.model.response.SimpleUserResponse;
 import app.yapam.user.model.response.UserResponse;
-import app.yapam.user.repository.UserDBO;
+import app.yapam.user.repository.UserDao;
 import app.yapam.user.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,21 +21,22 @@ import java.util.Objects;
 public class MappingService {
 
     @Autowired private UserRepository userRepository;
+    @Autowired private RequestHelperService requestHelperService;
 
-    public Secret secretFromDBO(SecretDBO secretDBO) {
+    public Secret secretFromDao(SecretDao secretDao) {
         var secret = new Secret();
-        BeanUtils.copyProperties(secretDBO, secret);
-        if (!Objects.isNull(secretDBO.getUser())) {
-            secret.setUser(userFromDBO(secretDBO.getUser()));
+        BeanUtils.copyProperties(secretDao, secret);
+        if (!Objects.isNull(secretDao.getUser())) {
+            secret.setUser(userFromDao(secretDao.getUser()));
         }
         return secret;
     }
 
-    public SecretDBO secretToDBO(Secret secret) {
-        var secretDBO = new SecretDBO();
+    public SecretDao secretToDao(Secret secret) {
+        var secretDBO = new SecretDao();
         BeanUtils.copyProperties(secret, secretDBO, "id");
         if (!Objects.isNull(secret.getUser())) {
-            secretDBO.setUser(userToDBO(secret.getUser()));
+            secretDBO.setUser(userToDao(secret.getUser()));
         }
         return secretDBO;
     }
@@ -44,7 +45,7 @@ public class MappingService {
         var secret = new Secret();
         BeanUtils.copyProperties(secretRequest, secret);
         if (!Objects.isNull(secretRequest.getUserId())) {
-            secret.setUser(userFromDBO(userRepository.findOneById(secretRequest.getUserId())));
+            secret.setUser(userFromDao(userRepository.findOneById(secretRequest.getUserId())));
         }
         return secret;
     }
@@ -64,39 +65,35 @@ public class MappingService {
         return simpleSecretResponse;
     }
 
-    public SecretResponse secretDBOToResponse(SecretDBO secretDBO) {
-        return secretToResponse(secretFromDBO(secretDBO));
+    public SecretResponse secretDaoToResponse(SecretDao secretDao) {
+        return secretToResponse(secretFromDao(secretDao));
     }
 
-    public SimpleSecretResponse secretDBOToSimpleResponse(SecretDBO secretDBO) {
-        return secretToSimpleResponse(secretFromDBO(secretDBO));
+    public SimpleSecretResponse secretDaoToSimpleResponse(SecretDao secretDao) {
+        return secretToSimpleResponse(secretFromDao(secretDao));
     }
 
-    public UserResponse userDBOToResponse(UserDBO user) {
-        return userToResponse(userFromDBO(user));
+    public UserResponse userDaoToResponse(UserDao user) {
+        return userToResponse(userFromDao(user));
     }
 
-    public User userFromDBO(UserDBO userDBO) {
+    public User userFromDao(UserDao userDao) {
         var user = new User();
-        BeanUtils.copyProperties(userDBO, user);
+        BeanUtils.copyProperties(userDao, user);
         return user;
     }
 
     public User userFromRequest(UserRequest userRequest) {
         var user = new User();
         BeanUtils.copyProperties(userRequest, user);
+        user.setEmail(requestHelperService.getEmail());
         return user;
     }
 
-    public UserDBO userToDBO(User user) {
-        var userDBO = new UserDBO();
+    public UserDao userToDao(User user) {
+        var userDBO = new UserDao();
         BeanUtils.copyProperties(user, userDBO);
         return userDBO;
-    }
-
-    public UserDBO copyUserRequestToDBO(UserRequest from, UserDBO to) {
-        BeanUtils.copyProperties(from, to, "id", "emailVerified", "emailToken", "creationDate");
-        return to;
     }
 
     public UserResponse userToResponse(User user) {
@@ -111,7 +108,7 @@ public class MappingService {
         return simpleUserResponse;
     }
 
-    public SimpleUserResponse userDBOToSimpleResponse(UserDBO userDBO) {
-        return userToSimpleResponse(userFromDBO(userDBO));
+    public SimpleUserResponse userDaoToSimpleResponse(UserDao userDao) {
+        return userToSimpleResponse(userFromDao(userDao));
     }
 }

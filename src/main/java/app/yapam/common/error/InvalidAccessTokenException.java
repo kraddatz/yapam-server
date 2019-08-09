@@ -3,6 +3,6 @@ package app.yapam.common.error;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class EmailVerificationTokenExpiredException extends YapamException {
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
+public class InvalidAccessTokenException extends YapamException {
 }

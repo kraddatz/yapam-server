@@ -15,27 +15,26 @@ app:
   app-name: 1
   java-version: 1
   spring-boot-version: 1
-  tomcat-version: 1
   swagger-schemes:
     - http
     - https
 
 yapam:
-  security:
-    oauth:
-      access-token-validity-period: P1D
-      refresh-token-validity-period: P1D
-
   registration-timeout: P1D
 
   mail:
-    host: host@domain.com
+    host: host.domain.com
     port: 587
     username: username
     password: password
     protocol: smtp
     test-connection: false
-    message-sender: yapam@yourdomain.com
+    message-sender: yapam@domain.com
 
   datasource:
     url: 'jdbc:h2:mem:'
+
+keycloak:
+  realm: "realm"
+  resource: "resource"
+  auth-server-url: "server"

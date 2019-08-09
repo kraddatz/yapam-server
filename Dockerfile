@@ -1,4 +1,4 @@
-FROM openjdk:11.0.3-jdk-slim
+FROM openjdk:12.0.3-jdk-slim
 VOLUME /config
 ENV SPRING_PROFILES_ACTIVE='local'
 ENV SPRING_CONFIG_LOCATION='classpath:application-local.yaml,file:/config/yapam.yaml'
