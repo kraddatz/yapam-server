@@ -1,10 +1,11 @@
 package app.yapam.user.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Mono;
 
-public interface UserRepository extends JpaRepository<UserDao, String> {
+public interface UserRepository extends ReactiveCrudRepository<UserDao, String> {
 
-    UserDao findOneByEmail(String email);
+    Mono<UserDao> findOneByEmail(String email);
 
-    UserDao findOneById(String userId);
+    Mono<UserDao> findOneById(String userId);
 }

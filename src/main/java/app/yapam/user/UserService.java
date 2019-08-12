@@ -6,10 +6,12 @@ import app.yapam.common.service.RequestHelperService;
 import app.yapam.user.model.response.SimpleUserResponse;
 import app.yapam.user.model.response.SimpleUserResponseWrapper;
 import app.yapam.user.model.response.UserResponse;
+import app.yapam.user.repository.UserDao;
 import app.yapam.user.repository.UserRepository;
 import app.yapam.user.model.request.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -22,21 +24,24 @@ public class UserService {
     @Autowired private RequestHelperService requestHelperService;
     @Autowired private MappingService mappingService;
 
-    public UserResponse getCurrentUser() {
-        var user = userRepository.findOneByEmail(requestHelperService.getEmail());
-        return mappingService.userDaoToResponse(user);
+    public Mono<UserResponse> getCurrentUser() {
+        return userRepository.findOneByEmail(requestHelperService.getEmail())
+                .map(u -> mappingService.userDaoToResponse(u));
     }
 
-    public SimpleUserResponse getSimpleUserById(String userId) {
-        return mappingService.userDaoToSimpleResponse(userRepository.findOneById(userId));
+    public Mono<SimpleUserResponse> getSimpleUserById(String userId) {
+        return userRepository.findOneById(userId)
+                .map(u -> mappingService.userDaoToSimpleResponse(u));
     }
 
-    public UserResponse createUser(UserRequest userRequest) {
+    public Mono<UserResponse> createUser(UserRequest userRequest) {
         var user = mappingService.userFromRequest(userRequest);
         user.setCreationDate(LocalDateTime.now());
         user.setEmail(requestHelperService.getEmail());
         user.setCreationDate(LocalDateTime.now());
-        userRepository.save(mappingService.userToDao(user));
+        return userRepository.save(mappingService.userToDao(user))
+                .compose(u -> emailService.sendWelcomeMail(mappingService.userFromDao(u)));
+                .map(u -> mappingService.userToResponse(u));
         emailService.sendWelcomeMail(user);
         return mappingService.userToResponse(user);
     }

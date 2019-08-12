@@ -14,6 +14,7 @@ import app.yapam.user.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
@@ -26,26 +27,28 @@ public class MappingService {
     public Secret secretFromDao(SecretDao secretDao) {
         var secret = new Secret();
         BeanUtils.copyProperties(secretDao, secret);
-        if (!Objects.isNull(secretDao.getUser())) {
+        if (Objects.nonNull(secretDao.getUser())) {
             secret.setUser(userFromDao(secretDao.getUser()));
         }
+
         return secret;
     }
 
     public SecretDao secretToDao(Secret secret) {
-        var secretDBO = new SecretDao();
-        BeanUtils.copyProperties(secret, secretDBO, "id");
-        if (!Objects.isNull(secret.getUser())) {
-            secretDBO.setUser(userToDao(secret.getUser()));
+        var secretDao = new SecretDao();
+        BeanUtils.copyProperties(secret, secretDao);
+        if (Objects.nonNull(secret.getUser())) {
+            secretDao.setUser(userToDao(secret.getUser()));
         }
-        return secretDBO;
+
+        return secretDao;
     }
 
     public Secret secretFromRequest(SecretRequest secretRequest) {
         var secret = new Secret();
         BeanUtils.copyProperties(secretRequest, secret);
         if (!Objects.isNull(secretRequest.getUserId())) {
-            secret.setUser(userFromDao(userRepository.findOneById(secretRequest.getUserId())));
+            secret.setUser(userFromDao(userRepository.findOneById(secretRequest.getUserId()).block()));
         }
         return secret;
     }

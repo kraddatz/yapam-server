@@ -38,6 +38,8 @@ lombok {
 
 repositories {
     mavenCentral()
+    maven { url "http://repo.spring.io/libs-milestone" }
+    maven { url "http://repo.spring.io/libs-snapshot" }
     jcenter()
 }
 
@@ -65,14 +67,18 @@ dependencies {
     implementation group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: '6.0.1'
     implementation group: 'org.liquibase', name: 'liquibase-core', version: "${liquibaseVersion}"
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${springBootVersion}"
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springBootVersion}"
+//    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springBootVersion}"
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: "${springBootVersion}"
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: "${springBootVersion}"
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${springBootVersion}"
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: "${springBootVersion}"
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: "${springCloudVersion}"
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: "${springCloudVersion}"
     implementation group: 'org.springframework.security', name: 'spring-security-jwt', version: "${jwtVersion}"
     implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: "${springOauthVersion}"
+    implementation group: 'io.r2dbc', name: 'r2dbc-postgresql', version: '1.0.0.M7'
+    implementation group: 'org.springframework.data', name: 'spring-data-r2dbc', version: '1.0.0.M2'
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.4.Final'
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: "${junitVersion}"
     testImplementation group: 'org.mockito', name: 'mockito-core', version: "${mockitoVersion}"
