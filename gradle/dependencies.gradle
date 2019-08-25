@@ -17,7 +17,8 @@ buildscript {
         jaxenVersion = '1.2.0'
         junitVersion = '5.5.1'
         jwtVersion = '1.0.10.RELEASE'
-        liquibaseVersion = '3.7.0'
+        keycloakVersion = '6.0.1'
+        liquibaseVersion = '3.8.0'
         lombokVersion = '1.18.8'
         mockitoVersion = '3.0.0'
         mysqlConnectorVersion = '8.0.17'
@@ -62,7 +63,7 @@ dependencies {
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: "${javaJaxbVersion}"
     implementation group: 'jaxen', name: 'jaxen', version: "${jaxenVersion}"
     implementation group: 'mysql', name: 'mysql-connector-java', version: "${mysqlConnectorVersion}"
-    implementation group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: '6.0.1'
+    implementation group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: "${keycloakVersion}"
     implementation group: 'org.liquibase', name: 'liquibase-core', version: "${liquibaseVersion}"
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${springBootVersion}"
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springBootVersion}"

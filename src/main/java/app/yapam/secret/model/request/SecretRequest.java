@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class SecretRequest {
@@ -15,6 +17,5 @@ public class SecretRequest {
     private String data;
     @ApiModelProperty(value = "Type of the secret", dataType = "string", allowableValues = "LOGIN, ID, WIFI, NOTE, CREDITCARD")
     private SecretTypeEnum type;
-    @ApiModelProperty(value = "owner of the secret", example = "7ba292c2-7c9b-48ac-a0b5-edb223704f42")
-    private String userId;
+    private List<UserIdSecretPrivilege> users;
 }

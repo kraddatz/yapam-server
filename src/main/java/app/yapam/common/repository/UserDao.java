@@ -1,6 +1,5 @@
-package app.yapam.user.repository;
+package app.yapam.common.repository;
 
-import app.yapam.secret.repository.SecretDao;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -33,8 +32,8 @@ public class UserDao {
     private LocalDateTime creationDate;
     @OneToMany(
             mappedBy = "user",
-            cascade =  CascadeType.ALL,
+            cascade =  CascadeType.MERGE,
             orphanRemoval = true
     )
-    private Set<SecretDao> secrets;
+    private Set<UserSecretDao> secrets;
 }

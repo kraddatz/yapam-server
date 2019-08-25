@@ -1,7 +1,7 @@
 package app.yapam.common.service;
 
 import app.yapam.YapamBaseTest;
-import app.yapam.user.repository.UserRepository;
+import app.yapam.common.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,140 +23,83 @@ class MappingServiceTest extends YapamBaseTest {
     @MockBean private RequestHelperService requestHelperService;
 
     @Test
-    void secretFromDBO_whenSecretDBOHasNoUser() {
-        var secretDBO = createDefaultSecretDBO();
-        secretDBO.setUser(null);
+    void secretDaoToResponse() {
+        var secretDao = createDefaultSecretDao();
 
-        var result = mappingService.secretFromDao(secretDBO);
-
-        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
-        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data faileed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
-        assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
-        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
-    }
-
-    @Test
-    void secretFromDBO_whenSecretDBOHasUser() {
-        var secretDBO = createDefaultSecretDBO();
-
-        var result = mappingService.secretFromDao(secretDBO);
-
-        assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "user failed");
-        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
-        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
-        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
-    }
-
-    @Test
-    void secretToDBO_whenSecretHasNoUser() {
-        var secret = createDefaultSecret();
-        secret.setUser(null);
-
-        var result = mappingService.secretToDao(secret);
-
-        assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
-        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
-        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
-        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
-        assertNull(result.getId(), "id failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
-        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
-    }
-
-    @Test
-    void secretToDBO_whenSecretHasUser() {
-        var secret = createDefaultSecret();
-
-        var result = mappingService.secretToDao(secret);
-
-        assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "username failed");
-        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
-        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
-        assertNull(result.getId(), "id failed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
-        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
-    }
-
-    @Test
-    void secretFromRequest_whenSecretRequestHasNoUserId() {
-        var secretRequest = createDefaultSecretRequest();
-        secretRequest.setUserId(null);
-
-        var result = mappingService.secretFromRequest(secretRequest);
-
-        assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
-        assertNull(result.getVersion(), "version failed");
-        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
-        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
-        assertNull(result.getSecretId(), "secretId failed");
-        assertNull(result.getCreationDate(), "creationDate failed");
-    }
-
-    @Test
-    void secretFromRequest_whenSecretRequestHasUserId() {
-        var secretRequest = createDefaultSecretRequest();
-        var userDBO = createDefaultUserDao();
-        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDBO);
-
-        var result = mappingService.secretFromRequest(secretRequest);
-
-        assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "user failed");
-        assertNull(result.getCreationDate(), "creationDate failed");
-        assertNull(result.getSecretId(), "secretId failed");
-        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
-        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
-        assertNull(result.getVersion());
-    }
-
-    @Test
-    void secretToResponse_whenSecretHasNoUser() {
-        var secret = createDefaultSecret();
-        secret.setUser(null);
-
-        var result = mappingService.secretToResponse(secret);
-
-        assertThrows(NullPointerException.class, () -> result.getUser().getName(), "user failed");
-        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
-        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
-        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
-        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
-    }
-
-    @Test
-    void secretToResponse_whenSecretHasUser() {
-        var secret = createDefaultSecret();
-
-        var result = mappingService.secretToResponse(secret);
-
-        assertEquals(DEFAULT_USER_NAME, result.getUser().getName(), "name failed");
-        assertEquals(DEFAUlT_SECRET_DATA, result.getData(), "data failed");
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
-        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
-        assertEquals(DEFAUlT_SECRET_CREATION_DATE, result.getCreationDate(), "creationDate failed");
-        assertEquals(DEFAUlT_SECRET_TYPE, result.getType(), "type failed");
-        assertEquals(DEFAUlT_SECRET_VERSION, result.getVersion(), "version failed");
-    }
-
-    @Test
-    void secretDBOToResponse() {
-        var secretDBO = createDefaultSecretDBO();
-
-        var result = mappingService.secretDaoToResponse(secretDBO);
+        var result = mappingService.secretDaoToResponse(secretDao);
 
         assertNotNull(result);
+    }
+
+    @Test
+    void secretDaoToSimpleResponse() {
+        var secretDao = createDefaultSecretDao();
+
+        var result = mappingService.secretDaoToSimpleResponse(secretDao);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void secretFromDao() {
+        var secretDao = createDefaultSecretDao();
+
+        var result = mappingService.secretFromDao(secretDao);
+
+        assertEquals(DEFAULT_SECRET_TITLE, result.getTitle());
+        assertEquals(DEFAULT_SECRET_SECRETID, result.getSecretId());
+        assertEquals(DEFAULT_SECRET_VERSION, result.getVersion());
+        assertEquals(DEFAULT_SECRET_CREATION_DATE, result.getCreationDate());
+        assertEquals(DEFAULT_SECRET_DATA, result.getData());
+        assertEquals(DEFAULT_SECRET_TYPE, result.getType());
+        assertEquals(DEFAULT_USER_NAME, result.getUsers().get(0).getUser().getName());
+        assertTrue(result.getUsers().get(0).getPrivilege());
+    }
+
+    @Test
+    void secretFromRequest() {
+        var secretRequest = createDefaultSecretRequest();
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(createDefaultUserDao());
+
+        var result = mappingService.secretFromRequest(secretRequest);
+
+        assertEquals(DEFAULT_SECRET_TYPE, result.getType());
+        assertEquals(DEFAULT_SECRET_TITLE, result.getTitle());
+        assertEquals(DEFAULT_SECRET_DATA, result.getData());
+        assertEquals(DEFAULT_USER_NAME, result.getUsers().get(0).getUser().getName());
+        assertTrue(result.getUsers().get(0).getPrivilege());
+    }
+
+    @Test
+    void secretToDao() {
+        var secret = createDefaultSecret();
+
+        var result = mappingService.secretToDao(secret);
+
+        assertEquals(DEFAULT_SECRET_DATA, result.getData());
+        assertEquals(DEFAULT_SECRET_VERSION, result.getVersion());
+        assertEquals(DEFAULT_SECRET_CREATION_DATE, result.getCreationDate());
+        assertEquals(DEFAULT_SECRET_SECRETID, result.getSecretId());
+        assertEquals(DEFAULT_SECRET_TITLE, result.getTitle());
+        assertEquals(DEFAULT_SECRET_TYPE, result.getType());
+        assertEquals(DEFAULT_USER_NAME, result.getUsers().iterator().next().getUser().getName());
+        assertTrue(result.getUsers().iterator().next().getPrivileged());
+    }
+
+    @Test
+    void secretToResponse() {
+        var secret = createDefaultSecret();
+
+        var result = mappingService.secretToResponse(secret);
+
+        assertEquals(DEFAULT_SECRET_TYPE, result.getType());
+        assertEquals(DEFAULT_SECRET_TITLE, result.getTitle());
+        assertEquals(DEFAULT_SECRET_SECRETID, result.getSecretId());
+        assertEquals(DEFAULT_SECRET_CREATION_DATE, result.getCreationDate());
+        assertEquals(DEFAULT_SECRET_VERSION, result.getVersion());
+        assertEquals(DEFAULT_SECRET_DATA, result.getData());
+        assertEquals(DEFAULT_USER_NAME, result.getUsers().get(0).getUser().getName());
+        assertTrue(result.getUsers().get(0).getPrivileged());
     }
 
     @Test
@@ -165,15 +108,24 @@ class MappingServiceTest extends YapamBaseTest {
 
         var result = mappingService.secretToSimpleResponse(secret);
 
-        assertEquals(DEFAUlT_SECRET_SECRETID, result.getSecretId(), "secretId failed");
-        assertEquals(DEFAUlT_SECRET_TITLE, result.getTitle(), "title failed");
+        assertEquals(DEFAULT_SECRET_TITLE, result.getTitle());
+        assertEquals(DEFAULT_SECRET_SECRETID, result.getSecretId());
     }
 
     @Test
-    void secretDBOToSimpleResponse() {
-        var secretDBO = createDefaultSecretDBO();
+    void userDBOToResponse() {
+        var userDBO = createDefaultUserDao();
 
-        var result = mappingService.secretDaoToSimpleResponse(secretDBO);
+        var result = mappingService.userDaoToResponse(userDBO);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void userDBOToSimpleResponse() {
+        var userDBO = createDefaultUserDao();
+
+        var result = mappingService.userDaoToSimpleResponse(userDBO);
 
         assertNotNull(result);
     }
@@ -232,23 +184,5 @@ class MappingServiceTest extends YapamBaseTest {
         assertEquals(DEFAULT_USER_ID, result.getId());
         assertEquals(DEFAULT_USER_PUBLIC_KEY, result.getPublicKey());
         assertEquals(DEFAULT_USER_CREATION_DATE, result.getCreationDate());
-    }
-
-    @Test
-    void userDBOToSimpleResponse() {
-        var userDBO = createDefaultUserDao();
-
-        var result = mappingService.userDaoToSimpleResponse(userDBO);
-
-        assertNotNull(result);
-    }
-
-    @Test
-    void userDBOToResponse() {
-        var userDBO = createDefaultUserDao();
-
-        var result = mappingService.userDaoToResponse(userDBO);
-
-        assertNotNull(result);
     }
 }

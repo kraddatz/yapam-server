@@ -1,4 +1,4 @@
-package app.yapam.secret.repository;
+package app.yapam.common.repository;
 
 public interface SecretVersionProjection {
 

@@ -1,13 +1,13 @@
-package app.yapam.secret.repository;
+package app.yapam.common.repository;
 
 import app.yapam.secret.model.SecretTypeEnum;
-import app.yapam.user.repository.UserDao;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -22,7 +22,6 @@ public class SecretDao {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     private String id;
-
     private String title;
     @Column(name = "secret_id")
     private String secretId;
@@ -32,8 +31,10 @@ public class SecretDao {
     @Lob
     private String data;
     private SecretTypeEnum type;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserDao user;
+    @OneToMany(
+            mappedBy = "secret",
+            cascade = CascadeType.MERGE,
+            orphanRemoval = true
+    )
+    private Set<UserSecretDao> users;
 }

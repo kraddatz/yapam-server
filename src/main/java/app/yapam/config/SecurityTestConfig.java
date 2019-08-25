@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 @Configuration
 @EnableWebSecurity(debug = true)
-@Profile({"test", "integration"})
+@Profile({"test"})
 public class SecurityTestConfig extends WebSecurityConfigurerAdapter {
 
     @Override

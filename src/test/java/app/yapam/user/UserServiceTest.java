@@ -1,13 +1,13 @@
 package app.yapam.user;
 
 import app.yapam.YapamBaseTest;
+import app.yapam.common.repository.UserDao;
+import app.yapam.common.repository.UserRepository;
 import app.yapam.common.service.EmailService;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
 import app.yapam.user.model.User;
 import app.yapam.user.model.response.SimpleUserResponseWrapper;
-import app.yapam.user.repository.UserDao;
-import app.yapam.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
+import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -31,18 +32,6 @@ class UserServiceTest extends YapamBaseTest {
     @MockBean private RequestHelperService requestHelperService;
     @MockBean private MappingService mappingService;
     @MockBean private EmailService emailService;
-
-    @Test
-    void getSimpleUserById() {
-        var userDBO = createDefaultUserDao();
-        var simpleUserResponse = createDefaultSimpleUserResponse();
-        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDBO);
-        when(mappingService.userDaoToSimpleResponse(userDBO)).thenReturn(simpleUserResponse);
-
-        var result = userService.getSimpleUserById(DEFAULT_USER_ID);
-
-        assertNotNull(result);
-    }
 
     @Test
     void createUser() {
@@ -84,5 +73,17 @@ class UserServiceTest extends YapamBaseTest {
         userResponse = userService.getCurrentUser();
 
         assertNotNull(userResponse);
+    }
+
+    @Test
+    void getSimpleUserById() {
+        var userDBO = createDefaultUserDao();
+        var simpleUserResponse = createDefaultSimpleUserResponse();
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDBO);
+        when(mappingService.userDaoToSimpleResponse(userDBO)).thenReturn(simpleUserResponse);
+
+        var result = userService.getSimpleUserById(DEFAULT_USER_ID);
+
+        assertNotNull(result);
     }
 }

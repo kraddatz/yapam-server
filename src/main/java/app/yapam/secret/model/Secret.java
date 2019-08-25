@@ -3,9 +3,9 @@ package app.yapam.secret.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import app.yapam.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,5 +18,5 @@ public class Secret {
     private SecretTypeEnum type;
     private Integer version;
     private LocalDateTime creationDate;
-    private User user;
+    private List<UserSecretPrivilege> users;
 }

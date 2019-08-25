@@ -1,4 +1,4 @@
-package app.yapam.user.repository;
+package app.yapam.common.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -7,6 +7,5 @@ springBoot {
 }
 
 bootRun {
-    bootRun.systemProperty 'spring.profiles.active', 'local'
-    bootRun.systemProperty 'spring.config.location', 'classpath:application-local.yaml,file:./yapam.yaml'
+    bootRun.systemProperty 'spring.config.location', 'classpath:application.yaml,file:./yapam.yaml'
 }
