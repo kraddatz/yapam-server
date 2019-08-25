@@ -11,6 +11,7 @@ import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.model.response.SecretResponse;
 import app.yapam.secret.model.response.SecretResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ public class SecretService {
         return mappingService.secretToResponse(createSecret(secret));
     }
 
+    @PreAuthorize("@permissionEvaluator.hasAccessToSecret(#secretId, 'READ')")
     void deleteSecret(String secretId) {
         secretRepository.deleteBySecretId(secretId);
     }
@@ -61,6 +63,7 @@ public class SecretService {
         return secretResponseWrapper;
     }
 
+    @PreAuthorize("@permissionEvaluator.hasAccessToSecret(#secretId, 'WRITE')")
     SecretResponse getSecretById(String secretId, Integer version) {
         SecretDao secret;
         if (version == 0) {
@@ -71,6 +74,7 @@ public class SecretService {
         return mappingService.secretDaoToResponse(secret);
     }
 
+    @PreAuthorize("@permissionEvaluator.hasAccessToSecret(#secretId, 'WRITE')")
     SecretResponse updateSecret(String secretId, SecretRequest secretRequest) {
         var secret = mappingService.secretFromRequest(secretRequest);
         return mappingService.secretToResponse(updateSecret(secretId, secret));
