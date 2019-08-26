@@ -15,22 +15,54 @@ For local development just spin up a MySQL DB
 ### 2.2 Gradle
 This project uses gradle as build tool
 
-#### Run tests
-``./gradlew test``
+1. start and configure keycloak
+2. create a _yapam.yaml_ in the root of the project directory
+    ```yaml
+    yapam:
+      mail:
+        host: 
+        port: 
+        username: 
+        password: 
+        protocol: 
+        test-connection: true
+        message-sender: 
+    
+      datasource:
+        url: jdbc:mysql://localhost/yapam?createDatabaseIfNotExist=true&user=root&password=secret
+    
+      host: localhost:8080
+    
+    keycloak:
+      auth-server-url: "http://localhost:8888"
+      realm: 
+      resource: 
+      principal-attribute: preferred_username
+      public-client: true
+    ```
+3. ``./gradlew bootRun``
 
-#### Run application locally
-``./gradlew bootRun``
+## 3. Run, run, run
 
-#### Build application (assemble fatjar) 
-``./gradlew assemble``
-
-#### Build application (assemble fatjar and test)
-``./gradlew build``
-
-### 2.3 Code Analysis
-
-1. ``docker run docker run -d --name sonarqube -p 9000:9000 sonarqube``
-2. ``./gradlew sonar``
+1. start and configure keycloak
+2. create an environment file like this: /path/to/.yapam-server.env
+    ```
+    YAPAM_MAIL_HOST=
+    YAPAM_MAIL_PORT=
+    YAPAM_MAIL_USERNAME=
+    YAPAM_MAIL_PASSWORD=
+    YAPAM_MAIL_PROTOCOL=
+    YAPAM_MAIL_TEST-CONNECTION=
+    YAPAM_MAIL_MESSAGE-SENDER=
+    YAPAM_DATASOURCE_URL=jdbc:mysql://yapam-db/yapam?createDatabaseIfNotExists=true&user=root&password=secret
+    YAPAM_HOST=http://localhost:8080
+    KEYCLOAK_AUTH-SERVER-URL=http://localhost:8888
+    KEYCLOAK_REALM=
+    KEYCLOAK_RESOURCE=
+    KEYCLOAK_PRINCIPAL-ATTRIBUTE=preferred_username
+    KEYCLOAK_PUBLIC-CLIENT=true    
+    ```    
+3. ``docker run -it -p 8080:8080 --env-file /path/to/.yapam-server.env yapam-server`` 
 
 <!-- referenced links here -->
 [contribution-guide]:CONTRIBUTION.md
