@@ -19,7 +19,7 @@ apply from: 'gradle/dependencies.gradle'
 apply from: 'gradle/publishing.gradle'
 apply from: 'gradle/spring.gradle'
 
-version = '0.1.0-SNAPSHOT'
+version = '0.2.0-RELEASE'
 group = 'app.yapam'
 sourceCompatibility = 11
 targetCompatibility = 11
