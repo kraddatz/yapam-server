@@ -7,7 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,5 +36,10 @@ public class SecretDao {
             cascade = CascadeType.MERGE,
             orphanRemoval = true
     )
-    private Set<UserSecretDao> users;
+    private List<UserSecretDao> users;
+    @OneToMany(
+            mappedBy = "secret",
+            orphanRemoval = true
+    )
+    private List<FileDao> files;
 }

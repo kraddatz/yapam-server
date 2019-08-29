@@ -6,6 +6,7 @@ import app.yapam.common.repository.UserRepository;
 import app.yapam.common.repository.UserSecretRepository;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
+import app.yapam.file.FileService;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.model.response.SecretResponse;
@@ -28,6 +29,7 @@ public class SecretService {
     @Autowired private RequestHelperService requestHelperService;
     @Autowired private UserRepository userRepository;
     @Autowired private UserSecretRepository userSecretRepository;
+    @Autowired private FileService fileService;
 
     private Secret createSecret(Secret secret) {
         secret.setSecretId(UUID.randomUUID().toString());
@@ -35,6 +37,7 @@ public class SecretService {
         secret.setCreationDate(LocalDateTime.now());
         var secretDao = secretRepository.save(mappingService.secretToDao(secret));
         userSecretRepository.saveAll(secretDao.getUsers());
+        fileService.attachSecretToFiles(secret.getFiles(), secretDao);
         return secret;
     }
 
@@ -88,6 +91,7 @@ public class SecretService {
         var secretDao = mappingService.secretToDao(secret);
         secretRepository.save(secretDao);
         userSecretRepository.saveAll(secretDao.getUsers());
+        fileService.attachSecretToFiles(secret.getFiles(), secretDao);
         return secret;
     }
 }

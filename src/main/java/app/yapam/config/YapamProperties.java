@@ -3,6 +3,7 @@ package app.yapam.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -19,6 +20,12 @@ public class YapamProperties {
     private Duration registrationTimeout;
     private YapamMail mail;
     private YapamDatasource datasource;
+    private StorageProvider storageProvider;
+    private StorageProviderConfiguration storageProviderConfiguration;
+
+    public enum StorageProvider {
+        FILESYSTEM
+    }
 
     @Getter
     @Setter
@@ -40,5 +47,12 @@ public class YapamProperties {
     @Setter
     public static class YapamDatasource {
         private String url;
+    }
+
+    @Getter
+    @Setter
+    @Component
+    public static class StorageProviderConfiguration {
+        private String rootPath = "/data";
     }
 }

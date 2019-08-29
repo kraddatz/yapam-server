@@ -4,6 +4,7 @@ import app.yapam.YapamBaseTest;
 import app.yapam.common.repository.*;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
+import app.yapam.file.FileService;
 import app.yapam.secret.model.Secret;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ class SecretServiceTest extends YapamBaseTest {
     @Autowired private SecretService secretService;
     @MockBean private UserRepository userRepository;
     @MockBean private RequestHelperService requestHelperService;
+    @MockBean private FileService fileService;
     @MockBean private MappingService mappingService;
     @MockBean private SecretRepository secretRepository;
     @MockBean private UserSecretRepository userSecretRepository;
@@ -49,9 +51,13 @@ class SecretServiceTest extends YapamBaseTest {
     void createSecret() {
         var secretRequest = createDefaultSecretRequest();
         var secret = createDefaultSecret();
+        secret.setFiles(Collections.singletonList(createDefaultFile()));
         var secretDao = createDefaultSecretDao();
+        secretDao.setFiles(Collections.singletonList(createDefaultFileDao()));
         var secretDaoWithoutId = createDefaultSecretDao();
+        secretDaoWithoutId.setFiles(Collections.singletonList(createDefaultFileDao()));
         var secretResponse = createDefaultSecretResponse();
+        secretResponse.setFiles(Collections.singletonList(createDefaultSimpleFileResponse()));
         secretDaoWithoutId.setId(null);
         when(mappingService.secretFromRequest(secretRequest)).thenReturn(secret);
         when(mappingService.secretToDao(secret)).thenReturn(secretDaoWithoutId);
@@ -118,6 +124,7 @@ class SecretServiceTest extends YapamBaseTest {
     void updateSecret() {
         var secretRequest = createDefaultSecretRequest();
         var secret = createDefaultSecret();
+        secret.setFiles(Collections.singletonList(createDefaultFile()));
         var secretDBO = createDefaultSecretDao();
         var secretVersionProjection = projectionFactory.createProjection(SecretVersionProjection.class);
         secretVersionProjection.setVersion(0);

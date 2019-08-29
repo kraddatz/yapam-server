@@ -1,6 +1,7 @@
 package app.yapam.common.service;
 
 import app.yapam.YapamBaseTest;
+import app.yapam.common.repository.FileRepository;
 import app.yapam.common.repository.SecretRepository;
 import app.yapam.common.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -24,9 +25,76 @@ class PermissionEvaluatorTest extends YapamBaseTest {
     @MockBean private RequestHelperService requestHelperService;
     @MockBean private SecretRepository secretRepository;
     @MockBean private UserRepository userRepository;
+    @MockBean private FileRepository fileRepository;
 
     @Test
-    void whenUserHasReadAccess_thenReturnTrue() {
+    void whenUserHasReadAccessToFile_thenReturnTrue() {
+        var userDao = createDefaultUserDao();
+        var secretDao = createDefaultSecretDao();
+        var fileDao = createDefaultFileDao();
+        fileDao.setSecret(secretDao);
+        when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
+        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
+        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
+
+        var result = permissionEvaluator.hasAccessToFile(DEFAULT_FILE_ID, PermissionEvaluator.SecretAccessPermission.READ);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void whenUserHasNoReadAccessToFile_thenReturnFalse() {
+        var userDao = createDefaultUserDao();
+        var secretDao = createDefaultSecretDao();
+        secretDao.getUsers().get(0).getUser().setId("OTHER-USER-ID");
+        var fileDao = createDefaultFileDao();
+        fileDao.setSecret(secretDao);
+        when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
+        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
+        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
+
+        var result = permissionEvaluator.hasAccessToFile(DEFAULT_FILE_ID, PermissionEvaluator.SecretAccessPermission.READ);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void whenUserHasWriteAccessToFile_thenReturnTrue() {
+        var userDao = createDefaultUserDao();
+        var secretDao = createDefaultSecretDao();
+        var fileDao = createDefaultFileDao();
+        fileDao.setSecret(secretDao);
+        when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
+        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
+        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
+
+        var result = permissionEvaluator.hasAccessToFile(DEFAULT_FILE_ID, PermissionEvaluator.SecretAccessPermission.WRITE);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void whenUserHasNoWriteAccessToFile_thenReturnFalse() {
+        var userDao = createDefaultUserDao();
+        var secretDao = createDefaultSecretDao();
+        secretDao.getUsers().get(0).setPrivileged(false);
+        var fileDao = createDefaultFileDao();
+        fileDao.setSecret(secretDao);
+        when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
+        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
+        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
+
+        var result = permissionEvaluator.hasAccessToFile(DEFAULT_FILE_ID, PermissionEvaluator.SecretAccessPermission.WRITE);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void whenUserHasReadAccessToSecret_thenReturnTrue() {
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
         when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
@@ -39,10 +107,10 @@ class PermissionEvaluatorTest extends YapamBaseTest {
     }
 
     @Test
-    void whenUserHasNoReadAccess_thenReturnTrue() {
+    void whenUserHasNoReadAccessToSecret_thenReturnFalse() {
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
-        secretDao.getUsers().iterator().next().getUser().setId("OTHER-USER-ID");
+        secretDao.getUsers().get(0).getUser().setId("OTHER-USER-ID");
         when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
         when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
@@ -53,7 +121,7 @@ class PermissionEvaluatorTest extends YapamBaseTest {
     }
 
     @Test
-    void whenUserHasWriteAccess_thenReturnTrue() {
+    void whenUserHasWriteAccessToSecret_thenReturnTrue() {
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
         when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
@@ -66,10 +134,10 @@ class PermissionEvaluatorTest extends YapamBaseTest {
     }
 
     @Test
-    void whenUserHasNoWriteAccess_thenReturnTrue() {
+    void whenUserHasNoWriteAccessToSecret_thenReturnFalse() {
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
-        secretDao.getUsers().iterator().next().setPrivileged(false);
+        secretDao.getUsers().get(0).setPrivileged(false);
         when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
         when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);

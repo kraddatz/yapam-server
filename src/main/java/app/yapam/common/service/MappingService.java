@@ -1,9 +1,10 @@
 package app.yapam.common.service;
 
-import app.yapam.common.repository.SecretDao;
-import app.yapam.common.repository.UserDao;
-import app.yapam.common.repository.UserRepository;
-import app.yapam.common.repository.UserSecretDao;
+import app.yapam.common.error.InvalidFileContentException;
+import app.yapam.common.repository.*;
+import app.yapam.file.model.File;
+import app.yapam.file.model.response.FileResponse;
+import app.yapam.file.model.response.SimpleFileResponse;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.UserSecretPrivilege;
 import app.yapam.secret.model.request.SecretRequest;
@@ -15,20 +16,68 @@ import app.yapam.user.model.User;
 import app.yapam.user.model.request.UserRequest;
 import app.yapam.user.model.response.SimpleUserResponse;
 import app.yapam.user.model.response.UserResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Base64;
 import java.util.List;
-import java.util.Set;
 
 @Service
+@Slf4j
 public class MappingService {
 
     @Autowired private UserRepository userRepository;
     @Autowired private RequestHelperService requestHelperService;
+    @Autowired private FileRepository fileRepository;
+
+    public SimpleFileResponse fileDaoToSimpleResponse(FileDao fileDao) {
+        return fileToSimpleResponse(fileFromDao(fileDao));
+    }
+
+    public File fileFromDao(FileDao fileDao) {
+        var file = new File();
+        BeanUtils.copyProperties(fileDao, file);
+        return file;
+    }
+
+    public File fileFromRequest(MultipartFile multipartFile) {
+        var file = new File();
+        file.setFilename(multipartFile.getOriginalFilename());
+        file.setFilesize(multipartFile.getSize());
+        try {
+            file.setHash(new String(Base64.getEncoder().encode(MessageDigest.getInstance("SHA-1").digest(multipartFile.getBytes()))));
+            file.setContent(multipartFile.getBytes());
+        } catch (IOException | NoSuchAlgorithmException e) {
+            log.error(e.getMessage(), e);
+            throw new InvalidFileContentException();
+        }
+        return file;
+    }
+
+    public FileDao fileToDao(File file) {
+        var fileDao = new FileDao();
+        BeanUtils.copyProperties(file, fileDao);
+        return fileDao;
+    }
+
+    public FileResponse fileToResponse(File file) {
+        var fileResponse = new FileResponse();
+        BeanUtils.copyProperties(file, fileResponse);
+        return fileResponse;
+    }
+
+    public SimpleFileResponse fileToSimpleResponse(File file) {
+        var simpleFileResponse = new SimpleFileResponse();
+        BeanUtils.copyProperties(file, simpleFileResponse);
+        return simpleFileResponse;
+    }
 
     public SecretResponse secretDaoToResponse(SecretDao secretDao) {
         return secretToResponse(secretFromDao(secretDao));
@@ -48,6 +97,13 @@ public class MappingService {
             userSecretPrivileges.add(userSecretPrivilege);
         }
         secret.setUsers(userSecretPrivileges);
+
+        List<File> files = new ArrayList<>();
+        for (FileDao fileDao : secretDao.getFiles()) {
+            files.add(fileFromDao(fileDao));
+        }
+        secret.setFiles(files);
+
         return secret;
     }
 
@@ -55,23 +111,31 @@ public class MappingService {
         var secret = new Secret();
         BeanUtils.copyProperties(secretRequest, secret);
         List<UserSecretPrivilege> users = new ArrayList<>();
-        for (UserIdSecretPrivilege userId : secretRequest.getUsers()) {
-            var user = userFromDao(userRepository.findOneById(userId.getUserId()));
-            var privilege = new UserSecretPrivilege(user, userId.getPrivileged());
+        for (UserIdSecretPrivilege userIdSecretPrivilege : secretRequest.getUsers()) {
+            var user = userFromDao(userRepository.findOneById(userIdSecretPrivilege.getUserId()));
+            var privilege = new UserSecretPrivilege(user, userIdSecretPrivilege.getPrivileged());
             users.add(privilege);
         }
         secret.setUsers(users);
+
+        List<File> files = new ArrayList<>();
+        for (String fileId : secretRequest.getFiles()) {
+            files.add(fileFromDao(fileRepository.findOneById(fileId)));
+        }
+        secret.setFiles(files);
+
         return secret;
     }
 
     public SecretDao secretToDao(Secret secret) {
         var secretDao = new SecretDao();
         BeanUtils.copyProperties(secret, secretDao, "id");
-        Set<UserSecretDao> userSecrets = new HashSet<>();
+        List<UserSecretDao> userSecrets = new ArrayList<>();
         for (UserSecretPrivilege userSecretPrivilege : secret.getUsers()) {
             userSecrets.add(new UserSecretDao(secretDao, userToDao(userSecretPrivilege.getUser()), userSecretPrivilege.getPrivilege()));
         }
         secretDao.setUsers(userSecrets);
+
         return secretDao;
     }
 
@@ -85,6 +149,13 @@ public class MappingService {
             users.add(simpleUserPrivilegeResponse);
         }
         secretResponse.setUsers(users);
+
+        List<SimpleFileResponse> files = new ArrayList<>();
+        for (File file : secret.getFiles()) {
+            files.add(fileToSimpleResponse(file));
+        }
+        secretResponse.setFiles(files);
+
         return secretResponse;
     }
 

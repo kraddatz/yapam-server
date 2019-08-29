@@ -20,16 +20,15 @@ create table secret
     creation_date datetime     not null,
     data          longtext     not null,
     type          int          not null,
-    unique(secret_id, version)
+    unique (secret_id, version)
 );
 
 create table user_secret
 (
-    user_id       varchar(64) not null,
-    secret_id     varchar(64) not null,
-    privileged tinyint(1) not null,
+    user_id    varchar(64) not null,
+    secret_id  varchar(64) not null,
+    privileged tinyint(1)  not null,
     constraint fk_user_secret_user foreign key (user_id) references user (id),
     constraint fk_user_secret_secret foreign key (secret_id) references secret (id),
     primary key (user_id, secret_id)
-)
-;
+);

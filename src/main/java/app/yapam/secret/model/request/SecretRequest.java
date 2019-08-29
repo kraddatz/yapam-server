@@ -18,4 +18,5 @@ public class SecretRequest {
     @ApiModelProperty(value = "Type of the secret", dataType = "string", allowableValues = "LOGIN, ID, WIFI, NOTE, CREDITCARD")
     private SecretTypeEnum type;
     private List<UserIdSecretPrivilege> users;
+    private List<String> files;
 }

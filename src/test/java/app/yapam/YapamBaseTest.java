@@ -1,8 +1,12 @@
 package app.yapam;
 
+import app.yapam.common.repository.FileDao;
 import app.yapam.common.repository.SecretDao;
 import app.yapam.common.repository.UserDao;
 import app.yapam.common.repository.UserSecretDao;
+import app.yapam.file.model.File;
+import app.yapam.file.model.response.FileResponse;
+import app.yapam.file.model.response.SimpleFileResponse;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.SecretTypeEnum;
 import app.yapam.secret.model.UserSecretPrivilege;
@@ -17,10 +21,10 @@ import app.yapam.user.model.response.SimpleUserResponse;
 import app.yapam.user.model.response.UserResponse;
 import org.junit.jupiter.api.Disabled;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 
 @Disabled
 @java.lang.SuppressWarnings("squid:S2187")
@@ -38,6 +42,8 @@ public abstract class YapamBaseTest {
     protected final String API_USERS_BASE_URL = "/api/users";
     protected final String API_USERS_USER_BY_ID = API_USERS_BASE_URL + "/{userId}";
     protected final String API_USERS_CURRENT_USER = API_USERS_BASE_URL + "/currentuser";
+    protected final String API_FILES_BASE_URL = "/api/files";
+    protected final String API_FILES_FILE_BY_ID = API_FILES_BASE_URL + "/{fileId}";
 
     protected final String DEFAULT_SECRET_TITLE = "secretTitle";
     protected final String DEFAULT_SECRET_DATA = "secretData";
@@ -53,6 +59,47 @@ public abstract class YapamBaseTest {
     protected final String DEFAULT_USER_NAME = "Name";
     protected final String DEFAULT_USER_PUBLIC_KEY = "publicKey";
     protected final LocalDateTime DEFAULT_USER_CREATION_DATE = LocalDateTime.now();
+
+    protected final String DEFAULT_FILE_ID = "a532ef68-771f-4b78-a124-61781f39ca10";
+    protected final String DEFAULT_FILE_FILENAME = "testfile.txt";
+    protected final Long DEFAULT_FILE_ENCRYPTED_FILESIZE = 10L;
+    protected final Long DEFAULT_FILE_ORIGINAL_FILESIZE = 5L;
+    protected final String DEFAULT_FILE_DATA = "thisissomesecretdata";
+    protected final String DEFAULT_FILE_HASH = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+
+    protected MockMultipartFile createDefaultMultipartFile() {
+        return new MockMultipartFile("file", "filename.txt", "text/plain", "some data".getBytes());
+    }
+
+    protected File createDefaultFile() {
+        var file = new File();
+        file.setId(DEFAULT_FILE_ID);
+        file.setFilesize(DEFAULT_FILE_ENCRYPTED_FILESIZE);
+        file.setFilename(DEFAULT_FILE_FILENAME);
+        file.setHash(DEFAULT_FILE_HASH);
+
+        return file;
+    }
+
+    protected FileDao createDefaultFileDao() {
+        var fileDao = new FileDao();
+        fileDao.setId(DEFAULT_FILE_ID);
+        fileDao.setSecret(createDefaultSecretDao());
+        fileDao.setFilename(DEFAULT_FILE_FILENAME);
+        fileDao.setFilesize(DEFAULT_FILE_ORIGINAL_FILESIZE);
+        fileDao.setHash(DEFAULT_FILE_HASH);
+
+        return fileDao;
+    }
+
+    protected FileResponse createDefaultFileResponse() {
+        var fileResponse = new FileResponse();
+        fileResponse.setFilesize(DEFAULT_FILE_ENCRYPTED_FILESIZE);
+        fileResponse.setFilename(DEFAULT_FILE_FILENAME);
+        fileResponse.setId(DEFAULT_FILE_ID);
+
+        return fileResponse;
+    }
 
     protected MockHttpServletRequest createDefaultHttpServletRequest() {
         return new MockHttpServletRequest();
@@ -77,7 +124,7 @@ public abstract class YapamBaseTest {
         secretDBO.setTitle(DEFAULT_SECRET_TITLE);
         secretDBO.setData(DEFAULT_SECRET_DATA);
         secretDBO.setType(DEFAULT_SECRET_TYPE);
-        secretDBO.setUsers(new HashSet<>(Collections.singletonList(userSecretDao)));
+        secretDBO.setUsers(Collections.singletonList(userSecretDao));
         secretDBO.setCreationDate(DEFAULT_SECRET_CREATION_DATE);
         secretDBO.setId(DEFAULT_SECRET_ID);
         secretDBO.setVersion(DEFAULT_SECRET_VERSION);
@@ -92,6 +139,7 @@ public abstract class YapamBaseTest {
         secretRequest.setData(DEFAULT_SECRET_DATA);
         secretRequest.setType(DEFAULT_SECRET_TYPE);
         secretRequest.setUsers(Collections.singletonList(userIdSecretPrivilege));
+        secretRequest.setFiles(Collections.singletonList(DEFAULT_FILE_ID));
         return secretRequest;
     }
 
@@ -106,6 +154,15 @@ public abstract class YapamBaseTest {
         secretResponse.setUsers(Collections.singletonList(simpleUserPrivilegeResponse));
         secretResponse.setVersion(DEFAULT_SECRET_VERSION);
         return secretResponse;
+    }
+
+    protected SimpleFileResponse createDefaultSimpleFileResponse() {
+        var simpleFileResponse = new SimpleFileResponse();
+        simpleFileResponse.setFilesize(DEFAULT_FILE_ENCRYPTED_FILESIZE);
+        simpleFileResponse.setFilename(DEFAULT_FILE_FILENAME);
+        simpleFileResponse.setId(DEFAULT_FILE_ID);
+
+        return simpleFileResponse;
     }
 
     protected SimpleSecretResponse createDefaultSimpleSecretResponse() {

@@ -1,9 +1,6 @@
 package app.yapam.common.service;
 
-import app.yapam.common.repository.SecretDao;
-import app.yapam.common.repository.SecretRepository;
-import app.yapam.common.repository.UserRepository;
-import app.yapam.common.repository.UserSecretDao;
+import app.yapam.common.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,13 +10,20 @@ public class PermissionEvaluator {
     @Autowired private RequestHelperService requestHelperService;
     @Autowired private SecretRepository secretRepository;
     @Autowired private UserRepository userRepository;
+    @Autowired private FileRepository fileRepository;
 
     public enum SecretAccessPermission {
         READ,
         WRITE
     }
 
-    public boolean hasAccessToSecret(String secretId, SecretAccessPermission permission) {
+    public Boolean hasAccessToFile(String fileId, SecretAccessPermission permission) {
+        var fileDao = fileRepository.findOneById(fileId);
+
+        return hasAccessToSecret(fileDao.getSecret().getSecretId(), permission);
+    }
+
+    public Boolean hasAccessToSecret(String secretId, SecretAccessPermission permission) {
         var userId = userRepository.findOneByEmail(requestHelperService.getEmail()).getId();
         var secretDao = secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId);
 

@@ -1,14 +1,18 @@
 package app.yapam.common.service;
 
 import app.yapam.YapamBaseTest;
+import app.yapam.common.repository.FileRepository;
 import app.yapam.common.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -21,10 +25,66 @@ class MappingServiceTest extends YapamBaseTest {
     @Autowired private MappingService mappingService;
     @MockBean private UserRepository userRepository;
     @MockBean private RequestHelperService requestHelperService;
+    @MockBean private FileRepository fileRepository;
+
+    @Test
+    void fileFromRequest() {
+        var fileRequest = new MockMultipartFile("file", "filename.txt", "text/plain", "some xml".getBytes());
+
+        var result = mappingService.fileFromRequest(fileRequest);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void fileDaoToSimpleResponse() {
+        var fileDao = createDefaultFileDao();
+
+        var result = mappingService.fileDaoToSimpleResponse(fileDao);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void fileFromDao() {
+        var fileDao = createDefaultFileDao();
+
+        var result = mappingService.fileFromDao(fileDao);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void fileToDao() {
+        var file = createDefaultFile();
+
+        var result = mappingService.fileToDao(file);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void fileToResponse() {
+        var file = createDefaultFile();
+
+        var result = mappingService.fileToResponse(file);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void fileToSimpleResponse() {
+        var file = createDefaultFile();
+
+        var result = mappingService.fileToSimpleResponse(file);
+
+        assertNotNull(result);
+    }
 
     @Test
     void secretDaoToResponse() {
         var secretDao = createDefaultSecretDao();
+        secretDao.setFiles(Collections.singletonList(createDefaultFileDao()));
 
         var result = mappingService.secretDaoToResponse(secretDao);
 
@@ -34,6 +94,7 @@ class MappingServiceTest extends YapamBaseTest {
     @Test
     void secretDaoToSimpleResponse() {
         var secretDao = createDefaultSecretDao();
+        secretDao.setFiles(Collections.singletonList(createDefaultFileDao()));
 
         var result = mappingService.secretDaoToSimpleResponse(secretDao);
 
@@ -43,6 +104,7 @@ class MappingServiceTest extends YapamBaseTest {
     @Test
     void secretFromDao() {
         var secretDao = createDefaultSecretDao();
+        secretDao.setFiles(Collections.singletonList(createDefaultFileDao()));
 
         var result = mappingService.secretFromDao(secretDao);
 
@@ -60,6 +122,7 @@ class MappingServiceTest extends YapamBaseTest {
     void secretFromRequest() {
         var secretRequest = createDefaultSecretRequest();
         when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(createDefaultUserDao());
+        when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
 
         var result = mappingService.secretFromRequest(secretRequest);
 
@@ -73,6 +136,7 @@ class MappingServiceTest extends YapamBaseTest {
     @Test
     void secretToDao() {
         var secret = createDefaultSecret();
+        secret.setFiles(Collections.singletonList(createDefaultFile()));
 
         var result = mappingService.secretToDao(secret);
 
@@ -82,13 +146,14 @@ class MappingServiceTest extends YapamBaseTest {
         assertEquals(DEFAULT_SECRET_SECRETID, result.getSecretId());
         assertEquals(DEFAULT_SECRET_TITLE, result.getTitle());
         assertEquals(DEFAULT_SECRET_TYPE, result.getType());
-        assertEquals(DEFAULT_USER_NAME, result.getUsers().iterator().next().getUser().getName());
-        assertTrue(result.getUsers().iterator().next().getPrivileged());
+        assertEquals(DEFAULT_USER_NAME, result.getUsers().get(0).getUser().getName());
+        assertTrue(result.getUsers().get(0).getPrivileged());
     }
 
     @Test
     void secretToResponse() {
         var secret = createDefaultSecret();
+        secret.setFiles(Collections.singletonList(createDefaultFile()));
 
         var result = mappingService.secretToResponse(secret);
 
