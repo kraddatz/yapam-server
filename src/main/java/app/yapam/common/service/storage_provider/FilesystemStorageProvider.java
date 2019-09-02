@@ -1,7 +1,6 @@
 package app.yapam.common.service.storage_provider;
 
 import app.yapam.common.service.StorageProvider;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +10,6 @@ import java.nio.file.Path;
 
 @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "FILESYSTEM")
 @Service
-@Slf4j
 public class FilesystemStorageProvider extends StorageProvider {
 
     @Override

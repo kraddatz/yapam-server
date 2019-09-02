@@ -5,9 +5,9 @@ import app.yapam.common.repository.SecretDao;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.StorageProvider;
 import app.yapam.file.model.File;
-import app.yapam.file.model.response.FileResponse;
 import app.yapam.file.model.response.SimpleFileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,8 +31,8 @@ public class FileService {
     }
 
     @PreAuthorize("@permissionEvaluator.hasAccessToFile(#fileId, 'READ')")
-    FileResponse getFileForId(String fileId) {
-        return mappingService.fileToResponse(storageProvider.readFile(fileId));
+    Resource getFileForId(String fileId) {
+        return storageProvider.readFile(fileId);
     }
 
     public SimpleFileResponse saveFile(MultipartFile fileRequest) {

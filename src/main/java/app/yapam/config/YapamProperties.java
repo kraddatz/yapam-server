@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,10 +16,14 @@ import java.util.Map;
 public class YapamProperties {
 
     private String host;
-    private Duration registrationTimeout;
     private YapamMail mail;
     private YapamDatasource datasource;
-    private StorageProviderConfiguration storageProviderConfiguration;
+    private StorageProviderProperties storageProvider;
+
+    public enum StorageProviderType {
+        FILESYSTEM,
+        DROPBOX
+    }
 
     @Getter
     @Setter
@@ -44,23 +47,19 @@ public class YapamProperties {
         private String url;
     }
 
-    public enum StorageProviderType {
-        FILESYSTEM,
-        DROPBOX
-    }
-
     @Getter
     @Setter
     @Component
-    public static class StorageProviderConfiguration {
-        private String rootPath = "/data";
+    public static class StorageProviderProperties {
+        private String rootPath;
         private StorageProviderType type;
         private DropboxStorageProviderConfiguration dropbox;
-    }
 
-    @Getter
-    @Setter
-    public static class DropboxStorageProviderConfiguration {
-
+        @Getter
+        @Setter
+        @Component
+        public static class DropboxStorageProviderConfiguration {
+            private String accessToken;
+        }
     }
 }
