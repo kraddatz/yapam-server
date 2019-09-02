@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FileService {
@@ -36,8 +37,11 @@ public class FileService {
 
     public SimpleFileResponse saveFile(MultipartFile fileRequest) {
         var file = mappingService.fileFromRequest(fileRequest);
-        var fileDao = fileRepository.save(mappingService.fileToDao(file));
-        storageProvider.storeFile(file.getContent(), fileDao.getHash());
+        var fileDao = fileRepository.findOneByHash(file.getHash());
+        if (Objects.isNull(fileDao)) {
+            fileDao = fileRepository.save(mappingService.fileToDao(file));
+            storageProvider.storeFile(file, fileDao.getId());
+        }
         return mappingService.fileDaoToSimpleResponse(fileDao);
     }
 }
