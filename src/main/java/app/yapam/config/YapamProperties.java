@@ -20,12 +20,7 @@ public class YapamProperties {
     private Duration registrationTimeout;
     private YapamMail mail;
     private YapamDatasource datasource;
-    private StorageProvider storageProvider;
     private StorageProviderConfiguration storageProviderConfiguration;
-
-    public enum StorageProvider {
-        FILESYSTEM
-    }
 
     @Getter
     @Setter
@@ -49,10 +44,23 @@ public class YapamProperties {
         private String url;
     }
 
+    public enum StorageProviderType {
+        FILESYSTEM,
+        DROPBOX
+    }
+
     @Getter
     @Setter
     @Component
     public static class StorageProviderConfiguration {
         private String rootPath = "/data";
+        private StorageProviderType type;
+        private DropboxStorageProviderConfiguration dropbox;
+    }
+
+    @Getter
+    @Setter
+    public static class DropboxStorageProviderConfiguration {
+
     }
 }

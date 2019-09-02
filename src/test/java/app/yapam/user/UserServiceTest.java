@@ -41,8 +41,9 @@ class UserServiceTest extends YapamBaseTest {
         var userDao = createDefaultUserDao();
         when(mappingService.userFromRequest(userRequest)).thenReturn(user);
         when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(mappingService.userToResponse(user)).thenReturn(userResponse);
         when(mappingService.userToDao(user)).thenReturn(userDao);
+        when(userRepository.save(userDao)).thenReturn(userDao);
+        when(mappingService.userDaoToResponse(userDao)).thenReturn(userResponse);
 
         var result = userService.createUser(userRequest);
         verify(emailService, times(1)).sendWelcomeMail(any(User.class));

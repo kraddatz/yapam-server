@@ -29,7 +29,7 @@ public class UserService {
         user.setCreationDate(LocalDateTime.now());
         var userDao = userRepository.save(mappingService.userToDao(user));
         emailService.sendWelcomeMail(user);
-        return mappingService.userToResponse(mappingService.userFromDao(userDao));
+        return mappingService.userDaoToResponse(userDao);
     }
 
     public SimpleUserResponseWrapper getAllUsers() {
