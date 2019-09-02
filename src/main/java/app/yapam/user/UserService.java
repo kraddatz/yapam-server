@@ -27,9 +27,9 @@ public class UserService {
         user.setCreationDate(LocalDateTime.now());
         user.setEmail(requestHelperService.getEmail());
         user.setCreationDate(LocalDateTime.now());
-        userRepository.save(mappingService.userToDao(user));
+        var userDao = userRepository.save(mappingService.userToDao(user));
         emailService.sendWelcomeMail(user);
-        return mappingService.userToResponse(user);
+        return mappingService.userToResponse(mappingService.userFromDao(userDao));
     }
 
     public SimpleUserResponseWrapper getAllUsers() {
