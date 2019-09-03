@@ -4,6 +4,8 @@ import app.yapam.common.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component("permissionEvaluator")
 public class PermissionEvaluator {
 
@@ -11,11 +13,6 @@ public class PermissionEvaluator {
     @Autowired private SecretRepository secretRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private FileRepository fileRepository;
-
-    public enum SecretAccessPermission {
-        READ,
-        WRITE
-    }
 
     public Boolean hasAccessToFile(String fileId, SecretAccessPermission permission) {
         var fileDao = fileRepository.findOneById(fileId);
@@ -46,5 +43,15 @@ public class PermissionEvaluator {
 
     private Boolean hasWriteAccess(SecretDao secretDao) {
         return secretDao.getUsers().stream().allMatch(UserSecretDao::getPrivileged);
+    }
+
+    public Boolean registeredUser() {
+        var userDao = userRepository.findOneByEmail(requestHelperService.getEmail());
+        return !Objects.isNull(userDao);
+    }
+
+    public enum SecretAccessPermission {
+        READ,
+        WRITE
     }
 }

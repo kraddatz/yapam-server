@@ -1,5 +1,6 @@
 package app.yapam.secret;
 
+import app.yapam.common.error.UnknownSecretException;
 import app.yapam.common.repository.SecretDao;
 import app.yapam.common.repository.SecretRepository;
 import app.yapam.common.repository.UserRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -44,6 +46,7 @@ public class SecretService {
         return secret;
     }
 
+    @PreAuthorize("@permissionEvaluator.registeredUser()")
     SecretResponse createSecret(SecretRequest secretRequest) {
         var secret = mappingService.secretFromRequest(secretRequest);
         return mappingService.secretToResponse(createSecret(secret));
@@ -54,6 +57,7 @@ public class SecretService {
         secretRepository.deleteBySecretId(secretId);
     }
 
+    @PreAuthorize("@permissionEvaluator.registeredUser()")
     SecretResponseWrapper getAllSecrets() {
         var user = userRepository.findOneByEmail(requestHelperService.getEmail());
         var secretIds = userSecretRepository.findAllByUserId(user.getId()).stream().map(us -> us.getSecret().getSecretId()).distinct().collect(Collectors.toList());
@@ -77,6 +81,9 @@ public class SecretService {
         } else {
             secret = secretRepository.findFirstBySecretIdAndVersion(secretId, version);
         }
+        if (Objects.isNull(secret)) {
+            throw new UnknownSecretException(secretId);
+        }
         return mappingService.secretDaoToResponse(secret);
     }
 
@@ -89,6 +96,9 @@ public class SecretService {
     private Secret updateSecret(String secretId, Secret secret) {
         secret.setSecretId(secretId);
         var latestSecretVersion = secretRepository.findFirstDistinctVersionBySecretIdOrderByVersionDesc(secretId);
+        if (Objects.isNull(latestSecretVersion)) {
+            throw new UnknownSecretException(secretId);
+        }
         secret.setVersion(latestSecretVersion.getVersion() + 1);
         secret.setCreationDate(LocalDateTime.now());
         var secretDao = mappingService.secretToDao(secret);

@@ -1,5 +1,6 @@
 package app.yapam.file;
 
+import app.yapam.common.error.UnknownFileException;
 import app.yapam.common.repository.FileDao;
 import app.yapam.common.repository.FileRepository;
 import app.yapam.common.repository.SecretDao;
@@ -28,6 +29,9 @@ public class FileService {
         List<FileDao> fileDaos = new ArrayList<>();
         for (File file : files) {
             var fileDao = fileRepository.findOneById(file.getId());
+            if (Objects.isNull(fileDao)) {
+                throw new UnknownFileException(file.getId());
+            }
             fileDao.getSecrets().add(secretDao);
             fileDaos.add(fileDao);
         }
@@ -39,6 +43,7 @@ public class FileService {
         return storageProvider.readFile(fileId);
     }
 
+    @PreAuthorize("@permissionEvaluator.registeredUser()")
     public SimpleFileResponse saveFile(MultipartFile fileRequest) {
         var file = mappingService.fileFromRequest(fileRequest);
         var fileDao = fileRepository.findOneByHash(file.getHash());

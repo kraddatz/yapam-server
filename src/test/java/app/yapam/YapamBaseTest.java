@@ -26,10 +26,12 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Disabled
-@java.lang.SuppressWarnings("squid:S2187")
+@SuppressWarnings("squid:S2187")
 public abstract class YapamBaseTest {
 
     protected final String DEFAULT_HOST_BASE_URL = "http://localhost";
@@ -64,62 +66,36 @@ public abstract class YapamBaseTest {
     protected final LocalDateTime DEFAULT_USER_CREATION_DATE = LocalDateTime.now();
 
     protected final String DEFAULT_FILE_ID = "a532ef68-771f-4b78-a124-61781f39ca10";
-    protected final String DEFAULT_FILE_FILENAME = "testfile.txt";
-    protected final Long DEFAULT_FILE_ENCRYPTED_FILESIZE = 10L;
-    protected final Long DEFAULT_FILE_ORIGINAL_FILESIZE = 5L;
-    protected final String DEFAULT_FILE_DATA = "thisissomesecretdata";
-    protected final String DEFAULT_FILE_HASH = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+    protected final String DEFAULT_FILE_FILENAME = "filename.pdf";
+    protected final Long DEFAULT_FILE_FILESIZE = 12L;
+    protected final String DEFAULT_FILE_DATA = "somepdfstuff";
+    protected final String DEFAULT_FILE_HASH = "ZBjLu+kzoMatw92PtIU/zLdECHuUMpyQ6diqaQctRUc=";
+    protected final String DEFAULT_FILE_MIMETYPE = "application/pdf";
 
     protected final String DEFAULT_TAG_ID = "804ba1f6-0732-4b98-9f15-66c9666177c9";
     protected final String DEFAULT_TAG_NAME = "testtag";
 
-    protected MockMultipartFile createDefaultMultipartFile() {
-        return new MockMultipartFile("file", "filename.txt", "text/plain", "some data".getBytes());
-    }
-
-    protected Resource createDefaultResource() {
-        return new ByteArrayResource(DEFAULT_FILE_DATA.getBytes());
-    }
-
-    protected TagRequestWrapper createDefaultTagRequestWrapper() {
-        var tagRequestWrapper = new TagRequestWrapper();
-        tagRequestWrapper.setTags(Collections.singletonList(DEFAULT_TAG_NAME));
-
-        return tagRequestWrapper;
-    }
-
-    protected TagResponseWrapper createDefaultTagResponseWrapper() {
-        var tagResponseWrapper = new TagResponseWrapper();
-        tagResponseWrapper.setTags(Collections.singletonList(createDefaultTagResponse()));
-
-        return tagResponseWrapper;
-    }
-
-    protected TagResponse createDefaultTagResponse() {
-        var tagResponse = new TagResponse();
-        tagResponse.setId(DEFAULT_TAG_ID);
-        tagResponse.setName(DEFAULT_TAG_NAME);
-
-        return tagResponse;
-    }
-
     protected File createDefaultFile() {
         var file = new File();
         file.setId(DEFAULT_FILE_ID);
-        file.setFilesize(DEFAULT_FILE_ENCRYPTED_FILESIZE);
+        file.setFilesize(DEFAULT_FILE_FILESIZE);
         file.setFilename(DEFAULT_FILE_FILENAME);
         file.setHash(DEFAULT_FILE_HASH);
+        file.setMimetype(DEFAULT_FILE_MIMETYPE);
 
         return file;
     }
 
     protected FileDao createDefaultFileDao() {
         var fileDao = new FileDao();
+        List<SecretDao> secretDaos = new ArrayList<>();
+        secretDaos.add(createDefaultSecretDao());
         fileDao.setId(DEFAULT_FILE_ID);
-        fileDao.setSecrets(Collections.singletonList(createDefaultSecretDao()));
+        fileDao.setSecrets(secretDaos);
         fileDao.setFilename(DEFAULT_FILE_FILENAME);
-        fileDao.setFilesize(DEFAULT_FILE_ORIGINAL_FILESIZE);
+        fileDao.setFilesize(DEFAULT_FILE_FILESIZE);
         fileDao.setHash(DEFAULT_FILE_HASH);
+        fileDao.setMimetype(DEFAULT_FILE_MIMETYPE);
 
         return fileDao;
     }
@@ -128,18 +104,12 @@ public abstract class YapamBaseTest {
         return new MockHttpServletRequest();
     }
 
-    protected Tag createDefaultTag() {
-        var tag = new Tag();
-        tag.setId(DEFAULT_TAG_ID);
-        tag.setName(DEFAULT_TAG_NAME);
-        return tag;
+    protected MockMultipartFile createDefaultMultipartFile() {
+        return new MockMultipartFile("file", "filename.pdf", "application/pdf", "somepdfstuff".getBytes());
     }
 
-    protected TagDao createDefaultTagDao() {
-        var tagDao = new TagDao();
-        tagDao.setId(DEFAULT_TAG_ID);
-        tagDao.setName(DEFAULT_TAG_NAME);
-        return tagDao;
+    protected Resource createDefaultResource() {
+        return new ByteArrayResource(DEFAULT_FILE_DATA.getBytes());
     }
 
     protected Secret createDefaultSecret() {
@@ -195,7 +165,7 @@ public abstract class YapamBaseTest {
 
     protected SimpleFileResponse createDefaultSimpleFileResponse() {
         var simpleFileResponse = new SimpleFileResponse();
-        simpleFileResponse.setFilesize(DEFAULT_FILE_ENCRYPTED_FILESIZE);
+        simpleFileResponse.setFilesize(DEFAULT_FILE_FILESIZE);
         simpleFileResponse.setFilename(DEFAULT_FILE_FILENAME);
         simpleFileResponse.setId(DEFAULT_FILE_ID);
 
@@ -216,6 +186,43 @@ public abstract class YapamBaseTest {
         simpleUserResponse.setName(DEFAULT_USER_NAME);
         simpleUserResponse.setPublicKey(DEFAULT_USER_PUBLIC_KEY);
         return simpleUserResponse;
+    }
+
+    protected Tag createDefaultTag() {
+        var tag = new Tag();
+        tag.setId(DEFAULT_TAG_ID);
+        tag.setName(DEFAULT_TAG_NAME);
+        return tag;
+    }
+
+    protected TagDao createDefaultTagDao() {
+        var tagDao = new TagDao();
+        tagDao.setId(DEFAULT_TAG_ID);
+        tagDao.setName(DEFAULT_TAG_NAME);
+        tagDao.setSecrets(new ArrayList<>());
+        return tagDao;
+    }
+
+    protected TagRequestWrapper createDefaultTagRequestWrapper() {
+        var tagRequestWrapper = new TagRequestWrapper();
+        tagRequestWrapper.setTags(Collections.singletonList(DEFAULT_TAG_NAME));
+
+        return tagRequestWrapper;
+    }
+
+    protected TagResponse createDefaultTagResponse() {
+        var tagResponse = new TagResponse();
+        tagResponse.setId(DEFAULT_TAG_ID);
+        tagResponse.setName(DEFAULT_TAG_NAME);
+
+        return tagResponse;
+    }
+
+    protected TagResponseWrapper createDefaultTagResponseWrapper() {
+        var tagResponseWrapper = new TagResponseWrapper();
+        tagResponseWrapper.setTags(Collections.singletonList(createDefaultTagResponse()));
+
+        return tagResponseWrapper;
     }
 
     protected User createDefaultUser() {

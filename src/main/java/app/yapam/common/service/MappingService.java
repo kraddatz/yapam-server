@@ -1,6 +1,9 @@
 package app.yapam.common.service;
 
 import app.yapam.common.error.InvalidFileContentException;
+import app.yapam.common.error.UnknownFileException;
+import app.yapam.common.error.UnknownTagException;
+import app.yapam.common.error.UnknownUserException;
 import app.yapam.common.repository.*;
 import app.yapam.file.model.File;
 import app.yapam.file.model.response.SimpleFileResponse;
@@ -26,10 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -117,7 +117,11 @@ public class MappingService {
         BeanUtils.copyProperties(secretRequest, secret);
         List<UserSecretPrivilege> users = new ArrayList<>();
         for (UserIdSecretPrivilege userIdSecretPrivilege : secretRequest.getUsers()) {
-            var user = userFromDao(userRepository.findOneById(userIdSecretPrivilege.getUserId()));
+            var userDao = userRepository.findOneById(userIdSecretPrivilege.getUserId());
+            if (Objects.isNull(userDao)) {
+                throw new UnknownUserException();
+            }
+            var user = userFromDao(userDao);
             var privilege = new UserSecretPrivilege(user, userIdSecretPrivilege.getPrivileged());
             users.add(privilege);
         }
@@ -125,12 +129,20 @@ public class MappingService {
 
         List<File> files = new ArrayList<>();
         for (String fileId : secretRequest.getFiles()) {
-            files.add(fileFromDao(fileRepository.findOneById(fileId)));
+            var fileDao = fileRepository.findOneById(fileId);
+            if (Objects.isNull(fileDao)) {
+                throw new UnknownFileException();
+            }
+            files.add(fileFromDao(fileDao));
         }
         secret.setFiles(files);
 
         List<Tag> tags = new ArrayList<>();
         for (String tagId : secretRequest.getTags()) {
+            var tagDao = tagRepository.findOneById(tagId);
+            if (Objects.isNull(tagDao)) {
+                throw new UnknownTagException();
+            }
             tags.add(tagFromDao(tagRepository.findOneById(tagId)));
         }
         secret.setTags(tags);
@@ -152,6 +164,12 @@ public class MappingService {
             tags.add(tagToDao(tag));
         }
         secretDao.setTags(tags);
+
+        List<FileDao> files = new ArrayList<>();
+        for (File file : secret.getFiles()) {
+            files.add(fileToDao(file));
+        }
+        secretDao.setFiles(files);
 
         return secretDao;
     }

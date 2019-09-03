@@ -1,6 +1,7 @@
 package app.yapam.secret;
 
 import app.yapam.YapamBaseTest;
+import app.yapam.common.error.UnknownSecretException;
 import app.yapam.common.repository.*;
 import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
@@ -21,8 +22,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -97,6 +97,11 @@ class SecretServiceTest extends YapamBaseTest {
     }
 
     @Test
+    void getSecretById_whenSecretNotFound_thenThrowException() {
+        assertThrows(UnknownSecretException.class, () -> secretService.getSecretById(DEFAULT_SECRET_ID, 0));
+    }
+
+    @Test
     void getSecretById_whenVersionIs0_thenReturnLatestSecret() {
         var secretDBO = createDefaultSecretDao();
         var secretResponse = createDefaultSecretResponse();
@@ -142,5 +147,13 @@ class SecretServiceTest extends YapamBaseTest {
         secretDBO = captor.getValue();
 
         assertEquals(Integer.valueOf(1), secretDBO.getVersion());
+    }
+
+    @Test
+    void updateSecret_whenSecretNotFound_thenThrowException() {
+        var secretRequest = createDefaultSecretRequest();
+        var secret = createDefaultSecret();
+        when(mappingService.secretFromRequest(secretRequest)).thenReturn(secret);
+        assertThrows(UnknownSecretException.class, () -> secretService.updateSecret(DEFAULT_SECRET_ID, secretRequest));
     }
 }

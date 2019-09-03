@@ -30,6 +30,25 @@ class PermissionEvaluatorTest extends YapamBaseTest {
     @MockBean private FileRepository fileRepository;
 
     @Test
+    void whenRegisteredUser_thenReturnTrue() {
+        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
+        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(createDefaultUserDao());
+
+        var result = permissionEvaluator.registeredUser();
+
+        assertTrue(result);
+    }
+
+    @Test
+    void whenUnregisteredUser_thenReturnFalse() {
+        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
+
+        var result = permissionEvaluator.registeredUser();
+
+        assertFalse(result);
+    }
+
+    @Test
     void whenUserHasReadAccessToFile_thenReturnTrue() {
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
