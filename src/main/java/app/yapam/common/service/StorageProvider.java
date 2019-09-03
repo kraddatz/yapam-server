@@ -19,7 +19,6 @@ public abstract class StorageProvider {
     private static Log log = LogFactory.getLog(StorageProvider.class);
     @Autowired private YapamProperties yapamProperties;
     @Autowired private FileRepository fileRepository;
-    @Autowired private MappingService mappingService;
 
     private String getFilePath(String fileHash) {
         return yapamProperties.getStorageProvider().getRootPath() +
@@ -29,6 +28,7 @@ public abstract class StorageProvider {
                 fileHash.substring(3);
     }
 
+    @SuppressWarnings("squid:S00112")
     public abstract byte[] readContent(Path filepath) throws Exception;
 
     public Resource readFile(String fileId) {
@@ -43,6 +43,7 @@ public abstract class StorageProvider {
         }
     }
 
+    @SuppressWarnings("squid:S00112")
     public abstract void storeContent(byte[] content, Path filepath) throws Exception;
 
     public void storeFile(File file, String fileId) {

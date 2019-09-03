@@ -38,7 +38,7 @@ create table file
     id       varchar(64)  not null primary key,
     filename varchar(255) not null,
     filesize bigint       not null,
-    hash     varchar(40)  not null,
+    hash     varchar(44)  not null,
     mimetype varchar(16)  not null
 );
 

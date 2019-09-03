@@ -1,6 +1,7 @@
 package app.yapam.user;
 
 import app.yapam.YapamBaseTest;
+import app.yapam.common.error.UnknownUserException;
 import app.yapam.common.repository.UserDao;
 import app.yapam.common.repository.UserRepository;
 import app.yapam.common.service.EmailService;
@@ -18,8 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -86,5 +86,10 @@ class UserServiceTest extends YapamBaseTest {
         var result = userService.getSimpleUserById(DEFAULT_USER_ID);
 
         assertNotNull(result);
+    }
+
+    @Test
+    void getSimpleUserById_whenUserNotFound_thenThrowException() {
+        assertThrows(UnknownUserException.class, () ->userService.getSimpleUserById(DEFAULT_USER_ID));
     }
 }
