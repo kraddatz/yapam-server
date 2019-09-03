@@ -66,15 +66,6 @@ class MappingServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void fileToResponse() {
-        var file = createDefaultFile();
-
-        var result = mappingService.fileToResponse(file);
-
-        assertNotNull(result);
-    }
-
-    @Test
     void fileToSimpleResponse() {
         var file = createDefaultFile();
 

@@ -37,12 +37,14 @@ public class SecretDao {
             orphanRemoval = true
     )
     private List<UserSecretDao> users;
-    @OneToMany(
-            mappedBy = "secret",
-            orphanRemoval = true
+    @ManyToMany(
+            mappedBy = "secrets",
+            cascade = CascadeType.MERGE
     )
     private List<FileDao> files;
-    @ManyToMany
+    @ManyToMany(
+            cascade = CascadeType.MERGE
+    )
     @JoinTable(
             name = "secret_tag",
             joinColumns = @JoinColumn(name = "secret_id"),

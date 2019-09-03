@@ -12,6 +12,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -32,7 +34,7 @@ class PermissionEvaluatorTest extends YapamBaseTest {
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
         var fileDao = createDefaultFileDao();
-        fileDao.setSecret(secretDao);
+        fileDao.setSecrets(Collections.singletonList(secretDao));
         when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
         when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
         when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
@@ -49,7 +51,7 @@ class PermissionEvaluatorTest extends YapamBaseTest {
         var secretDao = createDefaultSecretDao();
         secretDao.getUsers().get(0).getUser().setId("OTHER-USER-ID");
         var fileDao = createDefaultFileDao();
-        fileDao.setSecret(secretDao);
+        fileDao.setSecrets(Collections.singletonList(secretDao));
         when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
         when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
         when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
@@ -65,7 +67,7 @@ class PermissionEvaluatorTest extends YapamBaseTest {
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
         var fileDao = createDefaultFileDao();
-        fileDao.setSecret(secretDao);
+        fileDao.setSecrets(Collections.singletonList(secretDao));
         when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
         when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
         when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
@@ -82,7 +84,7 @@ class PermissionEvaluatorTest extends YapamBaseTest {
         var secretDao = createDefaultSecretDao();
         secretDao.getUsers().get(0).setPrivileged(false);
         var fileDao = createDefaultFileDao();
-        fileDao.setSecret(secretDao);
+        fileDao.setSecrets(Collections.singletonList(secretDao));
         when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
         when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
         when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);

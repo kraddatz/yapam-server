@@ -32,3 +32,36 @@ create table user_secret
     constraint fk_user_secret_secret foreign key (secret_id) references secret (id),
     primary key (user_id, secret_id)
 );
+
+create table file
+(
+    id       varchar(64)  not null primary key,
+    filename varchar(255) not null,
+    filesize bigint       not null,
+    hash     varchar(40)  not null,
+    mimetype varchar(16)  not null
+);
+
+create table secret_file
+(
+    secret_id varchar(64) not null,
+    file_id   varchar(64) not null,
+    primary key (secret_id, file_id),
+    constraint fk_secret_file_secret_id foreign key (secret_id) references secret (id),
+    constraint fk_secret_file_file_id foreign key (file_id) references file (id)
+);
+
+create table tag
+(
+    id   varchar(64)  not null primary key,
+    name varchar(255) not null unique
+);
+
+create table secret_tag
+(
+    secret_id varchar(64) not null,
+    tag_id    varchar(64) not null,
+    primary key (secret_id, tag_id),
+    constraint fk_secret_tag_secret_id foreign key (secret_id) references secret (id),
+    constraint fk_secret_tag_tag_id foreign key (tag_id) references tag (id)
+);

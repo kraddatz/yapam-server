@@ -12,4 +12,5 @@ public class File {
     private Long filesize;
     private byte[] content;
     private String hash;
+    private String mimetype;
 }

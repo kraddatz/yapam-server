@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Entity
@@ -20,10 +21,15 @@ public class FileDao {
     )
     private String id;
     private String filename;
-    @ManyToOne
-    @JoinColumn(name = "secret_id")
-    private SecretDao secret;
+    @ManyToMany
+    @JoinTable(
+            name = "secret_file",
+            joinColumns = @JoinColumn(name = "file_id"),
+            inverseJoinColumns = @JoinColumn(name = "secret_id")
+    )
+    private List<SecretDao> secrets;
     @Column(name = "filesize")
     private Long filesize;
     private String hash;
+    private String mimetype;
 }

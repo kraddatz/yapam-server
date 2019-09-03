@@ -1,5 +1,6 @@
 package app.yapam.file;
 
+import app.yapam.common.repository.FileDao;
 import app.yapam.common.repository.FileRepository;
 import app.yapam.common.repository.SecretDao;
 import app.yapam.common.service.MappingService;
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,11 +25,13 @@ public class FileService {
     @Autowired private FileRepository fileRepository;
 
     public void attachSecretToFiles(List<File> files, SecretDao secretDao) {
+        List<FileDao> fileDaos = new ArrayList<>();
         for (File file : files) {
-            var fileDao = mappingService.fileToDao(file);
-            fileDao.setSecret(secretDao);
-            fileRepository.save(fileDao);
+            var fileDao = fileRepository.findOneById(file.getId());
+            fileDao.getSecrets().add(secretDao);
+            fileDaos.add(fileDao);
         }
+        fileRepository.saveAll(fileDaos);
     }
 
     @PreAuthorize("@permissionEvaluator.hasAccessToFile(#fileId, 'READ')")

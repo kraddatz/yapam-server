@@ -27,10 +27,10 @@ public class TagService {
         List<TagDao> tags = new ArrayList<>();
         for (Tag tag : tagIds) {
             var tagDao = tagRepository.findOneById(tag.getId());
+            tagDao.getSecrets().add(secretDao);
             tags.add(tagDao);
         }
-        secretDao.setTags(tags);
-        secretRepository.save(secretDao);
+        tagRepository.saveAll(tags);
     }
 
     TagResponseWrapper createTags(TagRequestWrapper tagRequestWrapper) {

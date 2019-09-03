@@ -10,4 +10,5 @@ public class SimpleFileResponse {
     private String filename;
     private Long filesize;
     private String id;
+    private String mimetype;
 }

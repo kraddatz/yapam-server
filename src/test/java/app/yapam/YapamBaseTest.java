@@ -2,7 +2,6 @@ package app.yapam;
 
 import app.yapam.common.repository.*;
 import app.yapam.file.model.File;
-import app.yapam.file.model.response.FileResponse;
 import app.yapam.file.model.response.SimpleFileResponse;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.SecretTypeEnum;
@@ -117,21 +116,12 @@ public abstract class YapamBaseTest {
     protected FileDao createDefaultFileDao() {
         var fileDao = new FileDao();
         fileDao.setId(DEFAULT_FILE_ID);
-        fileDao.setSecret(createDefaultSecretDao());
+        fileDao.setSecrets(Collections.singletonList(createDefaultSecretDao()));
         fileDao.setFilename(DEFAULT_FILE_FILENAME);
         fileDao.setFilesize(DEFAULT_FILE_ORIGINAL_FILESIZE);
         fileDao.setHash(DEFAULT_FILE_HASH);
 
         return fileDao;
-    }
-
-    protected FileResponse createDefaultFileResponse() {
-        var fileResponse = new FileResponse();
-        fileResponse.setFilesize(DEFAULT_FILE_ENCRYPTED_FILESIZE);
-        fileResponse.setFilename(DEFAULT_FILE_FILENAME);
-        fileResponse.setId(DEFAULT_FILE_ID);
-
-        return fileResponse;
     }
 
     protected MockHttpServletRequest createDefaultHttpServletRequest() {

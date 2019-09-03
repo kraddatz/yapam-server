@@ -3,7 +3,6 @@ package app.yapam.common.service;
 import app.yapam.common.error.InvalidFileContentException;
 import app.yapam.common.repository.*;
 import app.yapam.file.model.File;
-import app.yapam.file.model.response.FileResponse;
 import app.yapam.file.model.response.SimpleFileResponse;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.UserSecretPrivilege;
@@ -29,6 +28,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -54,8 +54,9 @@ public class MappingService {
         var file = new File();
         file.setFilename(multipartFile.getOriginalFilename());
         file.setFilesize(multipartFile.getSize());
+        file.setMimetype(multipartFile.getContentType());
         try {
-            file.setHash(new String(Base64.getEncoder().encode(MessageDigest.getInstance("SHA-1").digest(multipartFile.getBytes()))));
+            file.setHash(new String(Base64.getEncoder().encode(MessageDigest.getInstance("SHA-256").digest(multipartFile.getBytes()))));
             file.setContent(multipartFile.getBytes());
         } catch (IOException | NoSuchAlgorithmException e) {
             log.error(e.getMessage(), e);
@@ -67,13 +68,8 @@ public class MappingService {
     public FileDao fileToDao(File file) {
         var fileDao = new FileDao();
         BeanUtils.copyProperties(file, fileDao);
+        fileDao.setSecrets(Collections.emptyList());
         return fileDao;
-    }
-
-    public FileResponse fileToResponse(File file) {
-        var fileResponse = new FileResponse();
-        BeanUtils.copyProperties(file, fileResponse);
-        return fileResponse;
     }
 
     public SimpleFileResponse fileToSimpleResponse(File file) {

@@ -20,7 +20,12 @@ public class PermissionEvaluator {
     public Boolean hasAccessToFile(String fileId, SecretAccessPermission permission) {
         var fileDao = fileRepository.findOneById(fileId);
 
-        return hasAccessToSecret(fileDao.getSecret().getSecretId(), permission);
+        for (SecretDao secretDao : fileDao.getSecrets()) {
+            if (hasAccessToSecret(secretDao.getSecretId(), permission)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Boolean hasAccessToSecret(String secretId, SecretAccessPermission permission) {
