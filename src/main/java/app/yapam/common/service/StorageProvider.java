@@ -4,16 +4,12 @@ import app.yapam.common.error.InternalErrorException;
 import app.yapam.common.repository.FileRepository;
 import app.yapam.config.YapamProperties;
 import app.yapam.file.model.File;
-import com.dropbox.core.DbxException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

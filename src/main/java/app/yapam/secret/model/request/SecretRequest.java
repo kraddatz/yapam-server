@@ -19,4 +19,5 @@ public class SecretRequest {
     private SecretTypeEnum type;
     private List<UserIdSecretPrivilege> users;
     private List<String> files;
+    private List<String> tags;
 }

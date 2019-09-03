@@ -11,6 +11,7 @@ import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.model.response.SecretResponse;
 import app.yapam.secret.model.response.SecretResponseWrapper;
+import app.yapam.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class SecretService {
     @Autowired private UserRepository userRepository;
     @Autowired private UserSecretRepository userSecretRepository;
     @Autowired private FileService fileService;
+    @Autowired private TagService tagService;
 
     private Secret createSecret(Secret secret) {
         secret.setSecretId(UUID.randomUUID().toString());
@@ -38,6 +40,7 @@ public class SecretService {
         var secretDao = secretRepository.save(mappingService.secretToDao(secret));
         userSecretRepository.saveAll(secretDao.getUsers());
         fileService.attachSecretToFiles(secret.getFiles(), secretDao);
+        tagService.attachSecretToTags(secret.getTags(), secretDao);
         return secret;
     }
 
@@ -59,7 +62,7 @@ public class SecretService {
             secrets.add(secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId));
         }
 
-        var simpleSecretResponse = secrets.stream().map(secret -> mappingService.secretDaoToSimpleResponse(secret)).collect(Collectors.toSet());
+        var simpleSecretResponse = secrets.stream().map(secret -> mappingService.secretDaoToSimpleResponse(secret)).collect(Collectors.toList());
         var secretResponseWrapper = new SecretResponseWrapper();
         secretResponseWrapper.setSecrets(simpleSecretResponse);
 
@@ -92,6 +95,7 @@ public class SecretService {
         secretRepository.save(secretDao);
         userSecretRepository.saveAll(secretDao.getUsers());
         fileService.attachSecretToFiles(secret.getFiles(), secretDao);
+        tagService.attachSecretToTags(secret.getTags(), secretDao);
         return secret;
     }
 }

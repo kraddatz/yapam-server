@@ -1,6 +1,7 @@
 package app.yapam.secret.model;
 
 import app.yapam.file.model.File;
+import app.yapam.tag.model.Tag;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,4 +22,5 @@ public class Secret {
     private LocalDateTime creationDate;
     private List<UserSecretPrivilege> users;
     private List<File> files;
+    private List<Tag> tags;
 }

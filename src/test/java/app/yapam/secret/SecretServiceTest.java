@@ -6,6 +6,7 @@ import app.yapam.common.service.MappingService;
 import app.yapam.common.service.RequestHelperService;
 import app.yapam.file.FileService;
 import app.yapam.secret.model.Secret;
+import app.yapam.tag.TagService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +39,7 @@ class SecretServiceTest extends YapamBaseTest {
     @MockBean private UserRepository userRepository;
     @MockBean private RequestHelperService requestHelperService;
     @MockBean private FileService fileService;
+    @MockBean private TagService tagService;
     @MockBean private MappingService mappingService;
     @MockBean private SecretRepository secretRepository;
     @MockBean private UserSecretRepository userSecretRepository;

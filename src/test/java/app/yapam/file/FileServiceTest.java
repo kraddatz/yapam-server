@@ -37,10 +37,8 @@ public class FileServiceTest extends YapamBaseTest {
 
     @Test
     void getFileForId() {
-        var file = createDefaultFile();
-        var fileResponse = createDefaultFileResponse();
-        when(storageProvider.readFile(DEFAULT_FILE_ID)).thenReturn(file);
-        when(mappingService.fileToResponse(file)).thenReturn(fileResponse);
+        var resource = createDefaultResource();
+        when(storageProvider.readFile(DEFAULT_FILE_ID)).thenReturn(resource);
 
         var result = fileService.getFileForId(DEFAULT_FILE_ID);
 

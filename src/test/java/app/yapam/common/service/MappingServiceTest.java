@@ -2,6 +2,7 @@ package app.yapam.common.service;
 
 import app.yapam.YapamBaseTest;
 import app.yapam.common.repository.FileRepository;
+import app.yapam.common.repository.TagRepository;
 import app.yapam.common.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,7 @@ class MappingServiceTest extends YapamBaseTest {
     @MockBean private UserRepository userRepository;
     @MockBean private RequestHelperService requestHelperService;
     @MockBean private FileRepository fileRepository;
+    @MockBean private TagRepository tagRepository;
 
     @Test
     void fileFromRequest() {
@@ -85,6 +87,7 @@ class MappingServiceTest extends YapamBaseTest {
     void secretDaoToResponse() {
         var secretDao = createDefaultSecretDao();
         secretDao.setFiles(Collections.singletonList(createDefaultFileDao()));
+        secretDao.setTags(Collections.singletonList(createDefaultTagDao()));
 
         var result = mappingService.secretDaoToResponse(secretDao);
 
@@ -95,6 +98,7 @@ class MappingServiceTest extends YapamBaseTest {
     void secretDaoToSimpleResponse() {
         var secretDao = createDefaultSecretDao();
         secretDao.setFiles(Collections.singletonList(createDefaultFileDao()));
+        secretDao.setTags(Collections.singletonList(createDefaultTagDao()));
 
         var result = mappingService.secretDaoToSimpleResponse(secretDao);
 
@@ -105,6 +109,7 @@ class MappingServiceTest extends YapamBaseTest {
     void secretFromDao() {
         var secretDao = createDefaultSecretDao();
         secretDao.setFiles(Collections.singletonList(createDefaultFileDao()));
+        secretDao.setTags(Collections.singletonList(createDefaultTagDao()));
 
         var result = mappingService.secretFromDao(secretDao);
 
@@ -121,8 +126,10 @@ class MappingServiceTest extends YapamBaseTest {
     @Test
     void secretFromRequest() {
         var secretRequest = createDefaultSecretRequest();
+        secretRequest.setTags(Collections.singletonList(DEFAULT_TAG_ID));
         when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(createDefaultUserDao());
         when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
+        when(tagRepository.findOneById(DEFAULT_TAG_ID)).thenReturn(createDefaultTagDao());
 
         var result = mappingService.secretFromRequest(secretRequest);
 
@@ -137,6 +144,7 @@ class MappingServiceTest extends YapamBaseTest {
     void secretToDao() {
         var secret = createDefaultSecret();
         secret.setFiles(Collections.singletonList(createDefaultFile()));
+        secret.setTags(Collections.singletonList(createDefaultTag()));
 
         var result = mappingService.secretToDao(secret);
 
@@ -154,6 +162,7 @@ class MappingServiceTest extends YapamBaseTest {
     void secretToResponse() {
         var secret = createDefaultSecret();
         secret.setFiles(Collections.singletonList(createDefaultFile()));
+        secret.setTags(Collections.singletonList(createDefaultTag()));
 
         var result = mappingService.secretToResponse(secret);
 
@@ -249,5 +258,35 @@ class MappingServiceTest extends YapamBaseTest {
         assertEquals(DEFAULT_USER_ID, result.getId());
         assertEquals(DEFAULT_USER_PUBLIC_KEY, result.getPublicKey());
         assertEquals(DEFAULT_USER_CREATION_DATE, result.getCreationDate());
+    }
+
+    @Test
+    void tagDaoToResponse() {
+        var tagDao = createDefaultTagDao();
+
+        var result = mappingService.tagDaoToResponse(tagDao);
+
+        assertEquals(DEFAULT_TAG_ID, result.getId());
+        assertEquals(DEFAULT_TAG_NAME, result.getName());
+    }
+
+    @Test
+    void tagFromDao() {
+        var tagDao = createDefaultTagDao();
+
+        var result = mappingService.tagFromDao(tagDao);
+
+        assertEquals(DEFAULT_TAG_ID, result.getId());
+        assertEquals(DEFAULT_TAG_NAME, result.getName());
+    }
+
+    @Test
+    void tagToDao() {
+        var tag = createDefaultTag();
+
+        var result = mappingService.tagToDao(tag);
+
+        assertEquals(DEFAULT_TAG_ID, result.getId());
+        assertEquals(DEFAULT_TAG_NAME, result.getName());
     }
 }

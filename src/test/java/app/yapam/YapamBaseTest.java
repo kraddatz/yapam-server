@@ -1,9 +1,6 @@
 package app.yapam;
 
-import app.yapam.common.repository.FileDao;
-import app.yapam.common.repository.SecretDao;
-import app.yapam.common.repository.UserDao;
-import app.yapam.common.repository.UserSecretDao;
+import app.yapam.common.repository.*;
 import app.yapam.file.model.File;
 import app.yapam.file.model.response.FileResponse;
 import app.yapam.file.model.response.SimpleFileResponse;
@@ -15,11 +12,17 @@ import app.yapam.secret.model.request.UserIdSecretPrivilege;
 import app.yapam.secret.model.response.SecretResponse;
 import app.yapam.secret.model.response.SimpleSecretResponse;
 import app.yapam.secret.model.response.SimpleUserPrivilegeResponse;
+import app.yapam.tag.model.Tag;
+import app.yapam.tag.model.request.TagRequestWrapper;
+import app.yapam.tag.model.response.TagResponse;
+import app.yapam.tag.model.response.TagResponseWrapper;
 import app.yapam.user.model.User;
 import app.yapam.user.model.request.UserRequest;
 import app.yapam.user.model.response.SimpleUserResponse;
 import app.yapam.user.model.response.UserResponse;
 import org.junit.jupiter.api.Disabled;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -44,6 +47,7 @@ public abstract class YapamBaseTest {
     protected final String API_USERS_CURRENT_USER = API_USERS_BASE_URL + "/currentuser";
     protected final String API_FILES_BASE_URL = "/api/files";
     protected final String API_FILES_FILE_BY_ID = API_FILES_BASE_URL + "/{fileId}";
+    protected final String API_TAGS_BASE_URL = "/api/tags";
 
     protected final String DEFAULT_SECRET_TITLE = "secretTitle";
     protected final String DEFAULT_SECRET_DATA = "secretData";
@@ -67,8 +71,37 @@ public abstract class YapamBaseTest {
     protected final String DEFAULT_FILE_DATA = "thisissomesecretdata";
     protected final String DEFAULT_FILE_HASH = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
+    protected final String DEFAULT_TAG_ID = "804ba1f6-0732-4b98-9f15-66c9666177c9";
+    protected final String DEFAULT_TAG_NAME = "testtag";
+
     protected MockMultipartFile createDefaultMultipartFile() {
         return new MockMultipartFile("file", "filename.txt", "text/plain", "some data".getBytes());
+    }
+
+    protected Resource createDefaultResource() {
+        return new ByteArrayResource(DEFAULT_FILE_DATA.getBytes());
+    }
+
+    protected TagRequestWrapper createDefaultTagRequestWrapper() {
+        var tagRequestWrapper = new TagRequestWrapper();
+        tagRequestWrapper.setTags(Collections.singletonList(DEFAULT_TAG_NAME));
+
+        return tagRequestWrapper;
+    }
+
+    protected TagResponseWrapper createDefaultTagResponseWrapper() {
+        var tagResponseWrapper = new TagResponseWrapper();
+        tagResponseWrapper.setTags(Collections.singletonList(createDefaultTagResponse()));
+
+        return tagResponseWrapper;
+    }
+
+    protected TagResponse createDefaultTagResponse() {
+        var tagResponse = new TagResponse();
+        tagResponse.setId(DEFAULT_TAG_ID);
+        tagResponse.setName(DEFAULT_TAG_NAME);
+
+        return tagResponse;
     }
 
     protected File createDefaultFile() {
@@ -103,6 +136,20 @@ public abstract class YapamBaseTest {
 
     protected MockHttpServletRequest createDefaultHttpServletRequest() {
         return new MockHttpServletRequest();
+    }
+
+    protected Tag createDefaultTag() {
+        var tag = new Tag();
+        tag.setId(DEFAULT_TAG_ID);
+        tag.setName(DEFAULT_TAG_NAME);
+        return tag;
+    }
+
+    protected TagDao createDefaultTagDao() {
+        var tagDao = new TagDao();
+        tagDao.setId(DEFAULT_TAG_ID);
+        tagDao.setName(DEFAULT_TAG_NAME);
+        return tagDao;
     }
 
     protected Secret createDefaultSecret() {

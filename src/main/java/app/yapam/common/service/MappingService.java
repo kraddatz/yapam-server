@@ -12,6 +12,8 @@ import app.yapam.secret.model.request.UserIdSecretPrivilege;
 import app.yapam.secret.model.response.SecretResponse;
 import app.yapam.secret.model.response.SimpleSecretResponse;
 import app.yapam.secret.model.response.SimpleUserPrivilegeResponse;
+import app.yapam.tag.model.Tag;
+import app.yapam.tag.model.response.TagResponse;
 import app.yapam.user.model.User;
 import app.yapam.user.model.request.UserRequest;
 import app.yapam.user.model.response.SimpleUserResponse;
@@ -36,6 +38,7 @@ public class MappingService {
     @Autowired private UserRepository userRepository;
     @Autowired private RequestHelperService requestHelperService;
     @Autowired private FileRepository fileRepository;
+    @Autowired private TagRepository tagRepository;
 
     public SimpleFileResponse fileDaoToSimpleResponse(FileDao fileDao) {
         return fileToSimpleResponse(fileFromDao(fileDao));
@@ -104,6 +107,12 @@ public class MappingService {
         }
         secret.setFiles(files);
 
+        List<Tag> tags = new ArrayList<>();
+        for (TagDao tagDao : secretDao.getTags()) {
+            tags.add(tagFromDao(tagDao));
+        }
+        secret.setTags(tags);
+
         return secret;
     }
 
@@ -124,6 +133,12 @@ public class MappingService {
         }
         secret.setFiles(files);
 
+        List<Tag> tags = new ArrayList<>();
+        for (String tagId : secretRequest.getTags()) {
+            tags.add(tagFromDao(tagRepository.findOneById(tagId)));
+        }
+        secret.setTags(tags);
+
         return secret;
     }
 
@@ -135,6 +150,12 @@ public class MappingService {
             userSecrets.add(new UserSecretDao(secretDao, userToDao(userSecretPrivilege.getUser()), userSecretPrivilege.getPrivilege()));
         }
         secretDao.setUsers(userSecrets);
+
+        List<TagDao> tags = new ArrayList<>();
+        for (Tag tag : secret.getTags()) {
+            tags.add(tagToDao(tag));
+        }
+        secretDao.setTags(tags);
 
         return secretDao;
     }
@@ -156,6 +177,12 @@ public class MappingService {
         }
         secretResponse.setFiles(files);
 
+        List<String> tags = new ArrayList<>();
+        for (Tag tag : secret.getTags()) {
+            tags.add(tag.getName());
+        }
+        secretResponse.setTags(tags);
+
         return secretResponse;
     }
 
@@ -163,6 +190,24 @@ public class MappingService {
         var simpleSecretResponse = new SimpleSecretResponse();
         BeanUtils.copyProperties(secret, simpleSecretResponse);
         return simpleSecretResponse;
+    }
+
+    public TagResponse tagDaoToResponse(TagDao tagDao) {
+        var tagResponse = new TagResponse();
+        BeanUtils.copyProperties(tagDao, tagResponse);
+        return tagResponse;
+    }
+
+    public Tag tagFromDao(TagDao tagDao) {
+        var tag = new Tag();
+        BeanUtils.copyProperties(tagDao, tag);
+        return tag;
+    }
+
+    public TagDao tagToDao(Tag tag) {
+        var tagDao = new TagDao();
+        BeanUtils.copyProperties(tag, tagDao);
+        return tagDao;
     }
 
     public UserResponse userDaoToResponse(UserDao user) {

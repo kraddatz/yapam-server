@@ -42,4 +42,11 @@ public class SecretDao {
             orphanRemoval = true
     )
     private List<FileDao> files;
+    @ManyToMany
+    @JoinTable(
+            name = "secret_tag",
+            joinColumns = @JoinColumn(name = "secret_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<TagDao> tags;
 }

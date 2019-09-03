@@ -20,4 +20,5 @@ public class SecretResponse {
     private LocalDateTime creationDate;
     private List<SimpleUserPrivilegeResponse> users;
     private List<SimpleFileResponse> files;
+    private List<String> tags;
 }
