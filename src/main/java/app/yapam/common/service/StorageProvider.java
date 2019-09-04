@@ -17,11 +17,11 @@ import java.nio.file.Paths;
 public abstract class StorageProvider {
 
     private static Log log = LogFactory.getLog(StorageProvider.class);
-    @Autowired private YapamProperties yapamProperties;
+    @Autowired private YapamProperties.StorageProvider.StorageProviderProperties storageProviderProperties;
     @Autowired private FileRepository fileRepository;
 
     private String getFilePath(String fileHash) {
-        return yapamProperties.getStorageProvider().getRootPath() +
+        return storageProviderProperties.getRootPath() +
                 java.io.File.separator +
                 fileHash.substring(0, 3) +
                 java.io.File.separator +

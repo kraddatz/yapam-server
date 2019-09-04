@@ -56,7 +56,7 @@ public class MappingService {
         file.setFilesize(multipartFile.getSize());
         file.setMimetype(multipartFile.getContentType());
         try {
-            file.setHash(new String(Base64.getEncoder().encode(MessageDigest.getInstance("SHA-256").digest(multipartFile.getBytes()))));
+            file.setHash(new String(Base64.getEncoder().encode(MessageDigest.getInstance("SHA-1").digest(multipartFile.getBytes()))));
             file.setContent(multipartFile.getBytes());
         } catch (IOException | NoSuchAlgorithmException e) {
             log.error(e.getMessage(), e);

@@ -69,7 +69,7 @@ public abstract class YapamBaseTest {
     protected final String DEFAULT_FILE_FILENAME = "filename.pdf";
     protected final Long DEFAULT_FILE_FILESIZE = 12L;
     protected final String DEFAULT_FILE_DATA = "somepdfstuff";
-    protected final String DEFAULT_FILE_HASH = "ZBjLu+kzoMatw92PtIU/zLdECHuUMpyQ6diqaQctRUc=";
+    protected final String DEFAULT_FILE_HASH = "nhe6T2Lb1yaG9Xcf4oAPnBfQsCs=";
     protected final String DEFAULT_FILE_MIMETYPE = "application/pdf";
 
     protected final String DEFAULT_TAG_ID = "804ba1f6-0732-4b98-9f15-66c9666177c9";

@@ -2,6 +2,7 @@ package app.yapam.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ public class YapamProperties {
     private String host;
     private YapamMail mail;
     private YapamDatasource datasource;
-    private StorageProviderProperties storageProvider;
+    private StorageProvider storageProvider;
 
     public enum StorageProviderType {
         FILESYSTEM,
@@ -50,16 +51,33 @@ public class YapamProperties {
     @Getter
     @Setter
     @Component
-    public static class StorageProviderProperties {
-        private String rootPath;
+    public static class StorageProvider {
         private StorageProviderType type;
-        private DropboxStorageProviderConfiguration dropbox;
+        private FilesystemStorageProviderProperties filesystem;
+        private DropboxStorageProviderProperties dropbox;
 
         @Getter
         @Setter
-        @Component
-        public static class DropboxStorageProviderConfiguration {
+        @Component("storageProviderProperties")
+        @ConfigurationProperties(prefix = "yapam.storage-provider.filesystem")
+        @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "FILESYSTEM")
+        public static class FilesystemStorageProviderProperties implements StorageProviderProperties{
+            private String rootPath;
+        }
+
+        @Getter
+        @Setter
+        @Component("storageProviderProperties")
+        @ConfigurationProperties(prefix = "yapam.storage-provider.dropbox")
+        @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "DROPBOX")
+        public static class DropboxStorageProviderProperties implements StorageProviderProperties{
+            private String rootPath;
             private String accessToken;
         }
+
+        public interface StorageProviderProperties {
+            public String getRootPath();
+        }
     }
+
 }
