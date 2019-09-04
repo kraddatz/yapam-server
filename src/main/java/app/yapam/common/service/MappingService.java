@@ -203,6 +203,12 @@ public class MappingService {
     public SimpleSecretResponse secretToSimpleResponse(Secret secret) {
         var simpleSecretResponse = new SimpleSecretResponse();
         BeanUtils.copyProperties(secret, simpleSecretResponse);
+
+        List<String> tags = new ArrayList<>();
+        for (Tag tag : secret.getTags()) {
+            tags.add(tag.getName());
+        }
+        simpleSecretResponse.setTags(tags);
         return simpleSecretResponse;
     }
 

@@ -60,7 +60,6 @@ public class FileServiceTest extends YapamBaseTest {
     void attachSecretToFiles_whenFileNotFound_thenThrowException() {
         var secretDao = createDefaultSecretDao();
         var file = createDefaultFile();
-        when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenThrow(UnknownFileException.class);
         assertThrows(UnknownFileException.class, () -> fileService.attachSecretToFiles(Collections.singletonList(file), secretDao));
     }
 

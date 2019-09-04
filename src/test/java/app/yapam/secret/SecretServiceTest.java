@@ -91,9 +91,9 @@ class SecretServiceTest extends YapamBaseTest {
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
         when(mappingService.secretDaoToSimpleResponse(secretDao)).thenReturn(simpleSecretResponse);
 
-        var result = secretService.getAllSecrets();
+        var result = secretService.getAllSecrets(new String[]{""});
 
-        assertEquals(1, result.getSecrets().size());
+        assertEquals(1, result.size());
     }
 
     @Test

@@ -11,9 +11,10 @@ import app.yapam.file.FileService;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.request.SecretRequest;
 import app.yapam.secret.model.response.SecretResponse;
-import app.yapam.secret.model.response.SecretResponseWrapper;
+import app.yapam.secret.model.response.SimpleSecretResponse;
 import app.yapam.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +59,8 @@ public class SecretService {
     }
 
     @PreAuthorize("@permissionEvaluator.registeredUser()")
-    SecretResponseWrapper getAllSecrets() {
+    @PostFilter("@filterEvaluator.filterForKeywords(filterObject, #keywords)")
+    List<SimpleSecretResponse> getAllSecrets(String[] keywords) {
         var user = userRepository.findOneByEmail(requestHelperService.getEmail());
         var secretIds = userSecretRepository.findAllByUserId(user.getId()).stream().map(us -> us.getSecret().getSecretId()).distinct().collect(Collectors.toList());
         List<SecretDao> secrets = new ArrayList<>();
@@ -66,11 +68,7 @@ public class SecretService {
             secrets.add(secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId));
         }
 
-        var simpleSecretResponse = secrets.stream().map(secret -> mappingService.secretDaoToSimpleResponse(secret)).collect(Collectors.toList());
-        var secretResponseWrapper = new SecretResponseWrapper();
-        secretResponseWrapper.setSecrets(simpleSecretResponse);
-
-        return secretResponseWrapper;
+        return secrets.stream().map(secret -> mappingService.secretDaoToSimpleResponse(secret)).collect(Collectors.toList());
     }
 
     @PreAuthorize("@permissionEvaluator.hasAccessToSecret(#secretId, 'WRITE')")

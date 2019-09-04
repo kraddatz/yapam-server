@@ -1,6 +1,9 @@
 package app.yapam.common.service;
 
 import app.yapam.YapamBaseTest;
+import app.yapam.common.error.UnknownFileException;
+import app.yapam.common.error.UnknownTagException;
+import app.yapam.common.error.UnknownUserException;
 import app.yapam.common.repository.FileRepository;
 import app.yapam.common.repository.TagRepository;
 import app.yapam.common.repository.UserRepository;
@@ -190,6 +193,32 @@ class MappingServiceTest extends YapamBaseTest {
     }
 
     @Test
+    void secretFromRequest_whenTagNotFound_thenThrowException() {
+        var secretRequest = createDefaultSecretRequest();
+        secretRequest.setTags(Collections.singletonList("UNKNOWN_TAG_ID"));
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(createDefaultUserDao());
+        when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
+        when(tagRepository.findOneById("UNKNOWN_TAG_ID")).thenReturn(null);
+
+        assertThrows(UnknownTagException.class, () -> mappingService.secretFromRequest(secretRequest));
+    }
+
+    @Test
+    void secretFromRequest_whenFileNotFound_thenThrowException() {
+        var secretRequest = createDefaultSecretRequest();
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(createDefaultUserDao());
+
+        assertThrows(UnknownFileException.class, () -> mappingService.secretFromRequest(secretRequest));
+    }
+
+    @Test
+    void secretFromRequest_whenUserNotFound_thenThrowException() {
+        var secretRequest = createDefaultSecretRequest();
+
+        assertThrows(UnknownUserException.class, () -> mappingService.secretFromRequest(secretRequest));
+    }
+
+    @Test
     void secretToDao() {
         var secret = createDefaultSecret();
         secret.setFiles(Collections.singletonList(createDefaultFile()));
@@ -247,11 +276,13 @@ class MappingServiceTest extends YapamBaseTest {
     @Test
     void secretToSimpleResponse() {
         var secret = createDefaultSecret();
+        secret.setTags(Collections.singletonList(createDefaultTag()));
 
         var result = mappingService.secretToSimpleResponse(secret);
 
         assertEquals(DEFAULT_SECRET_TITLE, result.getTitle());
         assertEquals(DEFAULT_SECRET_SECRETID, result.getSecretId());
+        assertEquals(DEFAULT_TAG_NAME, result.getTags().get(0));
     }
 
     @Test

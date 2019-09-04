@@ -176,6 +176,7 @@ public abstract class YapamBaseTest {
         var simpleSecretResponse = new SimpleSecretResponse();
         simpleSecretResponse.setSecretId(DEFAULT_SECRET_SECRETID);
         simpleSecretResponse.setTitle(DEFAULT_SECRET_TITLE);
+        simpleSecretResponse.setTags(Collections.singletonList(DEFAULT_TAG_NAME));
         return simpleSecretResponse;
     }
 
