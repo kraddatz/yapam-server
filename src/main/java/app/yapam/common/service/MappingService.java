@@ -36,7 +36,6 @@ import java.util.*;
 public class MappingService {
 
     @Autowired private UserRepository userRepository;
-    @Autowired private RequestHelperService requestHelperService;
     @Autowired private FileRepository fileRepository;
     @Autowired private TagRepository tagRepository;
 
@@ -247,7 +246,6 @@ public class MappingService {
     public User userFromRequest(UserRequest userRequest) {
         var user = new User();
         BeanUtils.copyProperties(userRequest, user);
-        user.setEmail(requestHelperService.getEmail());
         return user;
     }
 

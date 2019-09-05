@@ -28,7 +28,6 @@ class MappingServiceTest extends YapamBaseTest {
 
     @Autowired private MappingService mappingService;
     @MockBean private UserRepository userRepository;
-    @MockBean private RequestHelperService requestHelperService;
     @MockBean private FileRepository fileRepository;
     @MockBean private TagRepository tagRepository;
 
@@ -360,8 +359,6 @@ class MappingServiceTest extends YapamBaseTest {
     @Test
     void userFromRequest() {
         var userRequest = createDefaultUserRequest();
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-
         var result = mappingService.userFromRequest(userRequest);
 
         assertEquals(DEFAULT_USER_NAME, result.getName());

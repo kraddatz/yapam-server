@@ -4,7 +4,6 @@ import app.yapam.YapamBaseTest;
 import app.yapam.common.error.UnknownSecretException;
 import app.yapam.common.repository.*;
 import app.yapam.common.service.MappingService;
-import app.yapam.common.service.RequestHelperService;
 import app.yapam.file.FileService;
 import app.yapam.secret.model.Secret;
 import app.yapam.tag.TagService;
@@ -37,7 +36,6 @@ class SecretServiceTest extends YapamBaseTest {
     private static SpelAwareProxyProjectionFactory projectionFactory;
     @Autowired private SecretService secretService;
     @MockBean private UserRepository userRepository;
-    @MockBean private RequestHelperService requestHelperService;
     @MockBean private FileService fileService;
     @MockBean private TagService tagService;
     @MockBean private MappingService mappingService;
@@ -81,12 +79,12 @@ class SecretServiceTest extends YapamBaseTest {
 
     @Test
     void getAllSecrets() {
+        mockSecurityContextHolder();
         var userDao = createDefaultUserDao();
         var userSecretDao = createDefaultUserSecretDao();
         var secretDao = createDefaultSecretDao();
         var simpleSecretResponse = createDefaultSimpleSecretResponse();
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDao);
         when(userSecretRepository.findAllByUserId(DEFAULT_USER_ID)).thenReturn(new HashSet<>(Collections.singletonList(userSecretDao)));
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
         when(mappingService.secretDaoToSimpleResponse(secretDao)).thenReturn(simpleSecretResponse);

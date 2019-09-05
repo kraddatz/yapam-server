@@ -6,7 +6,6 @@ import app.yapam.common.repository.SecretRepository;
 import app.yapam.common.repository.UserRepository;
 import app.yapam.common.repository.UserSecretRepository;
 import app.yapam.common.service.MappingService;
-import app.yapam.common.service.RequestHelperService;
 import app.yapam.file.FileService;
 import app.yapam.secret.model.Secret;
 import app.yapam.secret.model.request.SecretRequest;
@@ -16,9 +15,9 @@ import app.yapam.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +29,6 @@ public class SecretService {
 
     @Autowired private SecretRepository secretRepository;
     @Autowired private MappingService mappingService;
-    @Autowired private RequestHelperService requestHelperService;
     @Autowired private UserRepository userRepository;
     @Autowired private UserSecretRepository userSecretRepository;
     @Autowired private FileService fileService;
@@ -39,7 +37,6 @@ public class SecretService {
     private Secret createSecret(Secret secret) {
         secret.setSecretId(UUID.randomUUID().toString());
         secret.setVersion(1);
-        secret.setCreationDate(LocalDateTime.now());
         var secretDao = secretRepository.save(mappingService.secretToDao(secret));
         userSecretRepository.saveAll(secretDao.getUsers());
         fileService.attachSecretToFiles(secret.getFiles(), secretDao);
@@ -61,7 +58,7 @@ public class SecretService {
     @PreAuthorize("@permissionEvaluator.registeredUser()")
     @PostFilter("@filterEvaluator.filterForKeywords(filterObject, #keywords)")
     List<SimpleSecretResponse> getAllSecrets(String[] keywords) {
-        var user = userRepository.findOneByEmail(requestHelperService.getEmail());
+        var user = userRepository.findOneById(SecurityContextHolder.getContext().getAuthentication().getName());
         var secretIds = userSecretRepository.findAllByUserId(user.getId()).stream().map(us -> us.getSecret().getSecretId()).distinct().collect(Collectors.toList());
         List<SecretDao> secrets = new ArrayList<>();
         for (String secretId : secretIds) {
@@ -98,7 +95,6 @@ public class SecretService {
             throw new UnknownSecretException(secretId);
         }
         secret.setVersion(latestSecretVersion.getVersion() + 1);
-        secret.setCreationDate(LocalDateTime.now());
         var secretDao = mappingService.secretToDao(secret);
         secretRepository.save(secretDao);
         userSecretRepository.saveAll(secretDao.getUsers());

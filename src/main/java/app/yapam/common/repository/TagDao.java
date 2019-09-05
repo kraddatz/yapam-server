@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "tag")
-public class TagDao {
+public class TagDao extends Auditable {
 
     @Id
     @GeneratedValue(generator = "UUID")

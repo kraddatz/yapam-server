@@ -6,7 +6,6 @@ import app.yapam.common.repository.UserDao;
 import app.yapam.common.repository.UserRepository;
 import app.yapam.common.service.EmailService;
 import app.yapam.common.service.MappingService;
-import app.yapam.common.service.RequestHelperService;
 import app.yapam.user.model.User;
 import app.yapam.user.model.response.SimpleUserResponseWrapper;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,6 @@ class UserServiceTest extends YapamBaseTest {
 
     @Autowired private UserService userService;
     @MockBean private UserRepository userRepository;
-    @MockBean private RequestHelperService requestHelperService;
     @MockBean private MappingService mappingService;
     @MockBean private EmailService emailService;
 
@@ -40,7 +38,6 @@ class UserServiceTest extends YapamBaseTest {
         var userResponse = createDefaultUserResponse();
         var userDao = createDefaultUserDao();
         when(mappingService.userFromRequest(userRequest)).thenReturn(user);
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
         when(mappingService.userToDao(user)).thenReturn(userDao);
         when(userRepository.save(userDao)).thenReturn(userDao);
         when(mappingService.userDaoToResponse(userDao)).thenReturn(userResponse);
@@ -56,7 +53,6 @@ class UserServiceTest extends YapamBaseTest {
     void getAllUsers() {
         var userDBO = createDefaultUserDao();
         when(userRepository.findAll()).thenReturn(Collections.singletonList(userDBO));
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
 
         SimpleUserResponseWrapper users = userService.getAllUsers();
 
@@ -65,10 +61,10 @@ class UserServiceTest extends YapamBaseTest {
 
     @Test
     void getCurrentUser() {
+        mockSecurityContextHolder();
         var userDBO = createDefaultUserDao();
         var userResponse = createDefaultUserResponse();
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDBO);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDBO);
         when(mappingService.userDaoToResponse(userDBO)).thenReturn(userResponse);
 
         userResponse = userService.getCurrentUser();

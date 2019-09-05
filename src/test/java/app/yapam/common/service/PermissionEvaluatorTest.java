@@ -24,15 +24,14 @@ import static org.mockito.Mockito.when;
 class PermissionEvaluatorTest extends YapamBaseTest {
 
     @Autowired private PermissionEvaluator permissionEvaluator;
-    @MockBean private RequestHelperService requestHelperService;
     @MockBean private SecretRepository secretRepository;
     @MockBean private UserRepository userRepository;
     @MockBean private FileRepository fileRepository;
 
     @Test
     void whenRegisteredUser_thenReturnTrue() {
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(createDefaultUserDao());
+        mockSecurityContextHolder();
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(createDefaultUserDao());
 
         var result = permissionEvaluator.registeredUser();
 
@@ -41,8 +40,6 @@ class PermissionEvaluatorTest extends YapamBaseTest {
 
     @Test
     void whenUnregisteredUser_thenReturnFalse() {
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-
         var result = permissionEvaluator.registeredUser();
 
         assertFalse(result);
@@ -50,13 +47,13 @@ class PermissionEvaluatorTest extends YapamBaseTest {
 
     @Test
     void whenUserHasReadAccessToFile_thenReturnTrue() {
+        mockSecurityContextHolder();
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
         var fileDao = createDefaultFileDao();
         fileDao.setSecrets(Collections.singletonList(secretDao));
         when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDao);
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
 
         var result = permissionEvaluator.hasAccessToFile(DEFAULT_FILE_ID, PermissionEvaluator.SecretAccessPermission.READ);
@@ -72,8 +69,7 @@ class PermissionEvaluatorTest extends YapamBaseTest {
         var fileDao = createDefaultFileDao();
         fileDao.setSecrets(Collections.singletonList(secretDao));
         when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDao);
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
 
         var result = permissionEvaluator.hasAccessToFile(DEFAULT_FILE_ID, PermissionEvaluator.SecretAccessPermission.READ);
@@ -83,13 +79,13 @@ class PermissionEvaluatorTest extends YapamBaseTest {
 
     @Test
     void whenUserHasWriteAccessToFile_thenReturnTrue() {
+        mockSecurityContextHolder();
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
         var fileDao = createDefaultFileDao();
         fileDao.setSecrets(Collections.singletonList(secretDao));
         when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDao);
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
 
         var result = permissionEvaluator.hasAccessToFile(DEFAULT_FILE_ID, PermissionEvaluator.SecretAccessPermission.WRITE);
@@ -99,14 +95,14 @@ class PermissionEvaluatorTest extends YapamBaseTest {
 
     @Test
     void whenUserHasNoWriteAccessToFile_thenReturnFalse() {
+        mockSecurityContextHolder();
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
         secretDao.getUsers().get(0).setPrivileged(false);
         var fileDao = createDefaultFileDao();
         fileDao.setSecrets(Collections.singletonList(secretDao));
         when(fileRepository.findOneById(DEFAULT_FILE_ID)).thenReturn(createDefaultFileDao());
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDao);
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
 
         var result = permissionEvaluator.hasAccessToFile(DEFAULT_FILE_ID, PermissionEvaluator.SecretAccessPermission.WRITE);
@@ -116,10 +112,10 @@ class PermissionEvaluatorTest extends YapamBaseTest {
 
     @Test
     void whenUserHasReadAccessToSecret_thenReturnTrue() {
+        mockSecurityContextHolder();
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDao);
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
 
         var result = permissionEvaluator.hasAccessToSecret(DEFAULT_SECRET_SECRETID, PermissionEvaluator.SecretAccessPermission.READ);
@@ -129,11 +125,11 @@ class PermissionEvaluatorTest extends YapamBaseTest {
 
     @Test
     void whenUserHasNoReadAccessToSecret_thenReturnFalse() {
+        mockSecurityContextHolder();
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
         secretDao.getUsers().get(0).getUser().setId("OTHER-USER-ID");
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDao);
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
 
         var result = permissionEvaluator.hasAccessToSecret(DEFAULT_SECRET_SECRETID, PermissionEvaluator.SecretAccessPermission.READ);
@@ -143,10 +139,10 @@ class PermissionEvaluatorTest extends YapamBaseTest {
 
     @Test
     void whenUserHasWriteAccessToSecret_thenReturnTrue() {
+        mockSecurityContextHolder();
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDao);
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
 
         var result = permissionEvaluator.hasAccessToSecret(DEFAULT_SECRET_SECRETID, PermissionEvaluator.SecretAccessPermission.WRITE);
@@ -156,11 +152,11 @@ class PermissionEvaluatorTest extends YapamBaseTest {
 
     @Test
     void whenUserHasNoWriteAccessToSecret_thenReturnFalse() {
+        mockSecurityContextHolder();
         var userDao = createDefaultUserDao();
         var secretDao = createDefaultSecretDao();
         secretDao.getUsers().get(0).setPrivileged(false);
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDao);
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
 
         var result = permissionEvaluator.hasAccessToSecret(DEFAULT_SECRET_SECRETID, PermissionEvaluator.SecretAccessPermission.WRITE);

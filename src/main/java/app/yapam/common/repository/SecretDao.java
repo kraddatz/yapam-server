@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "secret")
-public class SecretDao {
+public class SecretDao extends Auditable {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -26,8 +26,6 @@ public class SecretDao {
     @Column(name = "secret_id")
     private String secretId;
     private Integer version;
-    @Column(name = "creation_date")
-    private LocalDateTime creationDate;
     @Lob
     private String data;
     private SecretTypeEnum type;

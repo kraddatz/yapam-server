@@ -16,4 +16,6 @@ public class UserRequest {
     private String locale;
     @ApiModelProperty(value = "Public key of the user", example = "public_key")
     private String publicKey;
+    @ApiModelProperty(value = "Email of the user", example = "max.mustermann@email.com")
+    private String email;
 }

@@ -2,6 +2,7 @@ package app.yapam.common.service;
 
 import app.yapam.common.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -9,7 +10,6 @@ import java.util.Objects;
 @Component("permissionEvaluator")
 public class PermissionEvaluator {
 
-    @Autowired private RequestHelperService requestHelperService;
     @Autowired private SecretRepository secretRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private FileRepository fileRepository;
@@ -26,7 +26,7 @@ public class PermissionEvaluator {
     }
 
     public Boolean hasAccessToSecret(String secretId, SecretAccessPermission permission) {
-        var userId = userRepository.findOneByEmail(requestHelperService.getEmail()).getId();
+        var userId = SecurityContextHolder.getContext().getAuthentication().getName();
         var secretDao = secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId);
 
         var readAccess = hasReadAccess(secretDao, userId);
@@ -46,7 +46,7 @@ public class PermissionEvaluator {
     }
 
     public Boolean registeredUser() {
-        var userDao = userRepository.findOneByEmail(requestHelperService.getEmail());
+        var userDao = userRepository.findOneById(SecurityContextHolder.getContext().getAuthentication().getName());
         return !Objects.isNull(userDao);
     }
 

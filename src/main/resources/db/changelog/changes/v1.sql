@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset kevin.raddatz:v0.0.1
+--changeset kevin.raddatz:v1
 
 create table user
 (
@@ -20,6 +20,8 @@ create table secret
     creation_date datetime     not null,
     data          longtext     not null,
     type          int          not null,
+    created_by    varchar(64)  not null,
+    constraint fk_secret_created_by foreign key (created_by) references user (id),
     unique (secret_id, version)
 );
 
@@ -35,11 +37,14 @@ create table user_secret
 
 create table file
 (
-    id       varchar(64)  not null primary key,
-    filename varchar(255) not null,
-    filesize bigint       not null,
-    hash     varchar(44)  not null,
-    mimetype varchar(16)  not null
+    id            varchar(64)  not null primary key,
+    filename      varchar(255) not null,
+    filesize      bigint       not null,
+    hash          varchar(44)  not null,
+    mimetype      varchar(16)  not null,
+    creation_date datetime     not null,
+    created_by    varchar(64)  not null,
+    constraint fk_file_created_by foreign key (created_by) references user (id)
 );
 
 create table secret_file
@@ -53,8 +58,11 @@ create table secret_file
 
 create table tag
 (
-    id   varchar(64)  not null primary key,
-    name varchar(255) not null unique
+    id            varchar(64)  not null primary key,
+    name          varchar(255) not null unique,
+    creation_date datetime     not null,
+    created_by    varchar(64)  not null,
+    constraint fk_tag_created_by foreign key (created_by) references user (id)
 );
 
 create table secret_tag

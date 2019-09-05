@@ -24,11 +24,17 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Disabled
 @SuppressWarnings("squid:S2187")
@@ -74,6 +80,14 @@ public abstract class YapamBaseTest {
 
     protected final String DEFAULT_TAG_ID = "804ba1f6-0732-4b98-9f15-66c9666177c9";
     protected final String DEFAULT_TAG_NAME = "testtag";
+
+    protected void mockSecurityContextHolder() {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(DEFAULT_USER_ID);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+    }
 
     protected File createDefaultFile() {
         var file = new File();
@@ -253,6 +267,7 @@ public abstract class YapamBaseTest {
         userRequest.setLocale(DEFAULT_USER_LOCALE);
         userRequest.setName(DEFAULT_USER_NAME);
         userRequest.setPublicKey(DEFAULT_USER_PUBLIC_KEY);
+        userRequest.setEmail(DEFAULT_USER_EMAIL);
         return userRequest;
     }
 
