@@ -19,6 +19,8 @@ This project uses gradle as build tool
 2. create a _yapam.yaml_ in the root of the project directory
     ```yaml
     yapam:
+      identity-provider: KEYCLOAK   
+
       mail:
         host: 
         port: 
@@ -32,6 +34,14 @@ This project uses gradle as build tool
         url: jdbc:mysql://localhost/yapam?createDatabaseIfNotExist=true&user=root&password=secret
     
       host: localhost:8080
+   
+      storage-provider:
+          type: FILESYSTEM oder DROPBOX
+          filesystem:
+            root-path: /data
+          dropbox:
+            root-path: /
+            access-token: YOURAPITOKEN
     
     keycloak:
       auth-server-url: "http://localhost:8888"
@@ -47,6 +57,7 @@ This project uses gradle as build tool
 1. start and configure keycloak
 2. create an environment file like this: /path/to/.yapam-server.env
     ```
+    YAPAM_IDENTITY-PROVIDER=KEYCLOAK
     YAPAM_MAIL_HOST=
     YAPAM_MAIL_PORT=
     YAPAM_MAIL_USERNAME=
@@ -56,6 +67,10 @@ This project uses gradle as build tool
     YAPAM_MAIL_MESSAGE-SENDER=
     YAPAM_DATASOURCE_URL=jdbc:mysql://yapam-db/yapam?createDatabaseIfNotExists=true&user=root&password=secret
     YAPAM_HOST=http://localhost:8080
+    YAPAM_STORAGE-PROVIDER_TYPE=FILEYSTEM oder DROPBOX
+    YAPAM_STORAGE-PROVIDER_FILESYSTEM_ROOT-PATH=
+    YAPAM_STORAGE-PROVIDER_DROPBOX_ROOT-PATH=
+    YAPAM_STORAGE-PROVIDER_DROPBOX_ACCESS-TOKEN
     KEYCLOAK_AUTH-SERVER-URL=http://localhost:8888
     KEYCLOAK_REALM=
     KEYCLOAK_RESOURCE=
