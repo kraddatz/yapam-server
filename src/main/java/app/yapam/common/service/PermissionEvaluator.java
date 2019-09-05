@@ -1,26 +1,32 @@
 package app.yapam.common.service;
 
-import app.yapam.common.repository.SecretDao;
-import app.yapam.common.repository.SecretRepository;
-import app.yapam.common.repository.UserRepository;
-import app.yapam.common.repository.UserSecretDao;
+import app.yapam.common.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component("permissionEvaluator")
 public class PermissionEvaluator {
 
-    @Autowired private RequestHelperService requestHelperService;
     @Autowired private SecretRepository secretRepository;
     @Autowired private UserRepository userRepository;
+    @Autowired private FileRepository fileRepository;
 
-    public enum SecretAccessPermission {
-        READ,
-        WRITE
+    public Boolean hasAccessToFile(String fileId, SecretAccessPermission permission) {
+        var fileDao = fileRepository.findOneById(fileId);
+
+        for (SecretDao secretDao : fileDao.getSecrets()) {
+            if (hasAccessToSecret(secretDao.getSecretId(), permission)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public boolean hasAccessToSecret(String secretId, SecretAccessPermission permission) {
-        var userId = userRepository.findOneByEmail(requestHelperService.getEmail()).getId();
+    public Boolean hasAccessToSecret(String secretId, SecretAccessPermission permission) {
+        var userId = SecurityContextHolder.getContext().getAuthentication().getName();
         var secretDao = secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId);
 
         var readAccess = hasReadAccess(secretDao, userId);
@@ -37,5 +43,15 @@ public class PermissionEvaluator {
 
     private Boolean hasWriteAccess(SecretDao secretDao) {
         return secretDao.getUsers().stream().allMatch(UserSecretDao::getPrivileged);
+    }
+
+    public Boolean registeredUser() {
+        var userDao = userRepository.findOneById(SecurityContextHolder.getContext().getAuthentication().getName());
+        return !Objects.isNull(userDao);
+    }
+
+    public enum SecretAccessPermission {
+        READ,
+        WRITE
     }
 }

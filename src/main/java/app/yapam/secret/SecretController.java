@@ -33,8 +33,10 @@ public class SecretController {
     @ApiOperation(value = "Get all secrets accessible for a user")
     @GetMapping(value = "/api/secrets", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public SecretResponseWrapper getAllSecrets() {
-        return secretService.getAllSecrets();
+    public SecretResponseWrapper getAllSecrets(@RequestParam(value = "keyword", defaultValue = "", required = false) String[] keywords) {
+        var secretResponseWrapper = new SecretResponseWrapper();
+        secretResponseWrapper.setSecrets(secretService.getAllSecrets(keywords));
+        return secretResponseWrapper;
     }
 
     @ApiOperation(value = "Get a single secret by id")

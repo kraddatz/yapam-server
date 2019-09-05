@@ -36,7 +36,7 @@ class EmailServiceTest extends YapamBaseTest {
         var user = createDefaultUser();
         doThrow(MailSendException.class).when(javaMailSender).send(any(SimpleMailMessage.class));
         when(yapamProperties.getHost()).thenReturn(DEFAULT_HOST_BASE_URL);
-        when(yapamProperties.getMail()).thenReturn(mock(YapamProperties.YapamMail.class));
+        when(yapamProperties.getMail()).thenReturn(mock(YapamProperties.MailProperties.class));
         when(yapamProperties.getMail().getMessageSender()).thenReturn(EMAIL_MESSAGE_SENDER);
 
         assertThrows(InvalidEmailRecipientException.class, () -> emailService.sendWelcomeMail(user));
@@ -46,7 +46,7 @@ class EmailServiceTest extends YapamBaseTest {
     void sendRegisterEmail() {
         var user = createDefaultUser();
         when(yapamProperties.getHost()).thenReturn(DEFAULT_HOST_BASE_URL);
-        when(yapamProperties.getMail()).thenReturn(mock(YapamProperties.YapamMail.class));
+        when(yapamProperties.getMail()).thenReturn(mock(YapamProperties.MailProperties.class));
         when(yapamProperties.getMail().getMessageSender()).thenReturn(EMAIL_MESSAGE_SENDER);
 
         emailService.sendWelcomeMail(user);

@@ -1,10 +1,12 @@
 package app.yapam.secret;
 
 import app.yapam.YapamBaseTest;
+import app.yapam.common.error.UnknownSecretException;
 import app.yapam.common.repository.*;
 import app.yapam.common.service.MappingService;
-import app.yapam.common.service.RequestHelperService;
+import app.yapam.file.FileService;
 import app.yapam.secret.model.Secret;
+import app.yapam.tag.TagService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -35,7 +36,8 @@ class SecretServiceTest extends YapamBaseTest {
     private static SpelAwareProxyProjectionFactory projectionFactory;
     @Autowired private SecretService secretService;
     @MockBean private UserRepository userRepository;
-    @MockBean private RequestHelperService requestHelperService;
+    @MockBean private FileService fileService;
+    @MockBean private TagService tagService;
     @MockBean private MappingService mappingService;
     @MockBean private SecretRepository secretRepository;
     @MockBean private UserSecretRepository userSecretRepository;
@@ -49,9 +51,13 @@ class SecretServiceTest extends YapamBaseTest {
     void createSecret() {
         var secretRequest = createDefaultSecretRequest();
         var secret = createDefaultSecret();
+        secret.setFiles(Collections.singletonList(createDefaultFile()));
         var secretDao = createDefaultSecretDao();
+        secretDao.setFiles(Collections.singletonList(createDefaultFileDao()));
         var secretDaoWithoutId = createDefaultSecretDao();
+        secretDaoWithoutId.setFiles(Collections.singletonList(createDefaultFileDao()));
         var secretResponse = createDefaultSecretResponse();
+        secretResponse.setFiles(Collections.singletonList(createDefaultSimpleFileResponse()));
         secretDaoWithoutId.setId(null);
         when(mappingService.secretFromRequest(secretRequest)).thenReturn(secret);
         when(mappingService.secretToDao(secret)).thenReturn(secretDaoWithoutId);
@@ -73,19 +79,24 @@ class SecretServiceTest extends YapamBaseTest {
 
     @Test
     void getAllSecrets() {
+        mockSecurityContextHolder();
         var userDao = createDefaultUserDao();
         var userSecretDao = createDefaultUserSecretDao();
         var secretDao = createDefaultSecretDao();
         var simpleSecretResponse = createDefaultSimpleSecretResponse();
-        when(requestHelperService.getEmail()).thenReturn(DEFAULT_USER_EMAIL);
-        when(userRepository.findOneByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDao);
+        when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(userDao);
         when(userSecretRepository.findAllByUserId(DEFAULT_USER_ID)).thenReturn(new HashSet<>(Collections.singletonList(userSecretDao)));
         when(secretRepository.findFirstBySecretIdOrderByVersionDesc(DEFAULT_SECRET_SECRETID)).thenReturn(secretDao);
         when(mappingService.secretDaoToSimpleResponse(secretDao)).thenReturn(simpleSecretResponse);
 
-        var result = secretService.getAllSecrets();
+        var result = secretService.getAllSecrets(new String[]{""});
 
-        assertEquals(1, result.getSecrets().size());
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getSecretById_whenSecretNotFound_thenThrowException() {
+        assertThrows(UnknownSecretException.class, () -> secretService.getSecretById(DEFAULT_SECRET_ID, 0));
     }
 
     @Test
@@ -118,6 +129,7 @@ class SecretServiceTest extends YapamBaseTest {
     void updateSecret() {
         var secretRequest = createDefaultSecretRequest();
         var secret = createDefaultSecret();
+        secret.setFiles(Collections.singletonList(createDefaultFile()));
         var secretDBO = createDefaultSecretDao();
         var secretVersionProjection = projectionFactory.createProjection(SecretVersionProjection.class);
         secretVersionProjection.setVersion(0);
@@ -133,5 +145,13 @@ class SecretServiceTest extends YapamBaseTest {
         secretDBO = captor.getValue();
 
         assertEquals(Integer.valueOf(1), secretDBO.getVersion());
+    }
+
+    @Test
+    void updateSecret_whenSecretNotFound_thenThrowException() {
+        var secretRequest = createDefaultSecretRequest();
+        var secret = createDefaultSecret();
+        when(mappingService.secretFromRequest(secretRequest)).thenReturn(secret);
+        assertThrows(UnknownSecretException.class, () -> secretService.updateSecret(DEFAULT_SECRET_ID, secretRequest));
     }
 }

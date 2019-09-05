@@ -7,13 +7,13 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "secret")
-public class SecretDao {
+public class SecretDao extends Auditable {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -26,8 +26,6 @@ public class SecretDao {
     @Column(name = "secret_id")
     private String secretId;
     private Integer version;
-    @Column(name = "creation_date")
-    private LocalDateTime creationDate;
     @Lob
     private String data;
     private SecretTypeEnum type;
@@ -36,5 +34,19 @@ public class SecretDao {
             cascade = CascadeType.MERGE,
             orphanRemoval = true
     )
-    private Set<UserSecretDao> users;
+    private List<UserSecretDao> users;
+    @ManyToMany(
+            mappedBy = "secrets",
+            cascade = CascadeType.MERGE
+    )
+    private List<FileDao> files;
+    @ManyToMany(
+            cascade = CascadeType.MERGE
+    )
+    @JoinTable(
+            name = "secret_tag",
+            joinColumns = @JoinColumn(name = "secret_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<TagDao> tags;
 }
