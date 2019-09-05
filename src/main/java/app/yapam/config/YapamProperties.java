@@ -17,9 +17,14 @@ import java.util.Map;
 public class YapamProperties {
 
     private String host;
-    private YapamMail mail;
-    private YapamDatasource datasource;
+    private MailProperties mail;
+    private DatasourceProperties datasource;
     private StorageProvider storageProvider;
+    private IdentityProviderType identityProvider;
+
+    public enum IdentityProviderType {
+        KEYCLOAK
+    }
 
     public enum StorageProviderType {
         FILESYSTEM,
@@ -28,7 +33,9 @@ public class YapamProperties {
 
     @Getter
     @Setter
-    public static class YapamMail {
+    @Component
+    @ConfigurationProperties(prefix = "yapam.mail")
+    public static class MailProperties {
 
         private String host;
         private Integer port;
@@ -44,7 +51,7 @@ public class YapamProperties {
 
     @Getter
     @Setter
-    public static class YapamDatasource {
+    public static class DatasourceProperties {
         private String url;
     }
 
@@ -56,12 +63,16 @@ public class YapamProperties {
         private FilesystemStorageProviderProperties filesystem;
         private DropboxStorageProviderProperties dropbox;
 
+        public interface StorageProviderProperties {
+            String getRootPath();
+        }
+
         @Getter
         @Setter
         @Component("storageProviderProperties")
         @ConfigurationProperties(prefix = "yapam.storage-provider.filesystem")
         @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "FILESYSTEM")
-        public static class FilesystemStorageProviderProperties implements StorageProviderProperties{
+        public static class FilesystemStorageProviderProperties implements StorageProviderProperties {
             private String rootPath;
         }
 
@@ -70,13 +81,9 @@ public class YapamProperties {
         @Component("storageProviderProperties")
         @ConfigurationProperties(prefix = "yapam.storage-provider.dropbox")
         @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "DROPBOX")
-        public static class DropboxStorageProviderProperties implements StorageProviderProperties{
+        public static class DropboxStorageProviderProperties implements StorageProviderProperties {
             private String rootPath;
             private String accessToken;
-        }
-
-        public interface StorageProviderProperties {
-            public String getRootPath();
         }
     }
 

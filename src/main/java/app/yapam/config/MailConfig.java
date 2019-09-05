@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Properties;
 
 @Configuration
-public class MailProperties {
+public class MailConfig {
 
-    @Autowired private YapamProperties yapamProperties;
+    @Autowired private YapamProperties.MailProperties mailProperties;
 
     @Bean
     public JavaMailSenderImpl mailSender() throws MessagingException {
@@ -22,20 +22,20 @@ public class MailProperties {
     }
 
     private void applyProperties(JavaMailSenderImpl sender) throws MessagingException {
-        sender.setHost(this.yapamProperties.getMail().getHost());
-        if (this.yapamProperties.getMail().getPort() != null) {
-            sender.setPort(this.yapamProperties.getMail().getPort());
+        sender.setHost(mailProperties.getHost());
+        if (mailProperties.getPort() != null) {
+            sender.setPort(mailProperties.getPort());
         }
-        sender.setUsername(this.yapamProperties.getMail().getUsername());
-        sender.setPassword(this.yapamProperties.getMail().getPassword());
-        sender.setProtocol(this.yapamProperties.getMail().getProtocol());
-        if (this.yapamProperties.getMail().getTestConnection())
+        sender.setUsername(mailProperties.getUsername());
+        sender.setPassword(mailProperties.getPassword());
+        sender.setProtocol(mailProperties.getProtocol());
+        if (mailProperties.getTestConnection())
             sender.testConnection();
-        if (this.yapamProperties.getMail().getDefaultEncoding() != null) {
-            sender.setDefaultEncoding(this.yapamProperties.getMail().getDefaultEncoding().name());
+        if (mailProperties.getDefaultEncoding() != null) {
+            sender.setDefaultEncoding(mailProperties.getDefaultEncoding().name());
         }
-        if (!this.yapamProperties.getMail().getProperties().isEmpty()) {
-            sender.setJavaMailProperties(asProperties(this.yapamProperties.getMail().getProperties()));
+        if (!mailProperties.getProperties().isEmpty()) {
+            sender.setJavaMailProperties(asProperties(mailProperties.getProperties()));
         }
     }
 
