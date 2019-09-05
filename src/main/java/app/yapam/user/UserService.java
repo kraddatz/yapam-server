@@ -1,6 +1,7 @@
 package app.yapam.user;
 
 import app.yapam.common.error.UnknownUserException;
+import app.yapam.common.error.UserAlreadyExistsException;
 import app.yapam.common.repository.UserRepository;
 import app.yapam.common.service.EmailService;
 import app.yapam.common.service.MappingService;
@@ -24,7 +25,16 @@ public class UserService {
     @Autowired private EmailService emailService;
     @Autowired private MappingService mappingService;
 
+    private void checkUserExists() {
+        var userDao = userRepository.findOneById(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (Objects.nonNull(userDao)) {
+            throw new UserAlreadyExistsException();
+        }
+    }
+
     public UserResponse createUser(UserRequest userRequest) {
+        checkUserExists();
+
         var user = mappingService.userFromRequest(userRequest);
         user.setCreationDate(LocalDateTime.now());
         user.setCreationDate(LocalDateTime.now());
