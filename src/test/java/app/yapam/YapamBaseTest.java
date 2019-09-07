@@ -55,6 +55,7 @@ public abstract class YapamBaseTest {
     protected final String API_FILES_BASE_URL = "/api/files";
     protected final String API_FILES_FILE_BY_ID = API_FILES_BASE_URL + "/{fileId}";
     protected final String API_TAGS_BASE_URL = "/api/tags";
+    protected final String API_AUTH_BASE_URL = "/api/auth";
 
     protected final String DEFAULT_SECRET_TITLE = "secretTitle";
     protected final String DEFAULT_SECRET_DATA = "secretData";
@@ -146,7 +147,6 @@ public abstract class YapamBaseTest {
         secretDBO.setData(DEFAULT_SECRET_DATA);
         secretDBO.setType(DEFAULT_SECRET_TYPE);
         secretDBO.setUsers(Collections.singletonList(userSecretDao));
-        secretDBO.setCreationDate(DEFAULT_SECRET_CREATION_DATE);
         secretDBO.setId(DEFAULT_SECRET_ID);
         secretDBO.setVersion(DEFAULT_SECRET_VERSION);
         secretDBO.setSecretId(DEFAULT_SECRET_SECRETID);
