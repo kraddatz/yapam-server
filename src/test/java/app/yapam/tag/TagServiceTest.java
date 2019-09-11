@@ -51,7 +51,7 @@ class TagServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void attachSecretToTags_whenTagNotFound_thenThrowException() {
+    void attachSecretToTags_whenTagNotFound_thenThrowUnknownTagException() {
         var tags = Collections.singletonList(createDefaultTag());
         var secretDao = createDefaultSecretDao();
         assertThrows(UnknownTagException.class, () -> tagService.attachSecretToTags(tags, secretDao));

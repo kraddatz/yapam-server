@@ -95,7 +95,7 @@ class SecretServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void getSecretById_whenSecretNotFound_thenThrowException() {
+    void getSecretById_whenSecretNotFound_thenThrowUnknownSecretException() {
         assertThrows(UnknownSecretException.class, () -> secretService.getSecretById(DEFAULT_SECRET_ID, 0));
     }
 
@@ -148,7 +148,7 @@ class SecretServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void updateSecret_whenSecretNotFound_thenThrowException() {
+    void updateSecret_whenSecretNotFound_thenThrowUnknownSecretException() {
         var secretRequest = createDefaultSecretRequest();
         var secret = createDefaultSecret();
         when(mappingService.secretFromRequest(secretRequest)).thenReturn(secret);

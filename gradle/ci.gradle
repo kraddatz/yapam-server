@@ -15,7 +15,8 @@ sonarqube {
                         "**/app/yapam/common/error/**," +
                         "**/app/yapam/swagger/**," +
                         "**/app/yapam/**/model/**," +
-                        "**/app/yapam/**/repository/*.java"
+                        "**/app/yapam/**/repository/*.java,"+
+                        "**/app/yapam/common/service/storage_provider/**"
     }
 }
 

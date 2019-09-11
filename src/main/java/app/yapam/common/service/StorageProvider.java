@@ -1,6 +1,7 @@
 package app.yapam.common.service;
 
 import app.yapam.common.error.InternalErrorException;
+import app.yapam.common.error.UnknownFileException;
 import app.yapam.common.repository.FileRepository;
 import app.yapam.config.YapamProperties;
 import app.yapam.file.model.File;
@@ -11,6 +12,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
 import java.net.URI;
+import java.util.Objects;
 
 public abstract class StorageProvider {
 
@@ -40,8 +42,11 @@ public abstract class StorageProvider {
     public abstract byte[] readContent(String filepath) throws Exception;
 
     public Resource readFile(String fileId) {
+        var fileDao = fileRepository.findOneById(fileId);
+        if (Objects.isNull(fileDao)) {
+            throw new UnknownFileException();
+        }
         try {
-            var fileDao = fileRepository.findOneById(fileId);
             var filePath = getFilePath(fileDao.getHash());
             var content = readContent(filePath);
             return new ByteArrayResource(content);
@@ -55,8 +60,12 @@ public abstract class StorageProvider {
     public abstract void storeContent(byte[] content, String filepath) throws Exception;
 
     public void storeFile(File file, String fileId) {
+        var fileDao = fileRepository.findOneById(fileId);
+        if (Objects.isNull(fileDao)) {
+            throw new UnknownFileException();
+        }
+
         try {
-            var fileDao = fileRepository.findOneById(fileId);
             var filePath = getFilePath(fileDao.getHash());
             if (!existsContent(filePath)) {
                 createDirectories(filePath);

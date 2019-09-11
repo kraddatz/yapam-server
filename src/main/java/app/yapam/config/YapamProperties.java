@@ -91,6 +91,7 @@ public class YapamProperties {
         @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "DROPBOX")
         public static class DropboxStorageProviderProperties extends StorageProviderProperties {
             private String accessToken;
+            private String clientIdentifier;
         }
 
         @Getter

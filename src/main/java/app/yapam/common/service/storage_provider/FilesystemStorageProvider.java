@@ -13,14 +13,13 @@ import java.nio.file.Paths;
 public class FilesystemStorageProvider extends StorageProvider {
 
     @Override
-    public Boolean existsContent(String filepath) {
-        var path = Paths.get(filepath);
-        return Files.exists(path);
+    public void createDirectory(String path) throws Exception {
+        Files.createDirectory(Paths.get(path));
     }
 
     @Override
-    public void createDirectory(String path) throws Exception {
-        Files.createDirectory(Paths.get(path));
+    public Boolean existsContent(String filepath) {
+        return Files.exists(Paths.get(filepath));
     }
 
     @Override
@@ -30,7 +29,6 @@ public class FilesystemStorageProvider extends StorageProvider {
 
     @Override
     public void storeContent(byte[] content, String filepath) throws IOException {
-        var path = Paths.get(filepath);
-        Files.write(path, content);
+        Files.write(Paths.get(filepath), content);
     }
 }

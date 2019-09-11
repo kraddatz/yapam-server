@@ -32,7 +32,7 @@ class EmailServiceTest extends YapamBaseTest {
     @MockBean private JavaMailSender javaMailSender;
 
     @Test
-    void sendRegisterEmail_whenInvalidRecipient_thenThrowException() {
+    void sendRegisterEmail_whenInvalidRecipient_thenThrowInvalidEmailRecipientException() {
         var user = createDefaultUser();
         doThrow(MailSendException.class).when(javaMailSender).send(any(SimpleMailMessage.class));
         when(yapamProperties.getHost()).thenReturn(DEFAULT_HOST_BASE_URL);

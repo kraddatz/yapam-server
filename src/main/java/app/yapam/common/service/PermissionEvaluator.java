@@ -1,5 +1,7 @@
 package app.yapam.common.service;
 
+import app.yapam.common.error.UnknownFileException;
+import app.yapam.common.error.UnknownSecretException;
 import app.yapam.common.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +18,9 @@ public class PermissionEvaluator {
 
     public Boolean hasAccessToFile(String fileId, SecretAccessPermission permission) {
         var fileDao = fileRepository.findOneById(fileId);
+        if (Objects.isNull(fileDao)) {
+            throw new UnknownFileException();
+        }
 
         for (SecretDao secretDao : fileDao.getSecrets()) {
             if (hasAccessToSecret(secretDao.getSecretId(), permission)) {
@@ -28,6 +33,9 @@ public class PermissionEvaluator {
     public Boolean hasAccessToSecret(String secretId, SecretAccessPermission permission) {
         var userId = SecurityContextHolder.getContext().getAuthentication().getName();
         var secretDao = secretRepository.findFirstBySecretIdOrderByVersionDesc(secretId);
+        if (Objects.isNull(secretDao)) {
+            throw new UnknownSecretException();
+        }
 
         var readAccess = hasReadAccess(secretDao, userId);
         if (permission == SecretAccessPermission.READ) {

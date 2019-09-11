@@ -21,12 +21,9 @@ public class JPAConfig {
     @Bean
     AuditorAware<UserDao> auditorProvider(UserRepository userRepository) {
 
-        return new AuditorAware<UserDao>() {
-            @Override
-            public Optional<UserDao> getCurrentAuditor() {
-                var userId = SecurityContextHolder.getContext().getAuthentication().getName();
-                return Optional.of(userRepository.findOneById(userId));
-            }
+        return () -> {
+            var userId = SecurityContextHolder.getContext().getAuthentication().getName();
+            return Optional.of(userRepository.findOneById(userId));
         };
     }
 

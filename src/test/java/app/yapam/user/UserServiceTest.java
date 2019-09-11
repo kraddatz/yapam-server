@@ -2,6 +2,7 @@ package app.yapam.user;
 
 import app.yapam.YapamBaseTest;
 import app.yapam.common.error.UnknownUserException;
+import app.yapam.common.error.UserAlreadyExistsException;
 import app.yapam.common.repository.UserDao;
 import app.yapam.common.repository.UserRepository;
 import app.yapam.common.service.EmailService;
@@ -33,6 +34,7 @@ class UserServiceTest extends YapamBaseTest {
 
     @Test
     void createUser() {
+        mockSecurityContextHolder();
         var userRequest = createDefaultUserRequest();
         var user = createDefaultUser();
         var userResponse = createDefaultUserResponse();
@@ -47,6 +49,16 @@ class UserServiceTest extends YapamBaseTest {
         verify(userRepository, times(1)).save(any(UserDao.class));
 
         assertNotNull(result);
+    }
+
+    @Test
+    void createUser_whenUserAlreadyExists_throwUserAlreadyExistsException() {
+        mockSecurityContextHolder();
+        var userRequest = createDefaultUserRequest();
+        var userDao = createDefaultUserDao();
+        when(userRepository.findOneById(anyString())).thenReturn(userDao);
+
+        assertThrows(UserAlreadyExistsException.class, () -> userService.createUser(userRequest));
     }
 
     @Test
@@ -85,7 +97,7 @@ class UserServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void getSimpleUserById_whenUserNotFound_thenThrowException() {
+    void getSimpleUserById_whenUserNotFound_thenThrowUnknownUserException() {
         assertThrows(UnknownUserException.class, () ->userService.getSimpleUserById(DEFAULT_USER_ID));
     }
 }

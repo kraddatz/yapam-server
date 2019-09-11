@@ -2,13 +2,13 @@ package app.yapam.common.repository;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 @Entity
@@ -29,14 +29,14 @@ public class UserDao implements UserDetails {
     private LocalDateTime creationDate;
     @OneToMany(
             mappedBy = "user",
-            cascade =  CascadeType.MERGE,
+            cascade = CascadeType.MERGE,
             orphanRemoval = true
     )
-    private Set<UserSecretDao> secrets;
+    private transient Set<UserSecretDao> secrets;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

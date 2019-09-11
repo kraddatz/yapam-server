@@ -2,7 +2,6 @@ package app.yapam.tag;
 
 import app.yapam.common.error.UnknownTagException;
 import app.yapam.common.repository.SecretDao;
-import app.yapam.common.repository.SecretRepository;
 import app.yapam.common.repository.TagDao;
 import app.yapam.common.repository.TagRepository;
 import app.yapam.common.service.MappingService;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 public class TagService {
 
     @Autowired private TagRepository tagRepository;
-    @Autowired private SecretRepository secretRepository;
     @Autowired private MappingService mappingService;
 
     public void attachSecretToTags(List<Tag> tagIds, SecretDao secretDao) {

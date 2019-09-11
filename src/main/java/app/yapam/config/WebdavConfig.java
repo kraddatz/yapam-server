@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class WebdavConfig {
 
     @Bean
-    public Sardine sardine(YapamProperties.StorageProvider.WebdavStorageProviderProperties providerProperties) {
-        return SardineFactory.begin(providerProperties.getUsername(), providerProperties.getPassword());
+    public Sardine sardine(YapamProperties.StorageProvider.WebdavStorageProviderProperties storageProviderProperties) {
+        return SardineFactory.begin(storageProviderProperties.getUsername(), storageProviderProperties.getPassword());
     }
 }

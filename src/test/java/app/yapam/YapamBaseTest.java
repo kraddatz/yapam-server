@@ -1,6 +1,7 @@
 package app.yapam;
 
 import app.yapam.common.repository.*;
+import app.yapam.common.service.StorageProvider;
 import app.yapam.file.model.File;
 import app.yapam.file.model.response.SimpleFileResponse;
 import app.yapam.secret.model.Secret;
@@ -82,12 +83,52 @@ public abstract class YapamBaseTest {
     protected final String DEFAULT_TAG_ID = "804ba1f6-0732-4b98-9f15-66c9666177c9";
     protected final String DEFAULT_TAG_NAME = "testtag";
 
-    protected void mockSecurityContextHolder() {
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn(DEFAULT_USER_ID);
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
+    protected StorageProvider createExistingContentStorageProvider() {
+        return new StorageProvider() {
+            @Override
+            public Boolean existsContent(String filepath) throws Exception {
+                return true;
+            }
+
+            @Override
+            public void createDirectory(String path) throws Exception {
+
+            }
+
+            @Override
+            public byte[] readContent(String filepath) throws Exception {
+                return new byte[0];
+            }
+
+            @Override
+            public void storeContent(byte[] content, String filepath) throws Exception {
+
+            }
+        };
+    }
+
+    protected StorageProvider createNotExistingContentStorageProvider() {
+        return new StorageProvider() {
+            @Override
+            public Boolean existsContent(String filepath) throws Exception {
+                return false;
+            }
+
+            @Override
+            public void createDirectory(String path) throws Exception {
+
+            }
+
+            @Override
+            public byte[] readContent(String filepath) throws Exception {
+                return new byte[0];
+            }
+
+            @Override
+            public void storeContent(byte[] content, String filepath) throws Exception {
+
+            }
+        };
     }
 
     protected File createDefaultFile() {
@@ -288,5 +329,13 @@ public abstract class YapamBaseTest {
         userSecretDao.setUser(createDefaultUserDao());
         userSecretDao.setSecret(createDefaultSecretDao());
         return userSecretDao;
+    }
+
+    protected void mockSecurityContextHolder() {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(DEFAULT_USER_ID);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
     }
 }

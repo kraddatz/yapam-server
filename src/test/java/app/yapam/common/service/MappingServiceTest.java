@@ -1,6 +1,7 @@
 package app.yapam.common.service;
 
 import app.yapam.YapamBaseTest;
+import app.yapam.common.error.InvalidFileContentException;
 import app.yapam.common.error.UnknownFileException;
 import app.yapam.common.error.UnknownTagException;
 import app.yapam.common.error.UnknownUserException;
@@ -15,10 +16,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -67,6 +71,14 @@ class MappingServiceTest extends YapamBaseTest {
         assertNull(result.getId());
         assertEquals(DEFAULT_FILE_FILENAME, result.getFilename());
         assertEquals(DEFAULT_FILE_HASH, result.getHash());
+    }
+
+    @Test
+    void fileFromRequest_whenCorruptFileContent_thenThrowInvalidFileContentException() throws IOException {
+        var fileRequest = mock(MultipartFile.class);
+        when(fileRequest.getBytes()).thenThrow(IOException.class);
+
+        assertThrows(InvalidFileContentException.class, () -> mappingService.fileFromRequest(fileRequest));
     }
 
     @Test
@@ -190,7 +202,7 @@ class MappingServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void secretFromRequest_whenTagNotFound_thenThrowException() {
+    void secretFromRequest_whenTagNotFound_thenThrowUnknownTagException() {
         var secretRequest = createDefaultSecretRequest();
         secretRequest.setTags(Collections.singletonList("UNKNOWN_TAG_ID"));
         when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(createDefaultUserDao());
@@ -201,7 +213,7 @@ class MappingServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void secretFromRequest_whenFileNotFound_thenThrowException() {
+    void secretFromRequest_whenFileNotFound_thenThrowUnknownFileException() {
         var secretRequest = createDefaultSecretRequest();
         when(userRepository.findOneById(DEFAULT_USER_ID)).thenReturn(createDefaultUserDao());
 
@@ -209,7 +221,7 @@ class MappingServiceTest extends YapamBaseTest {
     }
 
     @Test
-    void secretFromRequest_whenUserNotFound_thenThrowException() {
+    void secretFromRequest_whenUserNotFound_thenThrowUnknownUserException() {
         var secretRequest = createDefaultSecretRequest();
 
         assertThrows(UnknownUserException.class, () -> mappingService.secretFromRequest(secretRequest));

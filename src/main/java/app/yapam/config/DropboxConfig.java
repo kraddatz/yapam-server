@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Configuration;
 public class DropboxConfig {
 
     @Bean
-    public DbxClientV2 dbxClientV2(YapamProperties yapamProperties) {
-        DbxRequestConfig config = DbxRequestConfig.newBuilder("yapam-asdf").build();
-        return new DbxClientV2(config, yapamProperties.getStorageProvider().getDropbox().getAccessToken());
+    public DbxClientV2 dbxClientV2(YapamProperties.StorageProvider.DropboxStorageProviderProperties storageProviderProperties) {
+        DbxRequestConfig config = DbxRequestConfig.newBuilder(storageProviderProperties.getClientIdentifier()).build();
+        return new DbxClientV2(config, storageProviderProperties.getAccessToken());
     }
 }

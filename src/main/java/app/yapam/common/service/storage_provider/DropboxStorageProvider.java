@@ -18,6 +18,11 @@ public class DropboxStorageProvider extends StorageProvider {
     @Autowired private DbxClientV2 client;
 
     @Override
+    public void createDirectory(String path) {
+        // not needed as uploadAndFinish in storeContent already creates the directories
+    }
+
+    @Override
     public Boolean existsContent(String filepath) throws Exception {
         try {
             client.files().getMetadata(filepath);
@@ -29,11 +34,6 @@ public class DropboxStorageProvider extends StorageProvider {
                 throw e;
             }
         }
-    }
-
-    @Override
-    public void createDirectory(String path) {
-
     }
 
     @Override
