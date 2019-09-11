@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +45,7 @@ public class FileService {
     }
 
     @PreAuthorize("@permissionEvaluator.registeredUser()")
+    @Transactional
     public SimpleFileResponse saveFile(MultipartFile fileRequest) {
         var file = mappingService.fileFromRequest(fileRequest);
         var fileDao = fileRepository.findOneByHash(file.getHash());
