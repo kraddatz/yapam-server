@@ -28,7 +28,8 @@ public class YapamProperties {
 
     public enum StorageProviderType {
         FILESYSTEM,
-        DROPBOX
+        DROPBOX,
+        WEBDAV
     }
 
     @Getter
@@ -84,6 +85,17 @@ public class YapamProperties {
         public static class DropboxStorageProviderProperties implements StorageProviderProperties {
             private String rootPath;
             private String accessToken;
+        }
+
+        @Getter
+        @Setter
+        @Component("storageProviderProperties")
+        @ConfigurationProperties(prefix = "yapam.storage-provider.webdav")
+        @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "WEBDAV")
+        public static class WebdavStorageProviderProperties implements StorageProviderProperties {
+            private String rootPath;
+            private String username;
+            private String password;
         }
     }
 

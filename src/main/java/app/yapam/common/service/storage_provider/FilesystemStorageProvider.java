@@ -6,12 +6,17 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "FILESYSTEM")
 @Service
 public class FilesystemStorageProvider extends StorageProvider {
+
+    @Override
+    public Boolean existsContent(String filepath) {
+        var path = Paths.get(filepath);
+        return Files.exists(path);
+    }
 
     @Override
     public byte[] readContent(String filepath) throws IOException {
@@ -23,11 +28,5 @@ public class FilesystemStorageProvider extends StorageProvider {
         var path = Paths.get(filepath);
         Files.createDirectories(path.getParent());
         Files.write(path, content);
-    }
-
-    @Override
-    public Boolean existsContent(String filepath) {
-        var path = Paths.get(filepath);
-        return Files.exists(path);
     }
 }
