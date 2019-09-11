@@ -19,6 +19,11 @@ public class FilesystemStorageProvider extends StorageProvider {
     }
 
     @Override
+    public void createDirectory(String path) throws Exception {
+        Files.createDirectory(Paths.get(path));
+    }
+
+    @Override
     public byte[] readContent(String filepath) throws IOException {
         return Files.readAllBytes(Paths.get(filepath));
     }
@@ -26,7 +31,6 @@ public class FilesystemStorageProvider extends StorageProvider {
     @Override
     public void storeContent(byte[] content, String filepath) throws IOException {
         var path = Paths.get(filepath);
-        Files.createDirectories(path.getParent());
         Files.write(path, content);
     }
 }

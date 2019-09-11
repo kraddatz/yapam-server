@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
+import java.net.URI;
+
 public abstract class StorageProvider {
 
     private static Log log = LogFactory.getLog(StorageProvider.class);
@@ -19,12 +21,19 @@ public abstract class StorageProvider {
     @SuppressWarnings("squid:S00112")
     public abstract Boolean existsContent(String filepath) throws Exception;
 
-    private String getFilePath(String fileHash) {
-        var filepath = storageProviderProperties.getRootPath();
-        if (!filepath.endsWith(java.io.File.separator)) {
-            filepath += java.io.File.separator;
+    @SuppressWarnings("squid:S00112")
+    public abstract void createDirectory(String path) throws Exception;
+
+    private void createDirectories(String filepath) throws Exception {
+        var uri = new URI(filepath).resolve(".");
+        while (!uri.toString().equals(storageProviderProperties.getRootPath())) {
+            createDirectory(uri.toString());
+            uri = uri.resolve("..");
         }
-        return filepath + fileHash;
+    }
+
+    private String getFilePath(String fileHash) {
+        return storageProviderProperties.getRootPath() + fileHash;
     }
 
     @SuppressWarnings("squid:S00112")
@@ -50,6 +59,7 @@ public abstract class StorageProvider {
             var fileDao = fileRepository.findOneById(fileId);
             var filePath = getFilePath(fileDao.getHash());
             if (!existsContent(filePath)) {
+                createDirectories(filePath);
                 storeContent(file.getContent(), filePath);
             }
         } catch (Exception e) {

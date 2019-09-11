@@ -32,6 +32,11 @@ public class DropboxStorageProvider extends StorageProvider {
     }
 
     @Override
+    public void createDirectory(String path) {
+
+    }
+
+    @Override
     public byte[] readContent(String filepath) throws Exception {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             client.files().downloadBuilder(filepath).download(os);

@@ -7,15 +7,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
 
 @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "WEBDAV")
 @Service
 public class WebdavStorageProvider extends StorageProvider {
 
     @Autowired private Sardine sardine;
+
+    @Override
+    public void createDirectory(String path) throws Exception {
+        sardine.createDirectory(path);
+    }
 
     @Override
     public Boolean existsContent(String filepath) throws IOException {
@@ -28,9 +30,7 @@ public class WebdavStorageProvider extends StorageProvider {
     }
 
     @Override
-    public void storeContent(byte[] content, String filepath) throws IOException, URISyntaxException {
-        var parentPath = new URI(filepath).resolve(".").toString();
-        sardine.createDirectory(parentPath);
+    public void storeContent(byte[] content, String filepath) throws IOException {
         sardine.put(filepath, content);
     }
 }
