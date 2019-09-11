@@ -24,6 +24,7 @@ buildscript {
         mockitoVersion = '3.0.0'
         mysqlConnectorVersion = '8.0.17'
         restAssuredVersion = '4.0.0'
+        sardineVersion = '5.9'
         springBootVersion = '2.1.7.RELEASE'
         springCloudVersion = '2.1.2.RELEASE'
         springFoxVersion = '2.9.2'
@@ -56,6 +57,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: "${jacksonDatatypeVersion}"
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: "${jacksonDatatypeVersion}"
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "${jacksonDatatypeVersion}"
+    implementation group: 'com.github.lookfirst', name: 'sardine', version: "${sardineVersion}"
     implementation group: 'com.sun.xml.bind', name: 'jaxb-core', version: "${jaxbCoreVersion}"
     implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: "${jaxbImplVersion}"
     implementation group: 'commons-io', name: 'commons-io', version: "${commonsioVersion}"

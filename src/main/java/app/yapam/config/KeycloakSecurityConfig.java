@@ -1,5 +1,7 @@
 package app.yapam.config;
 
+import app.yapam.auth.AuthService;
+import app.yapam.auth.model.Auth;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
@@ -7,6 +9,7 @@ import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticatio
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.keycloak.adapters.springsecurity.filter.KeycloakSecurityContextRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,7 +34,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 @ComponentScan(basePackageClasses = KeycloakSecurityComponents.class)
 @ConditionalOnProperty(name = "yapam.identity-provider", havingValue = "KEYCLOAK")
 @Profile("!test")
-public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
+public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -56,6 +59,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/documentation/**").anonymous()
+                .antMatchers("/api/auth").permitAll()
                 .anyRequest().authenticated();
     }
 
@@ -64,6 +68,19 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
         keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
         auth.authenticationProvider(keycloakAuthenticationProvider);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "yapam.identity-provider", havingValue = "KEYCLOAK")
+    public AuthService identityProvider(@Value("${keycloak.auth-server-url}") String authServerUrl,
+                                        @Value("${keycloak.realm}") String realm,
+                                        @Value("${keycloak.resource}") String clientId) {
+        return () -> {
+            var auth = new Auth();
+            auth.setIdentityProviderUrl(String.format("%s/realms/%s", authServerUrl, realm));
+            auth.setClientId(clientId);
+            return auth;
+        };
     }
 
     @Bean

@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.URI;
 
 public abstract class StorageProvider {
 
@@ -20,22 +18,32 @@ public abstract class StorageProvider {
     @Autowired private YapamProperties.StorageProvider.StorageProviderProperties storageProviderProperties;
     @Autowired private FileRepository fileRepository;
 
+    @SuppressWarnings("squid:S00112")
+    public abstract Boolean existsContent(String filepath) throws Exception;
+
+    @SuppressWarnings("squid:S00112")
+    public abstract void createDirectory(String path) throws Exception;
+
+    private void createDirectories(String filepath) throws Exception {
+        var uri = new URI(filepath).resolve(".");
+        while (!uri.toString().equals(storageProviderProperties.getRootPath())) {
+            createDirectory(uri.toString());
+            uri = uri.resolve("..");
+        }
+    }
+
     private String getFilePath(String fileHash) {
-        return storageProviderProperties.getRootPath() +
-                java.io.File.separator +
-                fileHash.substring(0, 3) +
-                java.io.File.separator +
-                fileHash.substring(3);
+        return storageProviderProperties.getRootPath() + fileHash;
     }
 
     @SuppressWarnings("squid:S00112")
-    public abstract byte[] readContent(Path filepath) throws Exception;
+    public abstract byte[] readContent(String filepath) throws Exception;
 
     public Resource readFile(String fileId) {
         try {
             var fileDao = fileRepository.findOneById(fileId);
             var filePath = getFilePath(fileDao.getHash());
-            var content = readContent(Paths.get(filePath));
+            var content = readContent(filePath);
             return new ByteArrayResource(content);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -44,13 +52,14 @@ public abstract class StorageProvider {
     }
 
     @SuppressWarnings("squid:S00112")
-    public abstract void storeContent(byte[] content, Path filepath) throws Exception;
+    public abstract void storeContent(byte[] content, String filepath) throws Exception;
 
     public void storeFile(File file, String fileId) {
         try {
             var fileDao = fileRepository.findOneById(fileId);
-            var filePath = Paths.get(getFilePath(fileDao.getHash()));
-            if (!Files.exists(filePath)) {
+            var filePath = getFilePath(fileDao.getHash());
+            if (!existsContent(filePath)) {
+                createDirectories(filePath);
                 storeContent(file.getContent(), filePath);
             }
         } catch (Exception e) {

@@ -114,7 +114,6 @@ class MappingServiceTest extends YapamBaseTest {
         assertEquals(DEFAULT_TAG_NAME, result.getTags().get(0));
         assertEquals(DEFAULT_SECRET_DATA, result.getData());
         assertEquals(DEFAULT_SECRET_VERSION, result.getVersion());
-        assertEquals(DEFAULT_SECRET_CREATION_DATE, result.getCreationDate());
         assertEquals(DEFAULT_SECRET_SECRETID, result.getSecretId());
         assertEquals(DEFAULT_SECRET_TITLE, result.getTitle());
         assertEquals(DEFAULT_SECRET_TYPE, result.getType());
@@ -143,7 +142,6 @@ class MappingServiceTest extends YapamBaseTest {
         assertEquals(DEFAULT_SECRET_TITLE, result.getTitle());
         assertEquals(DEFAULT_SECRET_SECRETID, result.getSecretId());
         assertEquals(DEFAULT_SECRET_VERSION, result.getVersion());
-        assertEquals(DEFAULT_SECRET_CREATION_DATE, result.getCreationDate());
         assertEquals(DEFAULT_SECRET_DATA, result.getData());
         assertEquals(DEFAULT_SECRET_TYPE, result.getType());
         assertEquals(DEFAULT_USER_NAME, result.getUsers().get(0).getUser().getName());
@@ -227,7 +225,6 @@ class MappingServiceTest extends YapamBaseTest {
 
         assertEquals(DEFAULT_SECRET_DATA, result.getData());
         assertEquals(DEFAULT_SECRET_VERSION, result.getVersion());
-        assertEquals(DEFAULT_SECRET_CREATION_DATE, result.getCreationDate());
         assertEquals(DEFAULT_SECRET_SECRETID, result.getSecretId());
         assertEquals(DEFAULT_SECRET_TITLE, result.getTitle());
         assertEquals(DEFAULT_SECRET_TYPE, result.getType());

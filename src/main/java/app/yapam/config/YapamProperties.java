@@ -28,7 +28,8 @@ public class YapamProperties {
 
     public enum StorageProviderType {
         FILESYSTEM,
-        DROPBOX
+        DROPBOX,
+        WEBDAV
     }
 
     @Getter
@@ -63,8 +64,16 @@ public class YapamProperties {
         private FilesystemStorageProviderProperties filesystem;
         private DropboxStorageProviderProperties dropbox;
 
-        public interface StorageProviderProperties {
-            String getRootPath();
+        @Setter
+        public abstract static class StorageProviderProperties {
+            private String rootPath;
+
+            public String getRootPath() {
+                if (!rootPath.endsWith("/")) {
+                    return rootPath + "/";
+                }
+                return rootPath;
+            }
         }
 
         @Getter
@@ -72,8 +81,7 @@ public class YapamProperties {
         @Component("storageProviderProperties")
         @ConfigurationProperties(prefix = "yapam.storage-provider.filesystem")
         @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "FILESYSTEM")
-        public static class FilesystemStorageProviderProperties implements StorageProviderProperties {
-            private String rootPath;
+        public static class FilesystemStorageProviderProperties extends StorageProviderProperties {
         }
 
         @Getter
@@ -81,9 +89,18 @@ public class YapamProperties {
         @Component("storageProviderProperties")
         @ConfigurationProperties(prefix = "yapam.storage-provider.dropbox")
         @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "DROPBOX")
-        public static class DropboxStorageProviderProperties implements StorageProviderProperties {
-            private String rootPath;
+        public static class DropboxStorageProviderProperties extends StorageProviderProperties {
             private String accessToken;
+        }
+
+        @Getter
+        @Setter
+        @Component("storageProviderProperties")
+        @ConfigurationProperties(prefix = "yapam.storage-provider.webdav")
+        @ConditionalOnProperty(name = "yapam.storage-provider.type", havingValue = "WEBDAV")
+        public static class WebdavStorageProviderProperties extends StorageProviderProperties {
+            private String username;
+            private String password;
         }
     }
 
