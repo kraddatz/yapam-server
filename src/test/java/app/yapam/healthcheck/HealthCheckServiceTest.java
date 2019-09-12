@@ -14,6 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import java.math.BigInteger;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -32,9 +34,9 @@ class HealthCheckServiceTest extends YapamBaseTest {
 
     @Test
     void createHealthCheckResult() {
-        var query = (TypedQuery<Integer>) mock(TypedQuery.class);
+        var query = (TypedQuery<BigInteger>) mock(TypedQuery.class);
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
-        when(query.getSingleResult()).thenReturn(1);
+        when(query.getSingleResult()).thenReturn(BigInteger.ONE);
 
         var result = healthCheckService.createHealthCheckResult();
 
@@ -43,7 +45,7 @@ class HealthCheckServiceTest extends YapamBaseTest {
 
     @Test
     void createHealthCheckResult_whenDatabaseConnectionFails_thenExpectSuccessfulBeFalse() {
-        var query = (TypedQuery<Integer>) mock(TypedQuery.class);
+        var query = (TypedQuery<BigInteger>) mock(TypedQuery.class);
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.getSingleResult()).thenReturn(null);
 

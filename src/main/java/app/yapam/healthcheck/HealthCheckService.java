@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletContext;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -73,7 +74,7 @@ class HealthCheckService {
         String error = null;
 
 
-        Integer pingDatabase = (Integer) entityManager.createNativeQuery("select 1").getSingleResult();
+        BigInteger pingDatabase = (BigInteger) entityManager.createNativeQuery("select 1").getSingleResult();
         if (Objects.isNull(pingDatabase)) {
             successful = false;
             error = "Database not connected";
