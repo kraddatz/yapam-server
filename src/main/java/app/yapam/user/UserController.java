@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 public class UserController {
 
@@ -42,5 +45,10 @@ public class UserController {
     @GetMapping(value = "/api/users/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public SimpleUserResponse getUserById(@PathVariable("userId") String userId) {
         return userService.getSimpleUserById(userId);
+    }
+
+    @GetMapping(value = "/logout")
+    public void logout(HttpServletRequest request) throws ServletException {
+        request.logout();
     }
 }

@@ -73,7 +73,6 @@ class HealthCheckService {
         boolean successful = true;
         String error = null;
 
-
         BigInteger pingDatabase = (BigInteger) entityManager.createNativeQuery("select 1").getSingleResult();
         if (Objects.isNull(pingDatabase)) {
             successful = false;
